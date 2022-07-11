@@ -1,5 +1,5 @@
 # ORIGAME
-ORIGAME private trial repo
+Private repository for ORIGAME simulation software.
 
 (c) Her Majesty the Queen in Right of Canada
 
