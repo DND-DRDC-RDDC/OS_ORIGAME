@@ -6,7 +6,7 @@ Private repository for ORIGAME simulation software.
 ## LICENSE
 See LICENSE file.
 
-## RECOMMENDEDINSTALLATION
+## RECOMMENDED INSTALLATION
 
 1. Install Python 3.5.2 (python-3.5.2-amd64.exe)
 	- https://www.python.org/downloads/release/python-352/
