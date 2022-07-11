@@ -4,7 +4,7 @@ ORIGAME private trial repo
 (c) Her Majesty the Queen in Right of Canada
 
 ## LICENSE
-GPLv3
+See LICENSE file.
 
 ## INSTALLATION
 
