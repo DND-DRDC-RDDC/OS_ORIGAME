@@ -6,7 +6,7 @@ Private repository for ORIGAME simulation software.
 ## LICENSE
 See LICENSE file.
 
-## INSTALLATION
+## RECOMMENDEDINSTALLATION
 
 1. Install Python 3.5.2 (python-3.5.2-amd64.exe)
 	- https://www.python.org/downloads/release/python-352/
@@ -16,8 +16,12 @@ See LICENSE file.
 
 3. Clone or download the ORIGAME project to your system
 
-4. Install dependencies in "requirements.txt" from the command line using pip (located in the .../Python35/Scripts folder)
-	- pip install -r requirements.txt
+4. From the project directory, create a virtual environment for ORIGAME
+	- e.g. "C:\Python35\python -m venv venv"
 
-5. Run "python origame_gui.py" in the project root folder
-	- Be sure to launch ORIGAME using the version of Python installed above (.../Python35/python.exe) in case multiple versions of Python exist on your system.
+5. Install dependencies in "requirements.txt"
+	- e.g. "venv\Scripts\pip install -r requirements.txt"
+
+6. Launch ORIGAME GUI
+	- e.g. "venv\python origame_gui.py"
+
