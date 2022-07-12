@@ -1,0 +1,35 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'ui_files\button_part.ui'
+#
+# Created by: PyQt5 UI code generator 5.7
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_ButtonPartWidget(object):
+    def setupUi(self, ButtonPartWidget):
+        ButtonPartWidget.setObjectName("ButtonPartWidget")
+        ButtonPartWidget.resize(200, 200)
+        self.horizontalLayout = QtWidgets.QHBoxLayout(ButtonPartWidget)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.push_button = SvgPushButton(ButtonPartWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.push_button.sizePolicy().hasHeightForWidth())
+        self.push_button.setSizePolicy(sizePolicy)
+        self.push_button.setText("")
+        self.push_button.setCheckable(True)
+        self.push_button.setObjectName("push_button")
+        self.horizontalLayout.addWidget(self.push_button)
+
+        self.retranslateUi(ButtonPartWidget)
+        QtCore.QMetaObject.connectSlotsByName(ButtonPartWidget)
+
+    def retranslateUi(self, ButtonPartWidget):
+        _translate = QtCore.QCoreApplication.translate
+        ButtonPartWidget.setWindowTitle(_translate("ButtonPartWidget", "Form"))
+
+from .custom_widgets import SvgPushButton

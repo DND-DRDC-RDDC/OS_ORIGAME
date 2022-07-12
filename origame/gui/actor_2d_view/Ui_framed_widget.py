@@ -1,0 +1,52 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'ui_files\framed_widget.ui'
+#
+# Created by: PyQt5 UI code generator 5.7
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_FramedPartWidget(object):
+    def setupUi(self, FramedPartWidget):
+        FramedPartWidget.setObjectName("FramedPartWidget")
+        FramedPartWidget.resize(265, 173)
+        self.verticalLayout = QtWidgets.QVBoxLayout(FramedPartWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.header_frame = QtWidgets.QFrame(FramedPartWidget)
+        self.header_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.header_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.header_frame.setObjectName("header_frame")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.header_frame)
+        self.horizontalLayout_2.setContentsMargins(6, 1, 6, 1)
+        self.horizontalLayout_2.setSpacing(1)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.verticalLayout.addWidget(self.header_frame)
+        self.stacked_widget = QtWidgets.QStackedWidget(FramedPartWidget)
+        self.stacked_widget.setObjectName("stacked_widget")
+        self.verticalLayout.addWidget(self.stacked_widget)
+        self.bottom_widget = QtWidgets.QWidget(FramedPartWidget)
+        self.bottom_widget.setObjectName("bottom_widget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.bottom_widget)
+        self.horizontalLayout.setContentsMargins(0, 1, 0, 1)
+        self.horizontalLayout.setSpacing(1)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
+        self.part_name_label = QtWidgets.QLabel(self.bottom_widget)
+        self.part_name_label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.part_name_label.setObjectName("part_name_label")
+        self.horizontalLayout.addWidget(self.part_name_label)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem1)
+        self.verticalLayout.addWidget(self.bottom_widget)
+
+        self.retranslateUi(FramedPartWidget)
+        QtCore.QMetaObject.connectSlotsByName(FramedPartWidget)
+
+    def retranslateUi(self, FramedPartWidget):
+        _translate = QtCore.QCoreApplication.translate
+        self.part_name_label.setText(_translate("FramedPartWidget", "partName"))
+

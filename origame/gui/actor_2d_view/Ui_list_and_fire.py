@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'ui_files\list_and_fire.ui'
+#
+# Created by: PyQt5 UI code generator 5.7
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_ListAndFireDialog(object):
+    def setupUi(self, ListAndFireDialog):
+        ListAndFireDialog.setObjectName("ListAndFireDialog")
+        ListAndFireDialog.resize(555, 548)
+        self.verticalLayout = QtWidgets.QVBoxLayout(ListAndFireDialog)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.prompt = QtWidgets.QLabel(ListAndFireDialog)
+        self.prompt.setObjectName("prompt")
+        self.verticalLayout.addWidget(self.prompt)
+        self.listWidget = QtWidgets.QListWidget(ListAndFireDialog)
+        self.listWidget.setObjectName("listWidget")
+        self.verticalLayout.addWidget(self.listWidget)
+        self.buttonBox = QtWidgets.QDialogButtonBox(ListAndFireDialog)
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel)
+        self.buttonBox.setObjectName("buttonBox")
+        self.verticalLayout.addWidget(self.buttonBox)
+
+        self.retranslateUi(ListAndFireDialog)
+        self.buttonBox.accepted.connect(ListAndFireDialog.accept)
+        self.buttonBox.rejected.connect(ListAndFireDialog.reject)
+        QtCore.QMetaObject.connectSlotsByName(ListAndFireDialog)
+
+    def retranslateUi(self, ListAndFireDialog):
+        _translate = QtCore.QCoreApplication.translate
+        ListAndFireDialog.setWindowTitle(_translate("ListAndFireDialog", "Function List"))
+        self.prompt.setText(_translate("ListAndFireDialog", "Please select a function to run:"))
+
