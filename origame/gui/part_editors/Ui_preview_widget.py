@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'preview_widget.ui'
+#
+# Created by: PyQt5 UI code generator 5.7
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_PreviewWidget(object):
+    def setupUi(self, PreviewWidget):
+        PreviewWidget.setObjectName("PreviewWidget")
+        PreviewWidget.resize(383, 92)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(PreviewWidget.sizePolicy().hasHeightForWidth())
+        PreviewWidget.setSizePolicy(sizePolicy)
+        PreviewWidget.setMaximumSize(QtCore.QSize(400, 16777215))
+        self.verticalLayout = QtWidgets.QVBoxLayout(PreviewWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.preview_tab_widget = QtWidgets.QTabWidget(PreviewWidget)
+        self.preview_tab_widget.setEnabled(True)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.preview_tab_widget.sizePolicy().hasHeightForWidth())
+        self.preview_tab_widget.setSizePolicy(sizePolicy)
+        self.preview_tab_widget.setObjectName("preview_tab_widget")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.tab)
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.update_button = QtWidgets.QPushButton(self.tab)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.update_button.sizePolicy().hasHeightForWidth())
+        self.update_button.setSizePolicy(sizePolicy)
+        self.update_button.setObjectName("update_button")
+        self.verticalLayout_2.addWidget(self.update_button)
+        self.preview_tab_widget.addTab(self.tab, "")
+        self.verticalLayout.addWidget(self.preview_tab_widget)
+
+        self.retranslateUi(PreviewWidget)
+        self.preview_tab_widget.setCurrentIndex(0)
+        QtCore.QMetaObject.connectSlotsByName(PreviewWidget)
+
+    def retranslateUi(self, PreviewWidget):
+        _translate = QtCore.QCoreApplication.translate
+        PreviewWidget.setWindowTitle(_translate("PreviewWidget", "Form"))
+        self.update_button.setToolTip(_translate("PreviewWidget", "Preview the script result - WARNING: only use this feature if the script does not modify linked scenario parts"))
+        self.update_button.setText(_translate("PreviewWidget", "Update"))
+        self.preview_tab_widget.setTabText(self.preview_tab_widget.indexOf(self.tab), _translate("PreviewWidget", "Preview"))
+
