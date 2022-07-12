@@ -23,5 +23,5 @@ See LICENSE file.
 	- e.g. "venv\Scripts\pip install -r requirements.txt"
 
 6. Launch ORIGAME GUI
-	- e.g. "venv\python origame_gui.py"
+	- e.g. "venv\Scripts\python origame_gui.py"
 
