@@ -1,0 +1,10 @@
+<RCC>
+  <qresource prefix="control">
+    <file>../../../icons/button_batchsettings.svg</file>
+    <file>../../../icons/button_pausebatch.svg</file>
+    <file>../../../icons/button_abortbatch.svg</file>
+    <file>../../../icons/button_newbatch.svg</file>
+    <file>../../../icons/button_playbatch.svg</file>
+    <file>../../../icons/button_runbatch.svg</file>
+  </qresource>
+</RCC>
