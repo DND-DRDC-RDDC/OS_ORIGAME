@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32px"
+   height="32px"
+   id="svg18219"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="button_playsim.svg">
+  <defs
+     id="defs18221" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.197802"
+     inkscape:cx="12.075895"
+     inkscape:cy="9.7140565"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     inkscape:snap-bbox="true"
+     inkscape:window-width="944"
+     inkscape:window-height="1002"
+     inkscape:window-x="960"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:snap-global="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid18227" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata18224">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <g
+       id="g11425"
+       transform="matrix(0.45101982,0,0,0.45101982,48.162263,-2055.6378)">
+      <rect
+         ry="0"
+         rx="0"
+         y="4560.1782"
+         x="-95.4804"
+         height="66.103638"
+         width="16.798634"
+         id="rect10871-4-1-9-6-15-7-1-6-4-3-0"
+         style="fill:#e59f33;fill-opacity:1;stroke:none" />
+      <rect
+         ry="0"
+         rx="0"
+         y="4560.1782"
+         x="-63.938408"
+         height="66.103638"
+         width="16.798634"
+         id="rect10871-4-1-5-2-3-8-9-3-6-0-3-5"
+         style="fill:#e59f33;fill-opacity:1;stroke:none" />
+    </g>
+  </g>
+</svg>
