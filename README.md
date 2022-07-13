@@ -3,6 +3,8 @@ Private repository for ORIGAME simulation software.
 
 (c) Her Majesty the Queen in Right of Canada
 
+This repository was created for a Government of Canada contract to update the ORIGAME code base.
+
 ## LICENSE
 See LICENSE file.
 
@@ -24,4 +26,15 @@ See LICENSE file.
 
 6. Launch ORIGAME GUI
 	- e.g. "venv\Scripts\python origame_gui.py"
+
+## DOCUMENTATION
+
+The ORIGAME User Manual and an ORIGAME Tutorial document are located in the /origame/docs/ folder.
+
+## CONTACT
+
+Stephen Okazawa
+Defence Scientist
+Defence Research and Development Canada
+stephen.okazawa@forces.gc.ca
 
