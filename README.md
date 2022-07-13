@@ -1,9 +1,9 @@
 # ORIGAME
 Private repository for ORIGAME simulation software.
 
-(c) Her Majesty the Queen in Right of Canada
-
 This repository was created for a Government of Canada contract to update the ORIGAME code base.
+
+(c) Her Majesty the Queen in Right of Canada
 
 ## LICENSE
 See LICENSE file.
@@ -16,9 +16,9 @@ See LICENSE file.
 2. Install Visual C++ Redistributable for Visual Studio 2015 (vc_redist.x64.exe)
 	- https://www.microsoft.com/en-ca/download/details.aspx?id=48145
 
-3. Clone or download the ORIGAME project to your system
+3. Clone or download ORIGAME to a project folder on your system
 
-4. From the project directory, create a virtual environment for ORIGAME
+4. From the project folder, create a virtual environment for ORIGAME
 	- e.g. "C:\Python35\python -m venv venv"
 
 5. Install dependencies in "requirements.txt"
@@ -29,7 +29,7 @@ See LICENSE file.
 
 ## DOCUMENTATION
 
-The ORIGAME User Manual and an ORIGAME Tutorial document are located in the /origame/docs/ folder.
+The ORIGAME User Manual and ORIGAME Tutorial documents are located in the /origame/docs/ folder.
 
 ## CONTACT
 
