@@ -33,8 +33,8 @@ The ORIGAME User Manual and ORIGAME Tutorial documents are located in the /origa
 
 ## CONTACT
 
-Stephen Okazawa
-Defence Scientist
-Defence Research and Development Canada
-stephen.okazawa@forces.gc.ca
+Stephen Okazawa<br/>
+Defence Scientist<br/>
+Defence Research and Development Canada<br/>
+stephen.okazawa@forces.gc.ca<br/>
 
