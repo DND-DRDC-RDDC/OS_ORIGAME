@@ -1,0 +1,10 @@
+{
+    "auto_seed": true,
+    "batch_runs_path": null,
+    "num_cores_wanted": 0,
+    "num_replics_per_variant": 5,
+    "num_variants": 1,
+    "replic_steps": null,
+    "save_scen_on_exit": true,
+    "seed_table": null
+}
