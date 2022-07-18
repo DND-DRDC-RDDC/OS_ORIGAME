@@ -36,12 +36,12 @@ Approved Use
 Users of the Software must adhere to the following restrictions regarding their use
 of the Software (herinafter called "Approved Use"):
 
-1. The Software may only be used to support the execution of work
+1. The Software must only be used to support the execution of work
    for the Government of Canada.
 
-2. The Software may not be modified without prior written permission from DRDC.
+2. The Software must not be modified without prior written permission from DRDC.
 
-3. The Software may not be provided to others unless the recipients are
+3. The Software must not be provided to others unless the recipients are
    Approved Users and their use of the Software adheres with the Approved Use.
 
 4. Contractors must further adhere to the terms of their contract with the
