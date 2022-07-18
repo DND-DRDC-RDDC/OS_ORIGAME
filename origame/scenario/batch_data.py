@@ -62,6 +62,8 @@ BATCH_TIMESTAMP_FMT = '%Y-%m-%d_%H-%M-%S'
 # batch run folders have following pattern:
 BATCH_FOLDER_RE = re.compile(r"batch_(.+)_\d+x\d+")
 
+#SQLite3 connection timeout (seconds)
+TO = 600
 
 class Decl(AnnotationDeclarations):
     SimController = 'SimController'
@@ -177,7 +179,7 @@ def create_batch_data_file(path: PathType, file_type: DataPathTypesEnum = None):
     to create this file.
     """
     results_db_path = get_db_path(path, file_type=file_type)
-    sqlite3.connect(str(results_db_path))
+    sqlite3.connect(str(results_db_path), timeout=TO)
 
 
 def erase_batch_data_file(path: PathType):
@@ -374,7 +376,7 @@ class BatchDataMgr:
         if results_db_path is None or not results_db_path.exists():
             return False
 
-        conn = sqlite3.connect(str(results_db_path))
+        conn = sqlite3.connect(str(results_db_path), timeout=TO)
         with conn:
             table_names = self.get_key_names(data_path=results_db_path, file_type=DataPathTypesEnum.db)
             return bool(table_names)
@@ -401,7 +403,7 @@ class BatchDataMgr:
         if results_db_path is None or not results_db_path.exists():
             raise RuntimeError('Could not load data from {}, file does not exist'.format(results_db_path))
 
-        conn = sqlite3.connect(str(results_db_path))
+        conn = sqlite3.connect(str(results_db_path), timeout=TO)
         data = {}
         with conn:
             table_names = self.get_key_names(data_path=results_db_path, file_type=DataPathTypesEnum.db)
@@ -423,7 +425,7 @@ class BatchDataMgr:
             raise RuntimeError('Could not get data keys from {}, file does not exist', results_db_path)
 
         sql_cmd = "SELECT name FROM sqlite_master WHERE type='table'"
-        conn = sqlite3.connect(str(results_db_path))
+        conn = sqlite3.connect(str(results_db_path), timeout=TO)
         with conn:
             result = conn.execute(sql_cmd).fetchall()
             return [r[0] for r in result]
@@ -521,7 +523,7 @@ class BatchDataMgr:
             raise RuntimeError("No data file could be identified, cannot write replication data to file")
 
         log.info("Saving batch replication data to {}", data_file)
-        conn = sqlite3.connect(str(data_file))
+        conn = sqlite3.connect(str(data_file), timeout=TO)
         with conn:
             for data_key in data:
                 table_name = data_key
