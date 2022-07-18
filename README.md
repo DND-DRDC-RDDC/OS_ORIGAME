@@ -21,7 +21,7 @@ See LICENSE file.
 4. From the project folder, create a virtual environment for ORIGAME
 	- e.g. "C:\Python35\python -m venv venv"
 
-5. Install dependencies in "requirements.txt"
+5. Install dependencies in "requirements.txt" to the virtual environment
 	- e.g. "venv\Scripts\pip install -r requirements.txt"
 
 6. Launch ORIGAME GUI
