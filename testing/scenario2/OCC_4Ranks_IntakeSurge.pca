@@ -1,0 +1,20 @@
+{
+    "/INTAKE/SETUP": {
+        "setupFile": "'C:/Users/Jillian/Documents/WorkingFolder/ORIGAME/FFM/ORIGAMEmodel/FFMv12_contractor_model/OCC_4Ranks_IntakeSurge.xls'"
+    },
+    "/RANK0/DATA/SETUP": {
+        "setupFile": "'C:/Users/Jillian/Documents/WorkingFolder/ORIGAME/FFM/ORIGAMEmodel/FFMv12_contractor_model/OCC_4Ranks_IntakeSurge.xls'"
+    },
+    "/RANK3/DATA/SETUP": {
+        "setupFile": "'C:/Users/Jillian/Documents/WorkingFolder/ORIGAME/FFM/ORIGAMEmodel/FFMv12_contractor_model/OCC_4Ranks_IntakeSurge.xls'"
+    },
+    "/RANK2/DATA/SETUP": {
+        "setupFile": "'C:/Users/Jillian/Documents/WorkingFolder/ORIGAME/FFM/ORIGAMEmodel/FFMv12_contractor_model/OCC_4Ranks_IntakeSurge.xls'"
+    },
+    "/RANK1/DATA/SETUP": {
+        "setupFile": "'C:/Users/Jillian/Documents/WorkingFolder/ORIGAME/FFM/ORIGAMEmodel/FFMv12_contractor_model/OCC_4Ranks_IntakeSurge.xls'"
+    },
+    "/TRAIN/DATA/SETUP": {
+        "setupFile": "'C:/Users/Jillian/Documents/WorkingFolder/ORIGAME/FFM/ORIGAMEmodel/FFMv12_contractor_model/OCC_4Ranks_IntakeSurge.xls'"
+    }
+}
