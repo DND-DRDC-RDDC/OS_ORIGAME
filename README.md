@@ -33,7 +33,7 @@ The ORIGAME User Manual and ORIGAME Tutorial documents are located in the /origa
 
 ## TESTING
 
-A number of test scenarios, run procedures and correct simulation output are provided in the /testing folder.
+A number of test scenarios and run procedures are provided in the /testing folder.
 
 These test scenarios constitute Government Supplied Material 2 (GSM 2), referred to in the task Statement of Work.
 
