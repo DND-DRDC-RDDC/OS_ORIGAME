@@ -496,8 +496,8 @@ class FramedPartWidget(IPartWidget):
             # These two lines are used to force this widget to have the correct size. The layout mechanism must be
             # restored when it at the full detail level. Incidentally, the setFixedSize cannot achieve the same effect,
             # contrary to what the documentation suggests.
-            self.setFixedWidth(self.__minimized_detail_size)
-            self.setFixedHeight(self.__minimized_detail_size)
+            self.setFixedWidth(int(self.__minimized_detail_size))
+            self.setFixedHeight(int(self.__minimized_detail_size))
 
             if not self.__detail_level_change_button.is_minimized:
                 self.__detail_level_change_button.toggle_detail_level()

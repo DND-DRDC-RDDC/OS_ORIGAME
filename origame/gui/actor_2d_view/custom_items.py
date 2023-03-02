@@ -288,7 +288,7 @@ class SizeGripRightItem(SizeGripItem):
         if warning_x is not None:
             log.debug(warning_x)
 
-        self._widget.setFixedWidth(self._size.width() + pos_delta_x)
+        self._widget.setFixedWidth(int(self._size.width() + pos_delta_x))
 
 
 class SizeGripBottomItem(SizeGripItem):
@@ -338,7 +338,7 @@ class SizeGripBottomItem(SizeGripItem):
         if warning_y is not None:
             log.debug(warning_y)
 
-        self._widget.setFixedWidth(self._widget.size().width())
+        self._widget.setFixedWidth(int(self._widget.size().width()))
         self._widget.setFixedHeight(int(self._size.height() + pos_delta_y))
 
 
