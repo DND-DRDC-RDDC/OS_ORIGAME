@@ -120,7 +120,7 @@ class CommentBoxItem(ICustomItem, QGraphicsProxyWidget):
         else:
             height_needed += self.ROOM_TO_AVOID_SCROLL
 
-        self.widget().setFixedHeight(height_needed)
+        self.widget().setFixedHeight(int(height_needed))
         self.parentItem().setVisible(bool(text.strip()))
 
         self.setY(-self.boundingRect().height())

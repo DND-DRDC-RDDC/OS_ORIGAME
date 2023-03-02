@@ -25,8 +25,7 @@ from importlib import import_module
 
 # [2. third-party]
 import jedi
-from jedi.api.classes import Definition as JediDefn
-from jedi.parser.pgen2.parse import ParseError as JediParseError
+from jedi.api.classes import Name as JediDefn
 
 from PyQt5.Qsci import QsciLexer, QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, QTimer
@@ -820,10 +819,6 @@ class PyCodingAssistant(CodingAssistant):
             # call_signatures = jedi_scripter2.call_signatures()
             # definitions = jedi_scripter1.goto_definitions()  # doesn't work
 
-        except JediParseError:
-            log.error("Caught Jedi parse error, please complete input.")
-            return
-
         except Exception as exc:
             log.error(exc)
             return
@@ -867,9 +862,6 @@ class PyCodingAssistant(CodingAssistant):
         try:
             self.__update_completions(text, line, col)
             return self.__completion_names
-
-        except JediParseError:
-            log.error("Caught Jedi parse error, please complete input.")
 
         except Exception as exc:
             log.error(exc)

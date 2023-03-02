@@ -527,7 +527,7 @@ def set_button_image(button: QToolButton, image_path: str, size: QSize = None, r
     if resize:
         height = button.height() - margin
         width = button.width() - margin
-        q_size = QSize(height, width)
+        q_size = QSize(int(height), int(width))
         button.setIconSize(q_size)
 
     if text:

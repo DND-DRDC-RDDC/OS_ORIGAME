@@ -536,7 +536,7 @@ class LinkSegmentBaseItem(QGraphicsObject):
         self._link_path = QPainterPath()
 
         self._link_pen = QPen(Qt.SolidLine)
-        self._link_pen.setWidth(self.PEN_WIDTH)
+        self._link_pen.setWidth(int(self.PEN_WIDTH))
         self._link_pen.setColor(self.COLOR_DEFAULT)
 
 
@@ -944,12 +944,12 @@ class LinkSegmentItem(IInteractiveItem, LinkSegmentBaseItem):
 
         # Fine pen for link arrow
         self._arrow_pen = QPen(Qt.SolidLine)
-        self._arrow_pen.setWidthF(0.1)
+        self._arrow_pen.setWidthF(int(0.1))
         self._arrow_pen.setColor(self.COLOR_DEFAULT)
 
         # Fine pen for link label
         self._label_pen = QPen(Qt.SolidLine)
-        self._label_pen.setWidthF(0.1)
+        self._label_pen.setWidthF(int(0.1))
         self._label_pen.setColor(self.COLOR_DEFAULT)
         self._label_brush = QBrush(self.COLOR_DEFAULT, Qt.SolidPattern)
 

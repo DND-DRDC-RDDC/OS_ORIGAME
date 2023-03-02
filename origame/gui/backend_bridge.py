@@ -58,8 +58,9 @@ from queue import Queue
 from inspect import Parameter
 
 # [2. third-party]
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtWrapperType, QThread, Qt, pyqtBoundSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, Qt, pyqtBoundSignal
 from PyQt5.QtWidgets import QApplication
+from sip import wrappertype as pyqtWrapperType
 
 # [3. local]
 from ..core.typing import AnnotationDeclarations

@@ -110,6 +110,7 @@ Version History: See SVN log.
 import inspect
 import logging
 import traceback
+import typing
 
 # [2. third-party]
 from PyQt5.QtCore import pyqtSignal
@@ -193,7 +194,15 @@ def safe_slot(func: SlotFunc, arg_types=None, __allow_decorator: bool = False) -
     # pyqtSlot()(func) returns func when func is free func; if func is a method, it must be of a class derived
     # from QObject because pyqtSlot adds an entry to the QObject instance's metaobject()
     arg_types = __get_checked_arg_types(func, arg_types)
-    pyqt_slot = pyqtSlot(*arg_types)(slot_wrapper)
+    try:
+        pyqt_slot = pyqtSlot(*arg_types)(slot_wrapper)
+    except TypeError: # TypeError: bytes or ASCII string expected not '_GenericAlias'
+        for x in range(len(arg_types)):
+            if typing.get_origin(arg_types[x]) != None:
+                arg_types[x] = typing.get_origin(arg_types[x])
+
+        pyqt_slot = pyqtSlot(*arg_types)(slot_wrapper)
+
     assert pyqt_slot is slot_wrapper  # wrapper gets spit out but pyqtSlot still got to do its job, as tests prove
 
     return pyqt_slot
@@ -290,8 +299,25 @@ def __validate_arg_types(arg_types: List[type], func: Callable):
             if not inferred.__name__.endswith(annotated.strip('*')):
                 mismatches.append((annotated, inferred))
         else:
-            if not issubclass(inferred, annotated):
-                mismatches.append((annotated, inferred))
+            try:
+                if not issubclass(inferred, annotated):
+                    mismatches.append((annotated, inferred))
+
+            # If inferred is typing.*, a TypeError will be raised because first parameter of issubclass has to be a class
+            except TypeError:
+                try:
+                    if not issubclass(typing.get_origin(inferred), annotated):
+                        mismatches.append((annotated, inferred))
+
+                # If inferred is typing.Unionlist, a TypeError will be raised again.
+                except TypeError:
+                    subclass = False
+                    for i, x in enumerate(typing.get_args(inferred)):
+                        if issubclass(typing.get_origin(x), annotated):
+                            subclass = True
+
+                    if not subclass:
+                        mismatches.append((annotated, inferred))
 
     if mismatches:
         log.debug("WARNING: safe_slot' {} arg_types {} don't match arg types {}",

@@ -69,10 +69,10 @@ def get_dialog_filter(dialog_type: str):
     :return: a string that tells a QFileDialog object what file types to show.
     """
 
-    if dialog_type is 'open':
+    if dialog_type == 'open':
         dot_ext_list = ['*{}'.format(ext) for ext in ScenarioManager.FILE_EXTENSION_LIST]
         return "Scenarios ({})".format(' '.join(dot_ext_list))
-    elif dialog_type is 'save':
+    elif dialog_type == 'save':
         dot_ext_list = ['*{}'.format(ext) for ext in ScenarioManager.FILE_EXTENSION_LIST if
                         ext != ScenarioManager.PROTOTYPE_EXTENSION]
         return "{}".format(';;'.join(dot_ext_list))

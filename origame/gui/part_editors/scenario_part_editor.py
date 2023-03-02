@@ -193,7 +193,7 @@ class BaseContentEditor(QWidget):
 
     @override(QWidget)
     def sizeHint(self):
-        return QSize(self.INIT_WIDTH, self.INIT_HEIGHT)
+        return QSize(int(self.INIT_WIDTH), int(self.INIT_HEIGHT))
 
     def submit_data(self, box_role: QDialogButtonBox):
         """

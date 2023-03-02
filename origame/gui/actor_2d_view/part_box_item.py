@@ -911,7 +911,7 @@ class FramelessPartItem(IBoxedPartItem, AlertIndicator, QGraphicsObject):
             return size.width, size.height
 
         def __init_values_from_part(width: float, height: float):
-            self._icon_size = QSize(width * SCALE_FACTOR, height * SCALE_FACTOR)
+            self._icon_size = QSize(int(width * SCALE_FACTOR), int(height * SCALE_FACTOR))
             self.prepareGeometryChange()
 
         AsyncRequest.call(__get_initial_state, response_cb=self.set_size)
@@ -1005,7 +1005,7 @@ class FramelessPartItem(IBoxedPartItem, AlertIndicator, QGraphicsObject):
         :param height: the 2D part's vertical dimension.
         """
         self.prepareGeometryChange()
-        self._icon_size = QSize(width * SCALE_FACTOR, height * SCALE_FACTOR)
+        self._icon_size = QSize(int(width * SCALE_FACTOR), int(height * SCALE_FACTOR))
         self.prepareGeometryChange()
         self.sig_boxed_item_size_changed.emit()
 

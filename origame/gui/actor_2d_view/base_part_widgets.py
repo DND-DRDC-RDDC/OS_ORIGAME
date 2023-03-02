@@ -219,7 +219,7 @@ class IPartWidget(AlertIndicator, QWidget):
         :param size: a Size (of a FunctionPart)
         :return: a QSize in widget pixels.
         """
-        return QSize(width * SCALE_FACTOR, height * SCALE_FACTOR)
+        return QSize(int(width * SCALE_FACTOR), int(height * SCALE_FACTOR))
 
     def size_to_scenario(self, size: QSize) -> Size:
         """
@@ -344,8 +344,8 @@ class FramedPartWidget(IPartWidget):
         self.__detail_level_override = DetailLevelOverrideEnum.none
 
         self._small_icon = QSvgWidget(str(icon_path))
-        self._small_icon.setFixedSize(SMALL_ICON_SIZE_WIDTH,
-                                      SMALL_ICON_SIZE_HEIGHT)
+        self._small_icon.setFixedSize(int(SMALL_ICON_SIZE_WIDTH),
+                                      int(SMALL_ICON_SIZE_HEIGHT))
         self.__detail_level_change_button.clicked.connect(self.__slot_on_detail_level_change_button_clicked)
 
         self._content_widget = None
@@ -370,7 +370,7 @@ class FramedPartWidget(IPartWidget):
         self.__minimized_detail_size = part.part_frame.DETAIL_LEVEL_MINIMIZED_LEN * SCALE_FACTOR
         minimized_detail_size_width = self.__minimized_detail_size - FramedPartWidget.ICON_FRAME_WIDTH
         center_icon = QSvgWidget(str(icon_path))
-        center_icon.setFixedSize(minimized_detail_size_width, minimized_detail_size_width)
+        center_icon.setFixedSize(int(minimized_detail_size_width), int(minimized_detail_size_width))
 
         self._icon_label = QWidget()
         # The force_to_center_layout is a technique used to make a widget go to the center of a stacked widget.

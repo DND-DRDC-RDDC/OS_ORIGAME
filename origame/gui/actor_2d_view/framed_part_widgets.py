@@ -133,7 +133,7 @@ class ParentActorProxyWidget(QWidget):
         self.ui_parent_actor_proxy = Ui_ParentActorProxyWidget()
         self.ui_parent_actor_proxy.setupUi(self)
         self.ui_parent_actor_proxy.small_icon.load(str(part_image('actor_proxy')))
-        self.ui_parent_actor_proxy.small_icon.setFixedSize(SMALL_ICON_SIZE_WIDTH, SMALL_ICON_SIZE_HEIGHT)
+        self.ui_parent_actor_proxy.small_icon.setFixedSize(int(SMALL_ICON_SIZE_WIDTH), int(SMALL_ICON_SIZE_HEIGHT))
 
         self.ui_parent_actor_proxy.name_label.setFont(get_scenario_font(point_size=12))
 

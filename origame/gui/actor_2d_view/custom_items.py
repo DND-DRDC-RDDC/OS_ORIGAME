@@ -235,7 +235,7 @@ class SizeGripCornerItem(SizeGripItem):
         if warning_y is not None:
             log.debug(warning_y)
 
-        self._widget.setFixedSize(self._size.width() + pos_delta_x, self._size.height() + pos_delta_y)
+        self._widget.setFixedSize(int(self._size.width() + pos_delta_x), int(self._size.height() + pos_delta_y))
 
         # --------------------------- instance _PROTECTED properties and safe slots -----------------
         # --------------------------- instance __PRIVATE members-------------------------------------
@@ -339,7 +339,7 @@ class SizeGripBottomItem(SizeGripItem):
             log.debug(warning_y)
 
         self._widget.setFixedWidth(self._widget.size().width())
-        self._widget.setFixedHeight(self._size.height() + pos_delta_y)
+        self._widget.setFixedHeight(int(self._size.height() + pos_delta_y))
 
 
 class SvgFromImageItem(ICustomItem, QGraphicsSvgItem):
