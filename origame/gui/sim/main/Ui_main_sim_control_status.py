@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'origame\gui\sim\main\ui_files\main_sim_control_status.ui'
+# Form implementation generated from reading ui file '.\origame\gui\sim\main\ui_files\main_sim_control_status.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -387,14 +387,5 @@ class Ui_MainSimulationControlWidget(object):
         self.run_startup_parts_toolbutton.setText(_translate("MainSimulationControlWidget", "Run Startup Parts"))
         self.run_finish_parts_toolbutton.setText(_translate("MainSimulationControlWidget", "Run Finish Parts"))
         self.main_sim_settings_toolbutton.setText(_translate("MainSimulationControlWidget", "Settings"))
-import main_sim_control_rc
+from . import main_sim_control_rc
 
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainSimulationControlWidget = QtWidgets.QWidget()
-    ui = Ui_MainSimulationControlWidget()
-    ui.setupUi(MainSimulationControlWidget)
-    MainSimulationControlWidget.show()
-    sys.exit(app.exec_())
