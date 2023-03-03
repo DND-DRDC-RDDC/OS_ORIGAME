@@ -456,14 +456,14 @@
           <widget class="QToolButton" name="run_sim_toolbutton">
            <property name="minimumSize">
             <size>
-             <width>60</width>
-             <height>90</height>
+             <width>150</width>
+             <height>100</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>60</width>
-             <height>90</height>
+             <width>150</width>
+             <height>100</height>
             </size>
            </property>
            <property name="text">
@@ -507,14 +507,14 @@ Simulation</string>
             <widget class="QToolButton" name="reset_sim_toolbutton">
              <property name="minimumSize">
               <size>
-               <width>80</width>
-               <height>30</height>
+               <width>180</width>
+               <height>40</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>80</width>
-               <height>30</height>
+               <width>180</width>
+               <height>40</height>
               </size>
              </property>
              <property name="text">
@@ -533,14 +533,14 @@ Simulation</string>
             <widget class="QToolButton" name="start_sim_toolbutton">
              <property name="minimumSize">
               <size>
-               <width>80</width>
-               <height>30</height>
+               <width>180</width>
+               <height>40</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>80</width>
-               <height>30</height>
+               <width>180</width>
+               <height>40</height>
               </size>
              </property>
              <property name="text">
@@ -559,14 +559,14 @@ Simulation</string>
             <widget class="QToolButton" name="end_sim_toolbutton">
              <property name="minimumSize">
               <size>
-               <width>80</width>
-               <height>30</height>
+               <width>180</width>
+               <height>40</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>80</width>
-               <height>30</height>
+               <width>180</width>
+               <height>40</height>
               </size>
              </property>
              <property name="text">
