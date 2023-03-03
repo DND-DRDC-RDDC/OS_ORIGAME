@@ -10,7 +10,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MainSimulationControlWidget(object):
     def setupUi(self, MainSimulationControlWidget):
         MainSimulationControlWidget.setObjectName("MainSimulationControlWidget")
@@ -261,8 +260,8 @@ class Ui_MainSimulationControlWidget(object):
         self.frame.setObjectName("frame")
         self.command_layout.addWidget(self.frame)
         self.play_pause_sim_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.play_pause_sim_toolbutton.setMinimumSize(QtCore.QSize(60, 90))
-        self.play_pause_sim_toolbutton.setMaximumSize(QtCore.QSize(60, 90))
+        self.play_pause_sim_toolbutton.setMinimumSize(QtCore.QSize(100, 90))
+        self.play_pause_sim_toolbutton.setMaximumSize(QtCore.QSize(100, 90))
         icon7 = QtGui.QIcon()
         icon7.addPixmap(QtGui.QPixmap(":/icons/icons/button_playsim.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.play_pause_sim_toolbutton.setIcon(icon7)
@@ -271,8 +270,8 @@ class Ui_MainSimulationControlWidget(object):
         self.play_pause_sim_toolbutton.setObjectName("play_pause_sim_toolbutton")
         self.command_layout.addWidget(self.play_pause_sim_toolbutton)
         self.step_sim_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.step_sim_toolbutton.setMinimumSize(QtCore.QSize(60, 90))
-        self.step_sim_toolbutton.setMaximumSize(QtCore.QSize(60, 90))
+        self.step_sim_toolbutton.setMinimumSize(QtCore.QSize(100, 90))
+        self.step_sim_toolbutton.setMaximumSize(QtCore.QSize(100, 90))
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap(":/icons/icons/button_stepsim.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.step_sim_toolbutton.setIcon(icon8)
