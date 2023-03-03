@@ -739,14 +739,14 @@
           <widget class="QToolButton" name="run_abort_new_toolbutton">
            <property name="minimumSize">
             <size>
-             <width>60</width>
-             <height>90</height>
+             <width>150</width>
+             <height>100</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>60</width>
-             <height>90</height>
+             <width>150</width>
+             <height>100</height>
             </size>
            </property>
            <property name="text">
@@ -772,14 +772,14 @@ Simulation</string>
           <widget class="QToolButton" name="play_pause_toolbutton">
            <property name="minimumSize">
             <size>
-             <width>60</width>
-             <height>90</height>
+             <width>150</width>
+             <height>100</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>60</width>
-             <height>90</height>
+             <width>150</width>
+             <height>100</height>
             </size>
            </property>
            <property name="text">
