@@ -397,8 +397,8 @@ class MainWindow(QMainWindow):
         editor_width = part_editor.width()
         editor_height = part_editor.height()
 
-        part_editor.move(desk_width / 2 - editor_width / 2 + desk_rect.left(),
-                         desk_height / 2 - editor_height / 2 + desk_rect.top())
+        part_editor.move(int(desk_width / 2 - editor_width / 2 + desk_rect.left()),
+                         int(desk_height / 2 - editor_height / 2 + desk_rect.top()))
 
         part_editor.show()
         part_editor.activateWindow()
