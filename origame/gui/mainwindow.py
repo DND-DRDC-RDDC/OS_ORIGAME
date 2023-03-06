@@ -72,6 +72,13 @@ log = logging.getLogger("system")
 
 AfterCheckCB = Callable[[], None]
 
+try:
+    from ctypes import windll  # Only exists on Windows.
+    app_id = 'Canada.DRDC.ORIGAME'
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+except ImportError:
+    pass
+
 class Decl(AnnotationDeclarations):
     GuiLogCacher = 'GuiLogCacher'
 
