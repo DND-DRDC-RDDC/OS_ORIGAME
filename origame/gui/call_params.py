@@ -153,7 +153,7 @@ class ParameterInputDialog(QDialog):
 
         # set the size of the dialog
         new_height = min(ParameterInputDialog.MAX_HEIGHT, total_height_needed + ParameterInputDialog.DIALOG_TEXT_MARGIN)
-        self.resize(self.size().width(), new_height)
+        self.resize(int(self.size().width()), int(new_height))
 
         # set the focus/cursor in the top parameter field
         index_of_first_qline_edit = 1
