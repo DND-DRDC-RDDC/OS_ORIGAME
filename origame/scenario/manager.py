@@ -371,7 +371,7 @@ class ScenarioManager:
         log.info("New scenario creation completed")
         return self.__scenario
 
-    def load(self, path: PathType) -> Scenario:
+    def load(self, path: PathType) -> Tuple[Scenario, list[str]]:
         """
         This function loads the scenario file from the specified path and returns the loaded data in the form of a
         Scenario object.
@@ -384,7 +384,7 @@ class ScenarioManager:
         log.info("Scenario load of '{}' requested", path)
         orig_scenario = self.__scenario
         path = Path(path)
-        scen_ori_def, path = self.__load_ori(path)
+        scen_ori_def, path, non_serialized_obj = self.__load_ori(path)
         log.info("Scenario file '{}' loaded successfully; instantiating...", path)
 
         self.__scenario = Scenario(anim_mode_constness=self.__anim_mode_constness)
@@ -411,7 +411,8 @@ class ScenarioManager:
             orig_scenario.shutdown()
 
         log.info("Scenario loading completed")
-        return self.__scenario
+
+        return self.__scenario, non_serialized_obj
 
     def save(self, path: PathType = None):
         """
@@ -433,8 +434,11 @@ class ScenarioManager:
             path_suffix = self.ORIGAME_EXTENSION
             path = path.with_suffix(path_suffix)
 
-        self.__save_ori(path, self.__scenario)
+        non_serialized_obj = self.__save_ori(path, self.__scenario)
+
         log.info("Scenario saving completed successfully")
+
+        return non_serialized_obj
 
     def erase_scenario_file(self):
         """Remove the saved scenario from filesystem. Does nothing if never saved."""
@@ -525,7 +529,7 @@ class ScenarioManager:
 
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
-    def __load_ori(self, path: Path) -> Tuple[OriScenData, Path]:
+    def __load_ori(self, path: Path) -> Tuple[OriScenData, Path, list[str]]:
         """
         This function loads the scenario file corresponding to the specified path and returns the scenario in Python
         dictionary format.
@@ -559,7 +563,7 @@ class ScenarioManager:
         scenario_loader = Loader()
         self.signals.sig_save_enabled.emit(scenario_loader.SAVABLE)
         try:
-            ori_scenario = scenario_loader.load_file(str(path))
+            ori_scenario, non_serialized_obj = scenario_loader.load_file(str(path))
 
         except ScenarioFileNotFoundError as path_error:
             log.exception("Scenario file not found ({}). More info: {}", path, str(path_error))
@@ -569,9 +573,9 @@ class ScenarioManager:
             log.exception("Scenario file format error. File:{}. Error:{}", path, str(format_error))
             raise
 
-        return ori_scenario, path
+        return ori_scenario, path, non_serialized_obj
 
-    def __save_ori(self, path: Path, scenario: Scenario):
+    def __save_ori(self, path: Path, scenario: Scenario) -> list[str]:
         """
         Save a scenario instance to file system.
         :param path: path to .ORI file in which to save scenario
@@ -595,7 +599,7 @@ class ScenarioManager:
         image_manager.post_process_image_dict_ori(path, image_dict_ori=ori_scenario[ScKeys.IMAGE_DICT])
         log.info("Got ORI definition data from scenario instance")
         try:
-            save_util.save(ori_scenario, path)
+            non_serialized_obj = save_util.save(ori_scenario, path)
         except Exception:
             scenario.set_ori_snapshot_baseline(OriBaselineEnum.existing)
             raise
@@ -615,3 +619,5 @@ class ScenarioManager:
             # i.e. not for exported scenarios
             self.signals.sig_scenario_filepath_changed.emit(str(path))
             self.signals.sig_scenario_saved.emit()
+
+        return non_serialized_obj

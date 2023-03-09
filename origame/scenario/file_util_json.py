@@ -28,8 +28,9 @@ import datetime
 
 # [3. local]
 from ..core import override
+from ..core.typing import Tuple
 from .file_util_base import ScenarioReaderWriter
-from .ori import OriScenData
+from .ori import OriScenData, SaveError, SaveErrorLocationEnum
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -78,7 +79,7 @@ class ScenFileUtilJsonOri(ScenarioReaderWriter):
     """
 
     @override(ScenarioReaderWriter)
-    def _load_from_file(self, pathname: Path) -> OriScenData:
+    def _load_from_file(self, pathname: Path) -> Tuple[OriScenData, list[str]]:
         """
         :raises: ValueError. This error is raised by the JSON interpreter if a parsing error occurs while the file
             is being loaded.
@@ -86,9 +87,18 @@ class ScenFileUtilJsonOri(ScenarioReaderWriter):
         with pathname.open() as f:
             ori_scenario = json.load(f, object_hook=as_python_object)
 
-        return OriScenData(ori_scenario)
+        non_serialized_obj = self.find_save_error_objs(ori_scenario)
+
+        return OriScenData(ori_scenario), non_serialized_obj
 
     @override(ScenarioReaderWriter)
     def _dump_to_file(self, ori_scenario: OriScenData, path: Path):
+        default = lambda o: SaveError(o, SaveErrorLocationEnum.other).to_json()
+        jsond = json.dumps(ori_scenario, indent=4, separators=(',', ': '), sort_keys=True, cls=ExtendedJSONEncoder, default=default)
+
         with path.open("w") as f:
-            json.dump(ori_scenario, f, indent=4, separators=(',', ': '), sort_keys=True, cls=ExtendedJSONEncoder)
+            f.write(jsond)
+
+        non_serialized_obj = self.find_save_error_objs(json.loads(jsond))
+
+        return non_serialized_obj

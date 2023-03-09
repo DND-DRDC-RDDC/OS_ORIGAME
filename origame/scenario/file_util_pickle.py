@@ -65,14 +65,23 @@ class ScenFileUtilPickle(ScenarioReaderWriter):
     """
 
     @override(ScenarioReaderWriter)
-    def _load_from_file(self, pathname: Path) -> OriScenData:
+    def _load_from_file(self, pathname: Path) -> Tuple[OriScenData, list[str]]:
         with pathname.open("rb") as file_obj:
             ori = pickle.load(file_obj)
-            if not isinstance(ori, OriScenData):
-                ori = OriScenData(ori)
-            return ori
+
+        non_serialized_obj = self.find_save_error_objs(ori)
+
+        if not isinstance(ori, OriScenData):
+            ori = OriScenData(ori)
+
+        return ori, non_serialized_obj
 
     @override(ScenarioReaderWriter)
     def _dump_to_file(self, ori_scenario: OriScenData, path: Path):
+        pickled = pickle.dumps(ori_scenario)
         with path.open("wb") as file_obj:
-            pickle.dump(ori_scenario, file_obj)
+            file_obj.write(pickled)
+
+        non_serialized_obj = self.find_save_error_objs(pickle.loads(pickled))
+
+        return non_serialized_obj
