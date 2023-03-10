@@ -126,7 +126,6 @@ def setup_fig_axes(fig: pyplot.Figure, rows: int = 1, cols: int = 1, grid: bool 
     if rows == 1 and cols == 1:
         axes = fig.add_subplot(1, 1, 1)
         axes.grid(grid)
-        axes.hold(True)  # need to keep titles etc; data will be removed explicitly
 
     else:
         fig_num = 1
@@ -134,7 +133,6 @@ def setup_fig_axes(fig: pyplot.Figure, rows: int = 1, cols: int = 1, grid: bool 
             for j in range(cols):
                 axes = fig.add_subplot(rows, cols, fig_num)
                 axes.grid(grid)
-                axes.hold(True)
                 fig_num += 1
 
     return get_fig_axes(fig)
