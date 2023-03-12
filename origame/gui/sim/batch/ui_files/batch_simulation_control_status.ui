@@ -458,10 +458,27 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="view_batch_data_button">
-                  <property name="text">
-                   <string>View Batch Data</string>
+                 <widget class="QComboBox" name="batch_folder_combobox">
+                  <property name="minimumSize">
+                   <size>
+                    <width>550</width>
+                    <height>50</height>
+                   </size>
                   </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>550</width>
+                    <height>50</height>
+                   </size>
+                  </property>
+                  <property name="currentText">
+                   <string>0</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>0</string>
+                   </property>
+                  </item>
                  </widget>
                 </item>
                </layout>
