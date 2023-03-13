@@ -25,7 +25,7 @@ from importlib import import_module
 
 # [2. third-party]
 import jedi
-from jedi.api.classes import Name as JediDefn
+from jedi.api.classes import Name as JediName
 
 from PyQt5.Qsci import QsciLexer, QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, QTimer
@@ -68,15 +68,15 @@ log = logging.getLogger('system')
 
 # -- Function definitions -----------------------------------------------------------------------
 
-def get_jedi_docstring(defn: JediDefn) -> str:
+def get_jedi_docstring(jediName: JediName) -> str:
     """
     Returns a string that represents the docstring of a Python object as determined by Jedi.
     :param defn: the Jedi Definition object that represents a Python object
     """
-    if defn.type == 'module':
+    if jediName.type == 'module':
         # jedi only provides object docstring, whereas really we want members similar to help(object)
         try:
-            module = import_module(defn.name)
+            module = import_module(jediName.name)
             return get_docstring(module)
 
         except (ImportError, ValueError):
@@ -84,7 +84,7 @@ def get_jedi_docstring(defn: JediDefn) -> str:
             # not be resolved to an actual module (this is the case of random module, which jedi says is random.p)
             pass
 
-    return '{} {}:\n{}'.format(defn.type, defn.name, defn.raw_doc or defn.doc)
+    return '{} {}:\n{}'.format(jediName.type, jediName.name, jediName.docstring(raw=True))
 
 
 def get_docstring(obj: Any) -> str:
@@ -196,7 +196,7 @@ class CodingAssistant:
         return False
 
     @override_optional
-    def get_docs(self, text: str, line: int, col: int, context_words: List[str]) -> str:
+    def get_docs(self, text: str, context_words: List[str]) -> str:
         """
         This gets called automatically whenever the cursor has moved or the text has changed.
         Override this to provide documentation for the "object" at cursor (line, col) in text.
@@ -285,24 +285,14 @@ class TextBlock:
         self.__start_pos = start_pos
         self.__end_pos = end_pos
 
-    def extract(self, text: str, cursor_line: int, cursor_col: int,
-                get_line_col_from_pos: ConvertPosToLineColCallable) -> Tuple[str, int, int]:
+    def extract(self, text: str) -> str:
         """
-        Convert a text and cursor position to a new text with equivalent cursor position
+        Convert a text to a new text with equivalent cursor position
         :param text: text to get portion of
-        :param cursor_line: line number of cursor in text (starts at 0)
-        :param cursor_col: column of cursor in text (starts at 0)
-        :param get_line_col_from_pos: callable to convert absolute positions (given at construction) to line, col
-        :return: the new text, line and col #
+        :return: the new text
         """
-        start_line, start_col = get_line_col_from_pos(self.__start_pos)
-        cursor_line -= start_line
-        if cursor_line == 0:  # for first cursor_line, column needs adjusting
-            cursor_col -= start_col
-        assert cursor_line >= 0 and cursor_col >= 0
-
         text = text[self.__start_pos: self.__end_pos]
-        return text, cursor_line, cursor_col
+        return text
 
 
 class LangMonitor(QObject):
@@ -623,7 +613,7 @@ class ScriptPanel(QsciScintilla):
         if self.__lang_monitor is not None:
             lang_block = self.__lang_monitor.check_lang(text, abs_pos)
             if lang_block is not None:
-                text, line, col = lang_block.extract(text, line, col, self.lineIndexFromPosition)
+                text = lang_block.extract(text)
 
         if self.__code_helper is None or not self.__code_helper.CAN_COMPLETE:
             # if no code assistance available, don't waste resources getting doc string
@@ -638,7 +628,7 @@ class ScriptPanel(QsciScintilla):
         else:
             context = [current_word]
 
-        docstring = self.__code_helper.get_docs(text, line, col, context)
+        docstring = self.__code_helper.get_docs(text, context)
         if docstring:
             # log.debug("Docs at line={}, col={} is:\n{}", line, col, docstring)
             self.sig_docstring_changed.emit(docstring)
@@ -656,7 +646,7 @@ class ScriptPanel(QsciScintilla):
         if self.__lang_monitor is not None:
             lang_block = self.__lang_monitor.check_lang(text, self.positionFromLineIndex(line, col))
             if lang_block is not None:
-                text, line, col = lang_block.extract(text, line, col, self.lineIndexFromPosition)
+                text = lang_block.extract(text)
 
         name_completions = self.__code_helper.get_completions(text, line, col)
         if name_completions:
@@ -812,10 +802,10 @@ class PyCodingAssistant(CodingAssistant):
         return word_at_cursor.isidentifier()
 
     @override(CodingAssistant)
-    def get_docs(self, text: str, line: int, col: int, context_words: List[str]) -> str:
+    def get_docs(self, text: str, context_words: List[str]) -> str:
         try:
-            jedi_scripter1, jedi_scripter2 = self.__get_jedies(text, line, col)
-            definitions = jedi_scripter2.goto_definitions()
+            jedi_scripter1, jedi_scripter2 = self.__get_jedies(text)
+            definitions = jedi_scripter2.infer()
             # call_signatures = jedi_scripter2.call_signatures()
             # definitions = jedi_scripter1.goto_definitions()  # doesn't work
 
@@ -860,7 +850,7 @@ class PyCodingAssistant(CodingAssistant):
     @override(CodingAssistant)
     def get_completions(self, text: str, line: int, col: int) -> List[str]:
         try:
-            self.__update_completions(text, line, col)
+            self.__update_completions(text)
             return self.__completion_names
 
         except Exception as exc:
@@ -876,7 +866,7 @@ class PyCodingAssistant(CodingAssistant):
         completion = self.__map_name_to_completion.get(name)
         return None if completion is None else completion.name_with_symbols[:-len(completion.complete)]
 
-    def __update_completions(self, text: str, line: int, line_pos: int):
+    def __update_completions(self, text: str):
         """
         Update the completions and call signature completion info for the current context (at cursor).
         """
@@ -885,10 +875,10 @@ class PyCodingAssistant(CodingAssistant):
         self.__completion_names = list()
         self.__call_signature = None
 
-        jedi_scripter1, jedi_scripter2 = self.__get_jedies(text, line, line_pos)
+        jedi_scripter1, jedi_scripter2 = self.__get_jedies(text)
         try:
-            completions1 = jedi_scripter1.completions()
-            completions2 = jedi_scripter2.completions()
+            completions1 = jedi_scripter1.complete()
+            completions2 = jedi_scripter2.complete()
 
             # signatures1 = jedi_scripter1.call_signatures()
             signatures2 = jedi_scripter2.call_signatures()
@@ -947,15 +937,8 @@ class PyCodingAssistant(CodingAssistant):
                     completion = self.__map_name_to_completion.pop(param.name)
                     self.__map_name_to_completion[choice] = completion
 
-    def __get_jedies(self, text: str, line: int, line_pos: int) -> Tuple[jedi.api.Script, jedi.api.Interpreter]:
-        # in jedi, first line is 1, but in Scintilla it is 0
-        # Note: Script is able to match local vars created (like defining a class and accessing its methods),
-        # whereas Interpreter is not. This is surely a bug, because Interpreter derives from Script. For
-        # now, combine the two:
-        if line_pos > len(text):
-            pass
+    def __get_jedies(self, text: str) -> Tuple[jedi.Script, jedi.Interpreter]:
         text = text.replace('\r', '')
-        jedi_scripter1 = jedi.api.Script(source=text, line=line + 1, column=line_pos)
-        jedi_scripter2 = jedi.api.Interpreter(source=text, line=line + 1, column=line_pos,
-                                              namespaces=self.__completion_namespaces)
+        jedi_scripter1 = jedi.api.Script(code=text)
+        jedi_scripter2 = jedi.api.Interpreter(code=text, namespaces=self.__completion_namespaces)
         return jedi_scripter1, jedi_scripter2
