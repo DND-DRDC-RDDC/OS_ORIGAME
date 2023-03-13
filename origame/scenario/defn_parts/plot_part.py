@@ -415,7 +415,7 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         already, first compile and execute script. Any exception raised in the script will get trapped and
         put in the part's last_exec_err_info property. No exceptions should escape from this method.
         """
-        self._clear_own_alerts(ScenAlertLevelEnum.error, ErrorCatEnum.compile, ErrorCatEnum.config_plot, ErrorCatEnum.axes)
+        self._clear_own_alerts(ScenAlertLevelEnum.error, ErrorCatEnum.compile, ErrorCatEnum.config_plot, ErrorCatEnum.axes,  ErrorCatEnum.plot)
         try:
             alert_categ = ErrorCatEnum.compile
             self._check_compile_and_exec()
@@ -463,16 +463,21 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
                 assert hasattr(axes, 'patches')
                 assert hasattr(axes, 'collections')
                 assert hasattr(axes, 'legend_')
-                axes.lines = []  # remove lines
-                axes.patches = []  # remove patches
-                axes.collections = []  # remove collections (to clear scatter plots)
+                # remove lines
+                while len(axes.lines):
+                    axes.lines[0].remove()
+                # remove patches
+                while len(axes.patches):
+                    axes.patches[0].remove()
+                # remove collections (to clear scatter plots)
+                while len(axes.collections):
+                    axes.collections[0].remove()
                 axes.legend_ = None
                 axes.set_prop_cycle(None)  # reset color cycling
                 axes.relim()  # axes scaling
 
         assert not self.has_alerts()
 
-        self._clear_own_alerts(ScenAlertLevelEnum.error, ErrorCatEnum.plot)
         try:
             self._py_exec(self.__script_update_fig)
             self.__plot_update_reqd__possible = False
