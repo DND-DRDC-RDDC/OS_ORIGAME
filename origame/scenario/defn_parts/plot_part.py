@@ -463,9 +463,15 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
                 assert hasattr(axes, 'patches')
                 assert hasattr(axes, 'collections')
                 assert hasattr(axes, 'legend_')
-                axes.lines = []  # remove lines
-                axes.patches = []  # remove patches
-                axes.collections = []  # remove collections (to clear scatter plots)
+                # remove lines
+                while len(axes.lines):
+                    axes.lines[0].remove()
+                # remove patches
+                while len(axes.patches):
+                    axes.patches[0].remove()
+                # remove collections (to clear scatter plots)
+                while len(axes.collections):
+                    axes.collections[0].remove()
                 axes.legend_ = None
                 axes.set_prop_cycle(None)  # reset color cycling
                 axes.relim()  # axes scaling
