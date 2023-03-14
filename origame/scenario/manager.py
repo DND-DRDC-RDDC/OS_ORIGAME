@@ -414,7 +414,7 @@ class ScenarioManager:
 
         return self.__scenario, non_serialized_obj
 
-    def save(self, path: PathType = None):
+    def save(self, path: PathType = None) -> list[str]:
         """
         This function saves the current scenario to the specified path. The function serves double-duty for 'save' and
         'save as' operations. If a file already exists at the specified path it will be overwritten without warning.
