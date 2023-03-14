@@ -32,8 +32,8 @@ from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ...core.typing import AnnotationDeclarations
 from ...core.utils import get_verified_repr
 
-from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSchemaEnum, pickle_from_str, pickle_to_str
-from ..ori import get_pickled_str, check_needs_pickling
+from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSchemaEnum, SaveErrorLocationEnum
+from ..ori import get_pickled_str, check_needs_pickling, pickle_from_str, pickle_to_str
 from ..ori import OriCommonPartKeys as CpKeys
 from ..ori import OriDataPartKeys as DpKeys
 
@@ -485,7 +485,7 @@ class DataPart(BasePart):
             # yes, need to loop over every value and test; first clone the data
             ori_data = self.__get_as_ordered_dict()
             for key, value in ori_data.items():
-                safe_val, is_pickle_successful = get_pickled_str(value)
+                safe_val, is_pickle_successful = get_pickled_str(value, SaveErrorLocationEnum.data_part)
                 if not is_pickle_successful:
                     ori_data[key] = safe_val
 
@@ -572,7 +572,7 @@ class DataPart(BasePart):
         pickled_keys = []
 
         def pickle_value(orig_value: Any, value_id: str) -> bytes:
-            safe_val, is_pickled = get_pickled_str(orig_value)
+            safe_val, is_pickled = get_pickled_str(orig_value, SaveErrorLocationEnum.data_part)
             if is_pickled:
                 pickled_keys.append(value_id)
             return safe_val

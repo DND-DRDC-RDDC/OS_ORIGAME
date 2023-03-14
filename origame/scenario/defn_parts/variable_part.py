@@ -30,7 +30,7 @@ from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ...core.typing import AnnotationDeclarations
 from ...core.utils import get_verified_repr
 
-from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSchemaEnum
+from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSchemaEnum, SaveErrorLocationEnum
 from ..ori import get_pickled_str, pickle_from_str, check_needs_pickling
 from ..ori import OriCommonPartKeys as CpKeys
 from ..ori import OriVariablePartKeys as VpKeys
@@ -257,7 +257,7 @@ class VariablePart(BasePart):
         editable_str = self._editable_str
         needs_pickling, _ = check_needs_pickling(self._value_obj)
         if needs_pickling:
-            safe_value, is_pickled = get_pickled_str(self._value_obj)
+            safe_value, is_pickled = get_pickled_str(self._value_obj, SaveErrorLocationEnum.variable_part)
             if not is_pickled:
                 editable_str = safe_value
         else:
@@ -267,7 +267,7 @@ class VariablePart(BasePart):
     @override(BasePart)
     def _get_ori_snapshot_local(self, snapshot: JsonObj, snapshot_slow: JsonObj):
         BasePart._get_ori_snapshot_local(self, snapshot, snapshot_slow)
-        safe_val, _ = get_pickled_str(self._value_obj)
+        safe_val, _ = get_pickled_str(self._value_obj, SaveErrorLocationEnum.variable_part)
         val = pickle.dumps(safe_val)
 
         md5_var_obj = md5(val).digest()
