@@ -1126,7 +1126,7 @@ class PartFrame(IOriSerializable):
         Example: self.get_matching_properties('hel.*') will return ['comment', 'name'] if comment is 'hello'
             and name is 'hell'
         """
-        regexp = re.compile(re_pattern, re.IGNORECASE)
+        regexp = re.compile(re.escape(re_pattern), re.IGNORECASE)
         matches = []
 
         # local properties

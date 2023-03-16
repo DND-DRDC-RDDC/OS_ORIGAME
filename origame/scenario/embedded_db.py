@@ -246,7 +246,7 @@ class EmbeddedDatabase:
         # register the REGEXP function that SQLITE3 supports (must be user-defined)
         # note that we pre-compile the regexp for efficiency; this means the first arg to REGEXP is not needed
         import re
-        regexp = re.compile(re_pattern, re.IGNORECASE)
+        regexp = re.compile(re.escape(re_pattern), re.IGNORECASE)
 
         def regexp_func(expr, item):
             return regexp.search(str(item)) is not None

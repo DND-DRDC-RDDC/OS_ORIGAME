@@ -2043,7 +2043,7 @@ class SheetPart(BasePart, ExcelSheet):
     def get_matching_properties(self, re_pattern: str) -> List[str]:
         matches = BasePart.get_matching_properties(self, re_pattern)
 
-        regexp = re.compile(re_pattern, re.IGNORECASE)
+        regexp = re.compile(re.escape(re_pattern), re.IGNORECASE)
         for row_num, row in enumerate(self._sheet_data):
             for cell_num, val in enumerate(row):
                 val_str = str(val)
