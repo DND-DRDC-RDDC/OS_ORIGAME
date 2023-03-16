@@ -645,14 +645,14 @@ class BasePart(IOriSerializable, IScenAlertSource, ScenarioObject, metaclass=Att
     @override_optional
     def get_matching_properties(self, re_pattern: str) -> List[str]:
         """
-        Get the names of all properties of this frame that have a string representation that matches a pattern.
+        Get the names of all properties of this frame that have a string representation that matches a pattern (case insensitive).
 
         :param re_pattern: the regular expression pattern to match on
 
         Example: self.get_matching_properties('hel.*') will return ['part_frame.comment', 'script'] if comment
             of part's frame is 'hello' and the derived part has a property named "script" that equal to "print('hell')"
         """
-        regexp = re.compile(re_pattern)
+        regexp = re.compile(re_pattern, re.IGNORECASE)
         matches = self._part_frame.get_matching_properties(re_pattern)
         matches = [('part_frame.' + match) for match in matches]
 

@@ -236,7 +236,7 @@ class EmbeddedDatabase:
 
     def table_data_matches(self, table_name: str, re_pattern: str, first_row: int = 0, num_rows: int = 100) -> str:
         """
-        Return true if any data in the table matches a regular expression pattern
+        Return true if any data in the table matches a regular expression pattern (case insensitive)
         :param table_name: name of table
         :param re_pattern: the regular expression pattern to match
         :param first_row: the first row to search.
@@ -246,7 +246,7 @@ class EmbeddedDatabase:
         # register the REGEXP function that SQLITE3 supports (must be user-defined)
         # note that we pre-compile the regexp for efficiency; this means the first arg to REGEXP is not needed
         import re
-        regexp = re.compile(re_pattern)
+        regexp = re.compile(re_pattern, re.IGNORECASE)
 
         def regexp_func(expr, item):
             return regexp.search(str(item)) is not None
