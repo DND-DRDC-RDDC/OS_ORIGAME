@@ -141,10 +141,10 @@ class DataPart(BasePart):
 
     @override(BasePart)
     def get_matching_properties(self, re_pattern: str) -> List[str]:
-        """In addition to basic search, add first key or value that matches pattern."""
+        """In addition to basic search, add first key or value that matches pattern (case insensitive)."""
         matches = BasePart.get_matching_properties(self, re_pattern)
 
-        regexp = re.compile(re_pattern)
+        regexp = re.compile(re.escape(re_pattern), re.IGNORECASE)
         for key, value in self.__get_as_ordered_dict().items():
             # first search the key names:
             key_str = str(key)

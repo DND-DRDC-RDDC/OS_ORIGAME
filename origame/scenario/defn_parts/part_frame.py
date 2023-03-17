@@ -1119,14 +1119,14 @@ class PartFrame(IOriSerializable):
 
     def get_matching_properties(self, re_pattern: str) -> List[str]:
         """
-        Get the names of all properties of this frame that have a string representation that matches a pattern.
+        Get the names of all properties of this frame that have a string representation that matches a pattern (case insensitive).
 
         :param re_pattern: the regular expression pattern to match on
 
         Example: self.get_matching_properties('hel.*') will return ['comment', 'name'] if comment is 'hello'
             and name is 'hell'
         """
-        regexp = re.compile(re_pattern)
+        regexp = re.compile(re.escape(re_pattern), re.IGNORECASE)
         matches = []
 
         # local properties
