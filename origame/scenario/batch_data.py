@@ -545,12 +545,15 @@ class BatchDataMgr:
                     data_pickle = pickle.dumps(data[data_key])
                     conn.execute('INSERT INTO {} VALUES (?, ?, ?)'.format(table_name),
                                 (replic_id, variant_id, data_pickle))
+                conn.commit()
                 self.replic_data_buffer.pop() # Once the data is written to the database, remove it from the buffer
+
         except sqlite3.OperationalError:
             log.info("Saving batch replication data to {} failed, trying again ...", data_file)
+
         else:
             log.debug('Data for keys {} saved', ', '.join(sorted(data)))
+
         finally:
             if (len(self.replic_data_buffer)):
                 self.__write_batch_data_to_db()
-
