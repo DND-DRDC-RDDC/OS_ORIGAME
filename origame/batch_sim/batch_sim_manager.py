@@ -599,7 +599,7 @@ class BatchSimSettings:
         Save the batch settings to the given file.
         :param pathname: The save file path.
         """
-        settings = self.__get_settings_dict()
+        settings = self.get_settings_dict()
         with pathname.open("w") as f:
             json.dump(settings, f, indent=4, sort_keys=True)
             log.info('Batch settings saved to {}', pathname)
@@ -607,6 +607,21 @@ class BatchSimSettings:
     def get_use_scen_sim_settings(self) -> bool:
         """Returns __use_scen_sim_settings boolean based on whether replic_steps is set to None"""
         return self.replic_steps is None
+
+    def get_settings_dict(self) -> Dict[str, Any]:
+        """Returns a dictionary containing the current batch sim settings"""
+        settings = {
+            'batch_runs_path': self.batch_runs_path,
+            'num_variants': self.num_variants,
+            'num_replics_per_variant': self.num_replics_per_variant,
+            'num_cores_wanted': self.num_cores_wanted,
+            'auto_seed': self.auto_seed,
+            'seed_table': None if self.auto_seed else self.seed_table.get_seeds_list(),
+            'save_scen_on_exit': self.save_scen_on_exit,
+            'replic_steps': None if self.replic_steps is None else self.replic_steps.to_json(),
+        }
+
+        return settings
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
 
@@ -624,21 +639,6 @@ class BatchSimSettings:
             self.seed_table = SeedTable(self.num_variants, self.num_replics_per_variant)
 
         assert self.auto_seed or self.seed_table is not None
-
-    def __get_settings_dict(self) -> Dict[str, Any]:
-        """Returns a dictionary containing the current batch sim settings"""
-        settings = {
-            'batch_runs_path': self.batch_runs_path,
-            'num_variants': self.num_variants,
-            'num_replics_per_variant': self.num_replics_per_variant,
-            'num_cores_wanted': self.num_cores_wanted,
-            'auto_seed': self.auto_seed,
-            'seed_table': None if self.auto_seed else self.seed_table.get_seeds_list(),
-            'save_scen_on_exit': self.save_scen_on_exit,
-            'replic_steps': None if self.replic_steps is None else self.replic_steps.to_json(),
-        }
-
-        return settings
 
 
 class BsmStateClasses:

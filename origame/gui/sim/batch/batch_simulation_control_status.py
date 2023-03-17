@@ -34,7 +34,7 @@ from ....core import override
 from ....core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
 from ....core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ....scenario import ScenarioManager, Scenario
-from ....batch_sim import BatchSimManager, BsmStatesEnum, BatchDoneStatusEnum
+from ....batch_sim import BatchSimManager, BsmStatesEnum, BatchDoneStatusEnum, BatchSimSettings
 from ....gui.menu_commands import SaveAsCallable
 
 from ...gui_utils import show_modal_dialog, exec_modal_dialog, get_icon_path, set_button_image
@@ -130,6 +130,24 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         batch_settings = BatchSimulationSettingsDialog(self.__batch_sim_manager)
         batch_settings.finished.connect(self.__slot_display_batch_sim_settings)
         batch_settings.exec()
+
+    def apply_settings(self) -> bool:
+        """
+        Apply the changed settings from the Batch Simulation Control Panel to the Batch Simulation Manager.
+        :returns: A boolean indicating if the settings were applied successfully.
+        """
+        settings = self.__batch_sim_manager.settings.get_settings_dict()
+        if settings:
+            assert len(settings) > 0
+            # Update only the variables that can be changed from the Batch Simulation Control Panel
+            settings.update({
+                'num_variants': self.__batch_sim_manager.num_variants,
+                'num_replics_per_variant': self.__batch_sim_manager.num_replics_per_variant,
+                'num_cores_wanted': self.__batch_sim_manager.num_cores_wanted
+            })
+            self.__batch_sim_manager.set_settings(BatchSimSettings(**settings))
+
+        return len(settings) > 0  # evaluates to True if settings are populated
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
 
@@ -268,26 +286,32 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         """
         Update variant value in Batch Sim Settings when user edits spinbox value.
         """
-        self.__batch_sim_manager.settings.num_variants = variants
+        if variants != self.__batch_sim_manager.settings.num_variants:
+            self.__batch_sim_manager.settings.num_variants = variants
+            self.apply_settings()
 
     def __on_action_replics_changed(self, reps_per_variant: int):
         """
         Update replications per variant value in Batch Sim Settings when user edits spinbox value.
         """
-        self.__batch_sim_manager.settings.num_replics_per_variant = reps_per_variant
+        if reps_per_variant != self.__batch_sim_manager.settings.num_replics_per_variant:
+            self.__batch_sim_manager.settings.num_replics_per_variant = reps_per_variant
+            self.apply_settings()
 
     def __on_action_num_cores_changed(self, cores_wanted: int):
         """
         Update 'cores wanted' value in Batch Sim Settings when user edits spinbox value.
         """
-        num_cores_available = self.__batch_sim_manager.num_cores_available
-        if cores_wanted > num_cores_available:
-            log.warning('The number of cores specified exceeds the number available. Setting to {}',
-                        num_cores_available)
-            self.ui.use_cores_spindbox.setValue(num_cores_available)
-            self.__batch_sim_manager.settings.num_cores_wanted = num_cores_available
-        else:
-            self.__batch_sim_manager.settings.num_cores_wanted = cores_wanted
+        if cores_wanted != self.__batch_sim_manager.settings.num_cores_wanted:
+            num_cores_available = self.__batch_sim_manager.num_cores_available
+            if cores_wanted > num_cores_available:
+                log.warning('The number of cores specified exceeds the number available. Setting to {}',
+                            num_cores_available)
+                self.ui.use_cores_spindbox.setValue(num_cores_available)
+                self.__batch_sim_manager.settings.num_cores_wanted = num_cores_available
+            else:
+                self.__batch_sim_manager.settings.num_cores_wanted = cores_wanted
+                self.apply_settings()
 
     # -----------------------
     # Batch Sim Manager slots
