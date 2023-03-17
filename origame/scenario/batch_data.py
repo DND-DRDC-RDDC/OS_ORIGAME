@@ -529,8 +529,7 @@ class BatchDataMgr:
             raise RuntimeError("No data file could be identified, cannot write replication data to file")
 
         try:
-            conn = sqlite3.connect(str(data_file), timeout=1)
-            with conn:
+            with sqlite3.connect(str(data_file), timeout=TO) as conn:
                 replic_data = self.replic_data_buffer[-1] # Write data to database on first-in-first-out basis
                 variant_id = replic_data["variant_id"]
                 replic_id = replic_data["replic_id"]
@@ -551,7 +550,6 @@ class BatchDataMgr:
             log.info("Saving batch replication data to {} failed, trying again ...", data_file)
         else:
             log.debug('Data for keys {} saved', ', '.join(sorted(data)))
-            conn.close()
         finally:
             if (len(self.replic_data_buffer)):
                 self.__write_batch_data_to_db()
