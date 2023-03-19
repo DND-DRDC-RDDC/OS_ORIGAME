@@ -516,13 +516,13 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         success = export_data(self.__figure, file_path, sheet)
         return success
 
-    def get_preview_fig(self, script: str) -> pyplot.Figure:
+    def get_preview_fig(self, script: str, dpi: int = 100) -> pyplot.Figure:
         """
         Get the pyplot.Figure instance to use for previews (called by GUI if showing preview figure). It uses the
         preview() function of the script, or the plot() function if there is no preview.
         :param script: the script to use to generate the figure.
         """
-        preview_fig = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, facecolor=PlotPart.DEFAULT_FACE_COLOR)
+        preview_fig = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, dpi=dpi, facecolor=PlotPart.DEFAULT_FACE_COLOR)
 
         script_namespace = self.get_py_namespace().copy()
         script_namespace['figure'] = preview_fig

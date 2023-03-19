@@ -43,6 +43,7 @@ from .script_editing import PythonScriptEditor
 from .part_editors_registry import register_part_editor_class
 from .Ui_plot_export_image_dialog import Ui_PlotExportImageDialog
 from .Ui_plot_export_data_dialog import Ui_PlotExportDataDialog
+from .Ui_plot_dpi_widget import Ui_PlotDpiWidget
 from .common import EditorDialog, IPreviewWidget
 
 # -- Meta-data ----------------------------------------------------------------------------------
@@ -73,7 +74,7 @@ log = logging.getLogger('system')
 # noinspection PyUnresolvedReferences
 class PlotEditorDialog(EditorDialog):
     """
-    The base class for Table Editor dialogs sets up the UI features and interface with the table editor.
+    The base class for Plot Editor dialogs sets up the UI features and interface with the plot editor.
     """
     def __init__(self, plot_part: PlotPart, ui: Any, parent: QWidget = None):
         super().__init__(parent)
@@ -210,6 +211,14 @@ class ExportDataDialog(PlotEditorDialog):
 
         return False, str()
 
+class PlotDpiWidget(QWidget):
+    """
+    Creates the plot resolution setting widget for the plot part editor.
+    """
+    def __init__(self):
+        super().__init__()
+        self.ui = Ui_PlotDpiWidget()
+        self.ui.setupUi(self)
 
 class PlotPreviewWidget(IPreviewWidget):
     """
@@ -222,7 +231,7 @@ class PlotPreviewWidget(IPreviewWidget):
         self.script = None
 
     @override(IPreviewWidget)
-    def update(self):
+    def update(self, dpi: int = 100):
         """
         Draw the plot based on the figure received from the backend.
         """
@@ -241,7 +250,7 @@ class PlotPreviewWidget(IPreviewWidget):
             self.add_display_widget(self.__canvas)
 
         self._set_wait_mode_callback(True)
-        AsyncRequest.call(self.__part.get_preview_fig, self.script, response_cb=on_figure_received)
+        AsyncRequest.call(self.__part.get_preview_fig, self.script, dpi, response_cb=on_figure_received)
 
     def draw_unrefreshed_plot(self, display_text: str):
         """
@@ -280,6 +289,9 @@ class PlotPartEditorPanel(PythonScriptEditor):
         # Add the preview panel
         self.plot_preview_panel = PlotPreviewWidget(part, set_wait_mode_callback=self.set_wait_mode)
         self.plot_preview_panel.ui.update_button.clicked.connect(self.__slot_on_update_button_clicked)
+        self.plot_dpi_widget = PlotDpiWidget()
+        self.plot_preview_panel.ui.verticalLayout.addWidget(self.plot_dpi_widget)
+        self.plot_dpi_widget.ui.resolution_combobox.activated.connect(self.__slot_on_update_button_clicked)
         self.ui.main_code_editor_layout.layout().addWidget(self.plot_preview_panel)
 
     @override(BaseContentEditor)
@@ -294,11 +306,11 @@ class PlotPartEditorPanel(PythonScriptEditor):
 
     def __on_update_button_clicked(self):
         """
-        Method called with the update button is clicked within the Plot Part Editor.
+        Method called when the update button is clicked within the Plot Part Editor.
         """
         self.plot_preview_panel.draw_unrefreshed_plot("Update pending...")
         self.plot_preview_panel.script = self.ui.code_editor.text()
-        self.plot_preview_panel.update()
+        self.plot_preview_panel.update(int(self.plot_dpi_widget.ui.resolution_combobox.currentText()))
 
     __slot_on_update_button_clicked = safe_slot(__on_update_button_clicked)
 
