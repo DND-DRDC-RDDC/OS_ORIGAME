@@ -133,6 +133,7 @@ class MainWindow(QMainWindow):
 
         self.__uil_file_commands = ScenarioManagerBridge(scenario_manager=self.__scenario_manager,
                                                          on_close_editors_callback=self.close_part_editors,
+                                                         changed_part_editors=self.get_changed_part_editors,
                                                          ui=self.ui)
         self.__uil_file_commands.sig_exit.connect(self.sig_exit)
 
@@ -436,6 +437,20 @@ class MainWindow(QMainWindow):
                 # editor.close() will lead to deletion of the editor from self.__open_editors.
 
         return False  # No changes present in open editors
+
+    def get_changed_part_editors(self) -> list[ScenarioPartEditorDlg]:
+        if not self.__open_editors:
+            return []  # No editors open, so no changes
+
+        changed_opened_editors = []
+
+        # Search editors for changes
+        for part_id in self.__open_editors.copy().keys():
+            editor = self.__open_editors[part_id]
+            if editor.check_unapplied_changes():
+                changed_opened_editors.append(editor)
+
+        return changed_opened_editors
 
     def save_settings(self):
         """

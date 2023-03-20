@@ -25,7 +25,7 @@ import sys
 
 # [2. third-party]
 from PyQt5.QtCore import QObject, QSettings, QTimer, pyqtSignal
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QDialogButtonBox
 
 # [3. local]
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -40,6 +40,7 @@ from .gui_utils import exec_modal_dialog
 from .safe_slot import safe_slot, ext_safe_slot
 from .about import AboutDialog
 from .slow_tasks import get_progress_bar, ProgressBusy
+from .part_editors import ScenarioPartEditorDlg
 
 import origame  # to find package path since help stored there
 
@@ -86,6 +87,8 @@ potentially asking for confirmation.
 :return: True if continue with save, False if cancelled
 """
 CloseEditorsCallable = Callable[[], Optional[bool]]
+
+ChangedPartEditors = Callable[[], list[ScenarioPartEditorDlg]]
 
 # -- Class Definitions --------------------------------------------------------------------------
 
@@ -148,7 +151,8 @@ class ScenarioManagerBridge(QObject):
     # --------------------------- instance (self) PUBLIC methods --------------------------------
 
     def __init__(self, scenario_manager: ScenarioManager,
-                 on_close_editors_callback: CloseEditorsCallable = None, ui: Any = None):
+                 on_close_editors_callback: CloseEditorsCallable = None,
+                 changed_part_editors: ChangedPartEditors = None, ui: Any = None):
         super().__init__()
 
         self.__scenario_manager = scenario_manager
@@ -165,6 +169,7 @@ class ScenarioManagerBridge(QObject):
         self.__close_part_editors = on_close_editors_callback
         self.__save_was_successful = None  # None => reset, True => save succeeded, False => save failed
         self.__is_saving_scenario = False  # True when app is in process of saving scenario; False otherwise.
+        self.__changed_part_editors = changed_part_editors
 
     @property
     def last_used_scen_filepath(self) -> str:
@@ -355,20 +360,37 @@ class ScenarioManagerBridge(QObject):
                 # Dialog Message
                 if scenario_has_unsaved_changes and not editors_have_unsaved_changes:
                     msg = 'The scenario has unsaved changes. ' \
-                          '\n\nClick OK to abandon all unsaved changes, or Cancel to go back.'
+                          '\n\nClick Save to save all changes, Don\'t Save to abandon all unsaved changes, or Cancel to go back.'
+
+                    user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
+                                               buttons=[QMessageBox.Save, QMessageBox.Cancel],
+                                               buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
+
                 elif editors_have_unsaved_changes and not scenario_has_unsaved_changes:
                     msg = 'There are part editors with unapplied changes.' \
-                          '\n\nClick OK to abandon all unapplied changes, or Cancel to go back.'
+                          '\n\nClick Save to save all changes, Don\'t Save to abandon all unapplied changes, or Cancel to go back.'
+
+                    user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
+                                                buttons=[QMessageBox.Save, QMessageBox.Cancel],
+                                                buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
+
                 else:
                     msg = 'The scenario has unsaved changes, and there are part editors with unapplied changes. ' \
-                          '\n\nClick OK to abandon all unapplied and unsaved changes, or Cancel to go back.'
+                          '\n\nClick Save to save all changes, Don\'t Save to abandon all unapplied and unsaved changes, or Cancel to go back.'
 
-                user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
-                                               buttons=[QMessageBox.Ok, QMessageBox.Cancel])
+                    user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
+                                                buttons=[QMessageBox.Save, QMessageBox.Cancel],
+                                                buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
 
-                if user_input != QMessageBox.Ok:
+                if user_input == QMessageBox.Cancel:
                     # user cancelled the operation
                     return
+
+                if user_input == QMessageBox.Save:
+                    # save opened editors first (if any) then save the scenario
+                    for part in self.__changed_part_editors():
+                        part.content_editor.submit_data(QDialogButtonBox.ApplyRole)
+                    self.__save_scenario()
 
             # Start the action
             is_action_started = action()
