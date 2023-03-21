@@ -244,7 +244,7 @@ class SvgPushButton(QPushButton):
     FIT_INTO_OWNER_FACTOR = 0.8
     SVG_MARGIN = 0
 
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QWidget = None, button_pressed: bool = False):
         """
         Constructs the button. Note: The images are not set during the construction
         """
@@ -272,7 +272,10 @@ class SvgPushButton(QPushButton):
 
         self.__stacked_layout.addWidget(self.__on_widget)
         self.__stacked_layout.addWidget(self.__off_widget)
-        self.__stacked_layout.setCurrentWidget(self.__off_widget)
+        if button_pressed:
+            self.__stacked_layout.setCurrentWidget(self.__on_widget)
+        else:
+            self.__stacked_layout.setCurrentWidget(self.__off_widget)
 
         self.pressed.connect(self.__slot_on_pressed)
         self.released.connect(self.__slot_on_released)
