@@ -658,6 +658,7 @@ class OriButtonPartKeys:
     ROTATION_2D_RELEASED = "rotation_2d_released"
     IMAGE_ID_PRESSED = "image_id_pressed"
     IMAGE_ID_RELEASED = "image_id_released"
+    BUTTON_STATE = "state"
 
 
 class OriClockPartKeys:

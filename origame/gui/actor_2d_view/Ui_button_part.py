@@ -12,12 +12,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_ButtonPartWidget(object):
-    def setupUi(self, ButtonPartWidget):
+    def setupUi(self, ButtonPartWidget, button_pressed: bool = False):
         ButtonPartWidget.setObjectName("ButtonPartWidget")
         ButtonPartWidget.resize(200, 200)
         self.horizontalLayout = QtWidgets.QHBoxLayout(ButtonPartWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.push_button = SvgPushButton(ButtonPartWidget)
+        self.push_button = SvgPushButton(ButtonPartWidget, button_pressed)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
