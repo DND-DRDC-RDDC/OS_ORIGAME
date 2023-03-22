@@ -1989,8 +1989,9 @@ class PlotPart2dContent(QScrollArea):
     Provides the plot canvas to show the figure in the content view.
     """
 
-    def __init__(self):
+    def __init__(self, logical_owner: QWidget):
         super().__init__()
+        self.__logical_owner = logical_owner
         self.canvas = None
         self.draw_unrefreshed_plot("Unrefreshed Plot")
 
@@ -2004,17 +2005,21 @@ class PlotPart2dContent(QScrollArea):
         figure.text(0.5, 0.5, display_text, horizontalalignment='center', verticalalignment='center')
         figure.add_subplot(1, 1, 1)
         self.canvas = PlotFigureCanvas(figure)
+        self.manage_size()
         self.refreshed = False
         self.setWidget(self.canvas)
 
+    def manage_size(self):
+        """
+        Makes the plot fit in the container - with aspect ratio.
+        """
+        fit_in = self.canvas.size().scaled(self.__logical_owner.size(), Qt.KeepAspectRatio)
+        self.canvas.setFixedSize(fit_in * 0.9)
 
 class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
     """
     A plot part 2d widget
     """
-
-    # Zoom factor for the figure canvas on each click
-    ZOOM_FACTOR = 1.1
 
     def __init__(self, part: PlotPart, parent_part_box_item: PartBoxItem = None):
         """
@@ -2026,7 +2031,7 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
         BreakpointIndicator.__init__(self, parent_part_box_item)
         self.__set_custom_context_menu_options()
         self._update_size_from_part()
-        self._set_content_widget(PlotPart2dContent())
+        self._set_content_widget(PlotPart2dContent(self))
         self.__export_image_dialog = ExportImageDialog(part)
         self.__export_data_dialog = ExportDataDialog(part)
         self.__set_canvas_management_buttons()
@@ -2037,6 +2042,11 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
             self.export_data_action.setEnabled(False)
         else:
             self._content_widget.refreshed = True
+
+    @override(QWidget)
+    def resizeEvent(self, event: QResizeEvent):
+        self._content_widget.manage_size()
+        super(PlotPartWidget, self).resizeEvent(event)
 
     @override(FramedPartWidget)
     def _update_detail_level_view(self):
@@ -2049,16 +2059,12 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
             self.export_data_action.setEnabled(False)
             if self.__plot_specific_buttons_ready:
                 self.__plot_update_button.setVisible(False)
-                self.__plot_zoom_out_button.setVisible(False)
-                self.__plot_zoom_in_button.setVisible(False)
         else:
             if self._content_widget.refreshed:
                 self.export_image_action.setEnabled(True)
                 self.export_data_action.setEnabled(True)
             if self.__plot_specific_buttons_ready:
                 self.__plot_update_button.setVisible(True)
-                self.__plot_zoom_out_button.setVisible(True)
-                self.__plot_zoom_in_button.setVisible(True)
 
     @override(FramedPartWidget)
     def _disconnect_all_slots(self):
@@ -2066,8 +2072,6 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
         signals = self._part.signals
         try_disconnect(signals.sig_axes_changed, self.__slot_on_backend_plot_update)
         try_disconnect(self.__plot_update_button.clicked, self.__slot_on_frontend_plot_update)
-        try_disconnect(self.__plot_zoom_out_button.clicked, self.__slot_on_zoom_out)
-        try_disconnect(self.__plot_zoom_in_button.clicked, self.__slot_on_zoom_in)
         try_disconnect(self.export_image_action.triggered, self.__slot_launch_export_image_dialog)
         try_disconnect(self.export_data_action.triggered, self.__slot_launch_export_data_dialog)
 
@@ -2082,20 +2086,6 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
         self.__plot_update_button.setVisible(detail_level_in_effect == DetailLevelEnum.full)
         self.__plot_update_button.setToolTip("Update the plot")
         self.__plot_update_button.clicked.connect(self.__slot_on_frontend_plot_update)
-
-        # Zoom-out button
-        self.__plot_zoom_out_button = SvgToolButton(PLOT_ZOOM_OUT, self.ui.header_frame)
-        self._add_header_frame_obj(FramedPartHeaderObjTypeEnum.plot_zoom_out, self.__plot_zoom_out_button)
-        self.__plot_zoom_out_button.setVisible(detail_level_in_effect == DetailLevelEnum.full)
-        self.__plot_zoom_out_button.setToolTip("Zoom out")
-        self.__plot_zoom_out_button.clicked.connect(self.__slot_on_zoom_out)
-
-        # Zoom-in button
-        self.__plot_zoom_in_button = SvgToolButton(PLOT_ZOOM_IN, self.ui.header_frame)
-        self._add_header_frame_obj(FramedPartHeaderObjTypeEnum.plot_zoom_in, self.__plot_zoom_in_button)
-        self.__plot_zoom_in_button.setVisible(detail_level_in_effect == DetailLevelEnum.full)
-        self.__plot_zoom_in_button.setToolTip("Zoom in")
-        self.__plot_zoom_in_button.clicked.connect(self.__slot_on_zoom_in)
 
         self.__plot_specific_buttons_ready = True
 
@@ -2135,7 +2125,9 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
         """
         Requests the backend to update itself when the widget "Update" button is pressed.
         """
-        stop_progress = get_progress_bar().stop_progress
+        def stop_progress():
+            get_progress_bar().stop_progress()
+            self._content_widget.manage_size()
 
         def on_error(err: AsyncErrorInfo):
             stop_progress()
@@ -2161,22 +2153,8 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
         self.__export_data_dialog.ui.file_path_line_edit.clear()
         self.__export_data_dialog.exec()
 
-    def __on_zoom_out(self):
-        """
-        Zooms out the figure canvas.
-        """
-        self._content_widget.canvas.setFixedSize(self._content_widget.canvas.size() / PlotPartWidget.ZOOM_FACTOR)
-
-    def __on_zoom_in(self):
-        """
-        Zooms in the figure canvas.
-        """
-        self._content_widget.canvas.setFixedSize(self._content_widget.canvas.size() * PlotPartWidget.ZOOM_FACTOR)
-
     __slot_on_backend_plot_update = safe_slot(__on_backend_plot_update)
     __slot_on_frontend_plot_update = safe_slot(__on_frontend_plot_update)
-    __slot_on_zoom_out = safe_slot(__on_zoom_out)
-    __slot_on_zoom_in = safe_slot(__on_zoom_in)
     __slot_launch_export_image_dialog = safe_slot(__launch_export_image_dialog)
     __slot_launch_export_data_dialog = safe_slot(__launch_export_data_dialog)
 
