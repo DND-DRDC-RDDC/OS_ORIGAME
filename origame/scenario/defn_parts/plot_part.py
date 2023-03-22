@@ -360,6 +360,7 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         self.signals = self.PlotSignals()
 
         self.__figure = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, facecolor=PlotPart.DEFAULT_FACE_COLOR)
+        self.__dpi = int(self.__figure.dpi) # default value by matplotlib
         self.__script_str = None
         self.__clear_data_on_each_plot = True
         self.__plot_update_reqd__possible = False
@@ -449,6 +450,8 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         try once more. Any exception raised in the script will get trapped and
         put in the part's last_exec_error_info property. No exceptions should escape from this method.
         """
+        self.__figure.set_dpi(self.dpi)
+
         if self.__try_reset_fig:
             self.reset_fig()
             if self.has_alerts():
@@ -501,6 +504,14 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         self.__plot_update_reqd__possible = True
         return self.__figure
 
+    def get_dpi(self) -> int:
+        """Return the dpi of the pyplot Figure instance for this part"""
+        return self.__dpi
+
+    def set_dpi(self, dpi: int):
+        """Set the dpi of the pyplot Figure instance for this part"""
+        self.__dpi = dpi
+
     def export_fig(self, filepath: str, dpi: int = 200, file_format: str = None):
         """
         Export a snapshot of the part's figure. See documentation for export_fig() in this module (the first
@@ -516,13 +527,13 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         success = export_data(self.__figure, file_path, sheet)
         return success
 
-    def get_preview_fig(self, script: str, dpi: int = 100) -> pyplot.Figure:
+    def get_preview_fig(self, script: str) -> pyplot.Figure:
         """
         Get the pyplot.Figure instance to use for previews (called by GUI if showing preview figure). It uses the
         preview() function of the script, or the plot() function if there is no preview.
         :param script: the script to use to generate the figure.
         """
-        preview_fig = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, dpi=dpi, facecolor=PlotPart.DEFAULT_FACE_COLOR)
+        preview_fig = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, dpi=self.dpi, facecolor=PlotPart.DEFAULT_FACE_COLOR)
 
         script_namespace = self.get_py_namespace().copy()
         script_namespace['figure'] = preview_fig
@@ -585,6 +596,7 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
     # --------------------------- instance PUBLIC properties ----------------------------
 
     script = property(get_script, set_script)
+    dpi = property(get_dpi, set_dpi)
     figure = property(get_figure)
     axes = property(get_axes)
 

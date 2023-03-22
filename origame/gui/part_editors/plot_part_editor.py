@@ -215,10 +215,11 @@ class PlotDpiWidget(QWidget):
     """
     Creates the plot resolution setting widget for the plot part editor.
     """
-    def __init__(self):
+    def __init__(self, current_dpi: int):
         super().__init__()
         self.ui = Ui_PlotDpiWidget()
         self.ui.setupUi(self)
+        self.ui.resolution_combobox.setCurrentText(str(current_dpi))
 
 class PlotPreviewWidget(IPreviewWidget):
     """
@@ -231,7 +232,7 @@ class PlotPreviewWidget(IPreviewWidget):
         self.script = None
 
     @override(IPreviewWidget)
-    def update(self, dpi: int = 100):
+    def update(self):
         """
         Draw the plot based on the figure received from the backend.
         """
@@ -250,7 +251,7 @@ class PlotPreviewWidget(IPreviewWidget):
             self.add_display_widget(self.__canvas)
 
         self._set_wait_mode_callback(True)
-        AsyncRequest.call(self.__part.get_preview_fig, self.script, dpi, response_cb=on_figure_received)
+        AsyncRequest.call(self.__part.get_preview_fig, self.script, response_cb=on_figure_received)
 
     def draw_unrefreshed_plot(self, display_text: str):
         """
@@ -289,7 +290,7 @@ class PlotPartEditorPanel(PythonScriptEditor):
         # Add the preview panel
         self.plot_preview_panel = PlotPreviewWidget(part, set_wait_mode_callback=self.set_wait_mode)
         self.plot_preview_panel.ui.update_button.clicked.connect(self.__slot_on_update_button_clicked)
-        self.plot_dpi_widget = PlotDpiWidget()
+        self.plot_dpi_widget = PlotDpiWidget(current_dpi=part.dpi)
         self.plot_preview_panel.ui.verticalLayout.addWidget(self.plot_dpi_widget)
         self.plot_dpi_widget.ui.resolution_combobox.activated.connect(self.__slot_on_update_button_clicked)
         self.ui.main_code_editor_layout.layout().addWidget(self.plot_preview_panel)
@@ -310,7 +311,8 @@ class PlotPartEditorPanel(PythonScriptEditor):
         """
         self.plot_preview_panel.draw_unrefreshed_plot("Update pending...")
         self.plot_preview_panel.script = self.ui.code_editor.text()
-        self.plot_preview_panel.update(int(self.plot_dpi_widget.ui.resolution_combobox.currentText()))
+        self.plot_preview_panel.update()
+        self.__part.dpi = int(self.plot_dpi_widget.ui.resolution_combobox.currentText())
 
     __slot_on_update_button_clicked = safe_slot(__on_update_button_clicked)
 
