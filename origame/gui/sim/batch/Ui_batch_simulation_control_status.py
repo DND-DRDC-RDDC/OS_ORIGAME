@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\origame\gui\sim\batch\ui_files\batch_simulation_control_status.ui'
+# Form implementation generated from reading ui file 'origame\gui\sim\batch\ui_files\batch_simulation_control_status.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -64,6 +64,7 @@ class Ui_BatchSimulationControlWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.percent_complete_label.sizePolicy().hasHeightForWidth())
         self.percent_complete_label.setSizePolicy(sizePolicy)
+        self.percent_complete_label.setMinimumSize(QtCore.QSize(0, 33))
         font = QtGui.QFont()
         font.setPointSize(20)
         self.percent_complete_label.setFont(font)
@@ -76,6 +77,7 @@ class Ui_BatchSimulationControlWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.complete_label.sizePolicy().hasHeightForWidth())
         self.complete_label.setSizePolicy(sizePolicy)
+        self.complete_label.setMinimumSize(QtCore.QSize(0, 33))
         self.complete_label.setObjectName("complete_label")
         self.horizontalLayout_2.addWidget(self.complete_label)
         spacerItem1 = QtWidgets.QSpacerItem(0, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
@@ -323,8 +325,8 @@ class Ui_BatchSimulationControlWidget(object):
         self.control_h_layout = QtWidgets.QHBoxLayout()
         self.control_h_layout.setObjectName("control_h_layout")
         self.run_abort_new_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.run_abort_new_toolbutton.setMinimumSize(QtCore.QSize(150, 100))
-        self.run_abort_new_toolbutton.setMaximumSize(QtCore.QSize(150, 100))
+        self.run_abort_new_toolbutton.setMinimumSize(QtCore.QSize(60, 90))
+        self.run_abort_new_toolbutton.setMaximumSize(QtCore.QSize(60, 90))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/control/icons/button_runbatch.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.run_abort_new_toolbutton.setIcon(icon)
@@ -333,8 +335,8 @@ class Ui_BatchSimulationControlWidget(object):
         self.run_abort_new_toolbutton.setObjectName("run_abort_new_toolbutton")
         self.control_h_layout.addWidget(self.run_abort_new_toolbutton)
         self.play_pause_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.play_pause_toolbutton.setMinimumSize(QtCore.QSize(150, 100))
-        self.play_pause_toolbutton.setMaximumSize(QtCore.QSize(150, 100))
+        self.play_pause_toolbutton.setMinimumSize(QtCore.QSize(60, 90))
+        self.play_pause_toolbutton.setMaximumSize(QtCore.QSize(60, 90))
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap(":/control/icons/button_playbatch.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.play_pause_toolbutton.setIcon(icon1)
@@ -393,4 +395,6 @@ class Ui_BatchSimulationControlWidget(object):
 "Simulation"))
         self.play_pause_toolbutton.setText(_translate("BatchSimulationControlWidget", "Resume"))
         self.batch_settings_toolbutton.setText(_translate("BatchSimulationControlWidget", "Settings"))
+
 from . import batch_sim_control_rc
+

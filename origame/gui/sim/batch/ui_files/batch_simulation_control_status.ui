@@ -101,6 +101,12 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>33</height>
+                   </size>
+                  </property>
                   <property name="font">
                    <font>
                     <pointsize>20</pointsize>
@@ -121,6 +127,12 @@
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>33</height>
+                   </size>
                   </property>
                   <property name="text">
                    <string>complete</string>
@@ -744,14 +756,14 @@
           <widget class="QToolButton" name="run_abort_new_toolbutton">
            <property name="minimumSize">
             <size>
-             <width>150</width>
-             <height>100</height>
+             <width>60</width>
+             <height>90</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>150</width>
-             <height>100</height>
+             <width>60</width>
+             <height>90</height>
             </size>
            </property>
            <property name="text">
@@ -777,14 +789,14 @@ Simulation</string>
           <widget class="QToolButton" name="play_pause_toolbutton">
            <property name="minimumSize">
             <size>
-             <width>150</width>
-             <height>100</height>
+             <width>60</width>
+             <height>90</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>150</width>
-             <height>100</height>
+             <width>60</width>
+             <height>90</height>
             </size>
            </property>
            <property name="text">
