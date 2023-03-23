@@ -456,14 +456,14 @@
           <widget class="QToolButton" name="run_sim_toolbutton">
            <property name="minimumSize">
             <size>
-             <width>150</width>
-             <height>100</height>
+             <width>60</width>
+             <height>90</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>150</width>
-             <height>100</height>
+             <width>60</width>
+             <height>90</height>
             </size>
            </property>
            <property name="text">
@@ -507,14 +507,14 @@ Simulation</string>
             <widget class="QToolButton" name="reset_sim_toolbutton">
              <property name="minimumSize">
               <size>
-               <width>180</width>
-               <height>40</height>
+               <width>80</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>180</width>
-               <height>40</height>
+               <width>80</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -533,14 +533,14 @@ Simulation</string>
             <widget class="QToolButton" name="start_sim_toolbutton">
              <property name="minimumSize">
               <size>
-               <width>180</width>
-               <height>40</height>
+               <width>80</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>180</width>
-               <height>40</height>
+               <width>80</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -559,14 +559,14 @@ Simulation</string>
             <widget class="QToolButton" name="end_sim_toolbutton">
              <property name="minimumSize">
               <size>
-               <width>180</width>
-               <height>40</height>
+               <width>80</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>180</width>
-               <height>40</height>
+               <width>80</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -597,13 +597,13 @@ Simulation</string>
           <widget class="QToolButton" name="play_pause_sim_toolbutton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>60</width>
              <height>90</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>100</width>
+             <width>60</width>
              <height>90</height>
             </size>
            </property>
@@ -629,13 +629,13 @@ Simulation</string>
           <widget class="QToolButton" name="step_sim_toolbutton">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>60</width>
              <height>90</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>100</width>
+             <width>60</width>
              <height>90</height>
             </size>
            </property>
