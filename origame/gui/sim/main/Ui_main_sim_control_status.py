@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\origame\gui\sim\main\ui_files\main_sim_control_status.ui'
+# Form implementation generated from reading ui file 'origame\gui\sim\main\ui_files\main_sim_control_status.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainSimulationControlWidget(object):
     def setupUi(self, MainSimulationControlWidget):
@@ -208,8 +209,8 @@ class Ui_MainSimulationControlWidget(object):
         self.command_layout = QtWidgets.QHBoxLayout()
         self.command_layout.setObjectName("command_layout")
         self.run_sim_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.run_sim_toolbutton.setMinimumSize(QtCore.QSize(150, 100))
-        self.run_sim_toolbutton.setMaximumSize(QtCore.QSize(150, 100))
+        self.run_sim_toolbutton.setMinimumSize(QtCore.QSize(60, 90))
+        self.run_sim_toolbutton.setMaximumSize(QtCore.QSize(60, 90))
         icon3 = QtGui.QIcon()
         icon3.addPixmap(QtGui.QPixmap(":/icons/icons/button_runmain.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.run_sim_toolbutton.setIcon(icon3)
@@ -227,8 +228,8 @@ class Ui_MainSimulationControlWidget(object):
         self.verticalLayout_5.setSpacing(1)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.reset_sim_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.reset_sim_toolbutton.setMinimumSize(QtCore.QSize(180, 40))
-        self.reset_sim_toolbutton.setMaximumSize(QtCore.QSize(180, 40))
+        self.reset_sim_toolbutton.setMinimumSize(QtCore.QSize(80, 30))
+        self.reset_sim_toolbutton.setMaximumSize(QtCore.QSize(80, 30))
         icon4 = QtGui.QIcon()
         icon4.addPixmap(QtGui.QPixmap(":/icons/icons/button_resetsim.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.reset_sim_toolbutton.setIcon(icon4)
@@ -236,8 +237,8 @@ class Ui_MainSimulationControlWidget(object):
         self.reset_sim_toolbutton.setObjectName("reset_sim_toolbutton")
         self.verticalLayout_5.addWidget(self.reset_sim_toolbutton)
         self.start_sim_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.start_sim_toolbutton.setMinimumSize(QtCore.QSize(180, 40))
-        self.start_sim_toolbutton.setMaximumSize(QtCore.QSize(180, 40))
+        self.start_sim_toolbutton.setMinimumSize(QtCore.QSize(80, 30))
+        self.start_sim_toolbutton.setMaximumSize(QtCore.QSize(80, 30))
         icon5 = QtGui.QIcon()
         icon5.addPixmap(QtGui.QPixmap(":/icons/icons/button_startsim.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.start_sim_toolbutton.setIcon(icon5)
@@ -245,8 +246,8 @@ class Ui_MainSimulationControlWidget(object):
         self.start_sim_toolbutton.setObjectName("start_sim_toolbutton")
         self.verticalLayout_5.addWidget(self.start_sim_toolbutton)
         self.end_sim_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.end_sim_toolbutton.setMinimumSize(QtCore.QSize(180, 40))
-        self.end_sim_toolbutton.setMaximumSize(QtCore.QSize(180, 40))
+        self.end_sim_toolbutton.setMinimumSize(QtCore.QSize(80, 30))
+        self.end_sim_toolbutton.setMaximumSize(QtCore.QSize(80, 30))
         icon6 = QtGui.QIcon()
         icon6.addPixmap(QtGui.QPixmap(":/icons/icons/button_stopsim.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.end_sim_toolbutton.setIcon(icon6)
@@ -260,8 +261,8 @@ class Ui_MainSimulationControlWidget(object):
         self.frame.setObjectName("frame")
         self.command_layout.addWidget(self.frame)
         self.play_pause_sim_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.play_pause_sim_toolbutton.setMinimumSize(QtCore.QSize(100, 90))
-        self.play_pause_sim_toolbutton.setMaximumSize(QtCore.QSize(100, 90))
+        self.play_pause_sim_toolbutton.setMinimumSize(QtCore.QSize(60, 90))
+        self.play_pause_sim_toolbutton.setMaximumSize(QtCore.QSize(60, 90))
         icon7 = QtGui.QIcon()
         icon7.addPixmap(QtGui.QPixmap(":/icons/icons/button_playsim.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.play_pause_sim_toolbutton.setIcon(icon7)
@@ -270,8 +271,8 @@ class Ui_MainSimulationControlWidget(object):
         self.play_pause_sim_toolbutton.setObjectName("play_pause_sim_toolbutton")
         self.command_layout.addWidget(self.play_pause_sim_toolbutton)
         self.step_sim_toolbutton = QtWidgets.QToolButton(self.scrollAreaWidgetContents)
-        self.step_sim_toolbutton.setMinimumSize(QtCore.QSize(100, 90))
-        self.step_sim_toolbutton.setMaximumSize(QtCore.QSize(100, 90))
+        self.step_sim_toolbutton.setMinimumSize(QtCore.QSize(60, 90))
+        self.step_sim_toolbutton.setMaximumSize(QtCore.QSize(60, 90))
         icon8 = QtGui.QIcon()
         icon8.addPixmap(QtGui.QPixmap(":/icons/icons/button_stepsim.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.step_sim_toolbutton.setIcon(icon8)
@@ -386,5 +387,5 @@ class Ui_MainSimulationControlWidget(object):
         self.run_startup_parts_toolbutton.setText(_translate("MainSimulationControlWidget", "Run Startup Parts"))
         self.run_finish_parts_toolbutton.setText(_translate("MainSimulationControlWidget", "Run Finish Parts"))
         self.main_sim_settings_toolbutton.setText(_translate("MainSimulationControlWidget", "Settings"))
-from . import main_sim_control_rc
 
+from . import main_sim_control_rc
