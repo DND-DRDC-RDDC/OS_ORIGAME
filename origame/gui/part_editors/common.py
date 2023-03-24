@@ -98,11 +98,11 @@ class IPreviewWidget(QWidget):
 
     def remove_display_widget(self):
         """
-        Remove the widget used to display the preview content to the UI of the preview widget.
+        Remove the widget used to display the preview content from the UI of the preview widget.
         :return: The display widget.
         """
         if self.__display_widget is not None:
-            self.ui.tab.layout().removeWidget(self.__display_widget)
+            self.__display_widget.setParent(None)
             self.__display_widget = None
 
 

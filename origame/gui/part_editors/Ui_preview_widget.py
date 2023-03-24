@@ -20,7 +20,7 @@ class Ui_PreviewWidget(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(PreviewWidget.sizePolicy().hasHeightForWidth())
         PreviewWidget.setSizePolicy(sizePolicy)
-        PreviewWidget.setMaximumSize(QtCore.QSize(400, 16777215))
+        PreviewWidget.setFixedSize(QtCore.QSize(1000, 900))
         self.verticalLayout = QtWidgets.QVBoxLayout(PreviewWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setSpacing(0)

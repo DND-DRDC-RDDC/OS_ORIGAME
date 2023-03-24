@@ -650,8 +650,6 @@ class GarbageCollector(QObject):
 
 
 PLOT_UPDATE = str(get_icon_path("shortcut_refresh.svg"))
-PLOT_ZOOM_IN = str(get_icon_path("shortcut_zoom_in.svg"))
-PLOT_ZOOM_OUT = str(get_icon_path("shortcut_zoom_out.svg"))
 DEFAULT_BUTTON_DOWN = str(get_icon_path("button_image_down.svg"))
 DEFAULT_BUTTON_UP = str(get_icon_path("button_image_up.svg"))
 DEFAULT_BUTTON_ON = str(get_icon_path("button_image_on.svg"))

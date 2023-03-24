@@ -86,7 +86,7 @@ class FramedPartHeaderObjTypeEnum(IntEnum):
     """
     This class represents the keys of the objects that are allowed to go to the header frame of the FramedPartWidget.
     """
-    small_icon, part_name, spacer, run_button, plot_zoom_in, plot_zoom_out, plot_update, detail_level_change = range(8)
+    small_icon, part_name, spacer, run_button, plot_update, detail_level_change = range(6)
 
 
 class IPartWidget(AlertIndicator, QWidget):
@@ -166,17 +166,17 @@ class IPartWidget(AlertIndicator, QWidget):
                                                     connect=self.__slot_sizing_action_ended)
         min_width = self._part.part_frame.get_min_width() * SCALE_FACTOR
         min_height = self._part.part_frame.get_min_height() * SCALE_FACTOR
-        _ = SizeGripCornerItem(widget_to_resize=self,
+        self.size_grip_corner = SizeGripCornerItem(widget_to_resize=self,
                                min_width=min_width,
                                min_height=min_height,
                                parent=self._parent_part_box_item.part_selection_border_item,
                                end_action=self.__size_grip_end_action)
-        _ = SizeGripRightItem(widget_to_resize=self,
+        self.size_grip_right = SizeGripRightItem(widget_to_resize=self,
                               min_width=min_width,
                               min_height=min_height,
                               parent=self._parent_part_box_item.part_selection_border_item,
                               end_action=self.__size_grip_end_action)
-        _ = SizeGripBottomItem(widget_to_resize=self,
+        self.size_grip_bottom = SizeGripBottomItem(widget_to_resize=self,
                                min_width=min_width,
                                min_height=min_height,
                                parent=self._parent_part_box_item.part_selection_border_item,

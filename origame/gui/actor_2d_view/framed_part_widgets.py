@@ -56,11 +56,11 @@ from ..async_methods import AsyncRequest, AsyncErrorInfo
 from ..gui_utils import DEFAULT_ACTOR_IMAGE, ACTOR_IMAGE_NOT_FOUND, BUTTON_IMAGE_NOT_FOUND
 from ..gui_utils import DEFAULT_BUTTON_DOWN, DEFAULT_BUTTON_UP, DEFAULT_BUTTON_ON, DEFAULT_BUTTON_OFF
 from ..gui_utils import EVENT_COUNTER_RECT_HEIGHT, try_disconnect
-from ..gui_utils import PLOT_UPDATE, PLOT_ZOOM_IN, PLOT_ZOOM_OUT, PyExpr
+from ..gui_utils import PLOT_UPDATE, PyExpr
 from ..gui_utils import exec_modal_dialog, get_scenario_font, get_icon_path, PART_ICON_COLORS
 from ..gui_utils import part_image, ITEM_SPACE, HORIZONTAL_ELLIPSIS
 from ..svg_utils import SvgFromImageWidget
-from ..conversions import convert_float_days_to_tick_period
+from ..conversions import convert_float_days_to_tick_period, SCALE_FACTOR
 from ..safe_slot import safe_slot, ext_safe_slot
 from ..part_editors import SortFilterProxyModelByColumns, ExportDataDialog
 from ..part_editors import ExportImageDialog, ImgEditorWidget, on_database_error, on_excel_error
@@ -83,6 +83,7 @@ from .Ui_file_part import Ui_FilePartWidget
 from .base_part_widgets import FramedPartWidget, IPartWidget, FramedPartHeaderObjTypeEnum, IExecPartWidget
 from .common import register_part_item_class
 from .custom_widgets import CallParameters, ScriptEditBox, SMALL_ICON_SIZE_WIDTH, SMALL_ICON_SIZE_HEIGHT
+from .custom_items import SizeGripCornerItem, SizeGripRightItem, SizeGripBottomItem
 from .custom_widgets import PlotFigureCanvas, SvgToolButton, ListAndFirePopup
 from .data_part_table_model import DataPartTableView, DataPartTableModel
 from .event_counter_manager import EventCounterManager
@@ -1984,16 +1985,35 @@ class ButtonPartWidget(FramedPartWidget):
     __slot_on_released = safe_slot(__on_released)
 
 
-class PlotPart2dContent(QScrollArea):
+class PlotPart2dContent(QWidget):
     """
     Provides the plot canvas to show the figure in the content view.
     """
 
     def __init__(self, logical_owner: QWidget):
         super().__init__()
+        self.__layout = QVBoxLayout(self)
         self.__logical_owner = logical_owner
         self.canvas = None
+        self.current_figure_dpi = None
         self.draw_unrefreshed_plot("Unrefreshed Plot")
+
+    def add_display_widget(self, widget: QWidget):
+        """
+        Add the widget used to display the plot to the UI of the content widget.
+        :param display_widget: The widget component used to display the plot.
+        """
+        self.canvas = widget
+        self.__layout.addWidget(self.canvas)
+
+    def remove_display_widget(self):
+        """
+        Remove the widget used to display the plot from the UI of the content widget.
+        :return: The display widget.
+        """
+        if self.canvas is not None:
+            self.canvas.setParent(None)
+            self.canvas = None
 
     def draw_unrefreshed_plot(self, display_text: str):
         """
@@ -2001,13 +2021,13 @@ class PlotPart2dContent(QScrollArea):
         on the refresh button.
         :param display_text: The text to show in the unrefreshed plot.
         """
+        self.remove_display_widget()
         figure = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, facecolor=PlotPart.DEFAULT_FACE_COLOR)
         figure.text(0.5, 0.5, display_text, horizontalalignment='center', verticalalignment='center')
         figure.add_subplot(1, 1, 1)
-        self.canvas = PlotFigureCanvas(figure)
+        self.add_display_widget(PlotFigureCanvas(figure))
         self.manage_size()
         self.refreshed = False
-        self.setWidget(self.canvas)
 
     def manage_size(self):
         """
@@ -2112,10 +2132,21 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
         """
         Updates the plot when the backend figure is changed.
         """
-        canvas = PlotFigureCanvas(self._part.figure)
-        self._content_widget.setWidget(canvas)
-        self._content_widget.canvas = canvas
+        self._content_widget.remove_display_widget()
+        self._content_widget.add_display_widget(PlotFigureCanvas(self._part.figure))
         self._content_widget.refreshed = True
+
+        # If the dpi has been updated since the last time the plot was updated, resize the plot part frame to accommodate the new dpi
+        if self._content_widget.current_figure_dpi != self._part.figure.dpi:
+            self._content_widget.current_figure_dpi = self._part.figure.dpi
+            min_width = self._part.MIN_CONTENT_SIZE['width']  * SCALE_FACTOR
+            min_height = self._part.MIN_CONTENT_SIZE['height'] * SCALE_FACTOR
+            self.size_grip_corner.set_min_size(min_width, min_height)
+            self.size_grip_right.set_min_size(min_width, min_height)
+            self.size_grip_bottom.set_min_size(min_width, min_height)
+            self.setFixedSize(int(min_width), int(min_height))
+
+        self._content_widget.manage_size()
 
         if self._detail_level_in_effect() == DetailLevelEnum.full:
             self.export_image_action.setEnabled(True)
@@ -2125,9 +2156,7 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
         """
         Requests the backend to update itself when the widget "Update" button is pressed.
         """
-        def stop_progress():
-            get_progress_bar().stop_progress()
-            self._content_widget.manage_size()
+        stop_progress = get_progress_bar().stop_progress
 
         def on_error(err: AsyncErrorInfo):
             stop_progress()

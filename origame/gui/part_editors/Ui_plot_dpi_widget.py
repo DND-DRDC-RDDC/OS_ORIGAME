@@ -29,8 +29,6 @@ class Ui_PlotDpiWidget(object):
         self.resolution_combobox.addItem("")
         self.resolution_combobox.addItem("")
         self.resolution_combobox.addItem("")
-        self.resolution_combobox.addItem("")
-        self.resolution_combobox.addItem("")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.resolution_combobox)
         self.horizontalLayout.addLayout(self.formLayout)
 
@@ -42,8 +40,5 @@ class Ui_PlotDpiWidget(object):
         self.resolution_combobox.setItemText(0, _translate("PlotDpiWidget", "100"))
         self.resolution_combobox.setItemText(1, _translate("PlotDpiWidget", "200"))
         self.resolution_combobox.setItemText(2, _translate("PlotDpiWidget", "300"))
-        self.resolution_combobox.setItemText(3, _translate("PlotDpiWidget", "500"))
-        self.resolution_combobox.setItemText(4, _translate("PlotDpiWidget", "800"))
-        self.resolution_combobox.setItemText(5, _translate("PlotDpiWidget", "1000"))
-        self.resolution_combobox.setItemText(6, _translate("PlotDpiWidget", "2000"))
-
+        self.resolution_combobox.setItemText(3, _translate("PlotDpiWidget", "400"))
+        self.resolution_combobox.setItemText(4, _translate("PlotDpiWidget", "500"))

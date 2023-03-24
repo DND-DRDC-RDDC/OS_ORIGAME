@@ -19,7 +19,8 @@ import logging
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QDialog, QMessageBox
+from PyQt5.QtWidgets import QWidget, QDialog, QMessageBox, QScrollArea
+from PyQt5.QtCore import Qt
 
 from matplotlib import pyplot
 import matplotlib
@@ -249,6 +250,8 @@ class PlotPreviewWidget(IPreviewWidget):
             self.__canvas.setVisible(False)
             self.__canvas = FigureCanvas(figure)
             self.add_display_widget(self.__canvas)
+            fit_in = self.__canvas.size().scaled(self.size(), Qt.KeepAspectRatio)
+            self.__canvas.setFixedSize(fit_in * 0.9)
 
         self._set_wait_mode_callback(True)
         AsyncRequest.call(self.__part.get_preview_fig, self.script, response_cb=on_figure_received)
