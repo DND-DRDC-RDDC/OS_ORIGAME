@@ -732,7 +732,9 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
 
     def __set_min_content_size(self, dpi: int):
         """
-        Sets the MIN_CONTENT_SIZE of this plot part instance depending on the dpi of the plot
+        Sets the MIN_CONTENT_SIZE of the plot part depending on the dpi of the plot.
+        These values were obtained by observation. Beyond the specifed size for each dpi, the tight layout
+        will not be applied by matplot to the plot, thus, the plot will not be displayed properly.
         """
         if dpi == 100:
             self.MIN_CONTENT_SIZE = dict(width=7.5, height=8.5)

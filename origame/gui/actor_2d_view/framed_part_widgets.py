@@ -2004,6 +2004,7 @@ class PlotPart2dContent(QWidget):
         :param display_widget: The widget component used to display the plot.
         """
         self.canvas = widget
+        self.__layout.setContentsMargins(1,1,1,1)
         self.__layout.addWidget(self.canvas)
 
     def remove_display_widget(self):
