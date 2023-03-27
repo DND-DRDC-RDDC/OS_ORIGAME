@@ -264,6 +264,15 @@ class ScriptEditor(BaseContentEditor):
 
         self.code_editor.enable_breakpoint_marking(True)
 
+        button_icon = QIcon()
+        button_icon.addFile(str(get_icon_path("arrow_left.png")), state=QIcon.Off)
+        button_icon.addFile(str(get_icon_path("arrow_right.png")), state=QIcon.On)
+
+        self.ui.toggle_button.setCheckable(True)
+        self.ui.toggle_button.setChecked(True)
+        self.ui.toggle_button.setIcon(button_icon)
+        self.ui.toggle_button.toggled.connect(self.__slot_handle_toggle)
+
     @override(BaseContentEditor)
     def get_tab_order(self) -> List[QWidget]:
         tab_order = [self.ui.undo_button,
@@ -820,6 +829,14 @@ class ScriptEditor(BaseContentEditor):
         if all_used:
             no_applicable_links_found("All the links are used in the script.")
 
+    def __on_toggle_button_click(self, is_checked: bool):
+        """
+        Shows or hide the Tabs panel from the editor based on the 'checked' value
+        :param is_checked: if the button is checked or not
+        """
+        self.ui.available_tabs.setVisible(is_checked)
+
+    __slot_handle_toggle = safe_slot(__on_toggle_button_click)
     __slot_paste = safe_slot(__paste)
     __slot_cut = safe_slot(__cut)
     __slot_copy = safe_slot(__copy)
