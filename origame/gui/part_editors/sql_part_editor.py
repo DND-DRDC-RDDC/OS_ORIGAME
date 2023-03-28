@@ -102,7 +102,7 @@ class SqlCodingAssistant(CodingAssistant):
         return word_at_cursor.isidentifier()
 
     @override(CodingAssistant)
-    def get_docs(self, text: str, context_words: List[str]) -> str:
+    def get_docs(self, text: str, line: int, col: int, context_words: List[str]) -> str:
         if not context_words or not context_words[0].strip():
             return
 
