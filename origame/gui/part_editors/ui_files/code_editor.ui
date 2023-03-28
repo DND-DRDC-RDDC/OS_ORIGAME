@@ -374,6 +374,18 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
+   <layout class="QHBoxLayout" name="horizontalLayout_9">
+    <item>
+    <widget class="QPushButton" name="toggle_button">
+     <property name="maximumSize">
+      <size>
+       <width>20</width>
+       <height>1000</height>
+      </size>
+     </property>
+    </widget>
+    </item>
+    <item>
     <widget class="QTabWidget" name="available_tabs">
      <property name="maximumSize">
       <size>
@@ -778,6 +790,8 @@ Undefined</string>
       </layout>
      </widget>
     </widget>
+    </item>
+    </layout>
    </item>
   </layout>
  </widget>
