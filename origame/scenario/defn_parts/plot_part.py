@@ -676,6 +676,9 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
 
         part_content = ori_data[CpKeys.CONTENT]
 
+        dpi = part_content.get(PpKeys.DPI)
+        self.set_dpi(dpi)
+
         script_pieces = part_content.get(PpKeys.SCRIPT)
         if script_pieces:
             # ORI script is a list of lines of code:
@@ -692,6 +695,7 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         func_ori_def = {
             # ORI script is a list of lines of code:
             PpKeys.SCRIPT: self.__script_str.split('\n'),
+            PpKeys.DPI: self.__dpi
         }
 
         ori_def[CpKeys.CONTENT].update(func_ori_def)
