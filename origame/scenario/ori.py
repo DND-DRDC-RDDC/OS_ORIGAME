@@ -775,6 +775,7 @@ class OriPlotPartKeys:
     """
     PART_TYPE_PLOT = "plot"
     SCRIPT = "script_lines"
+    DPI = "dpi"
 
 
 class OriPulsePartKeys:

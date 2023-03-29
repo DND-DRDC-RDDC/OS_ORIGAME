@@ -85,10 +85,14 @@ class SizeGripItem(ICustomItem, QGraphicsWidget):
         self._widget = widget_to_resize
         self._size = widget_to_resize.size()
         self.__end_action = end_action
-        self.__min_width = min_width
-        self.__min_height = min_height
+        self.set_min_size(min_width, min_height)
         self._min_delta_x = min_width - self._size.width()
         self._min_delta_y = min_height - self._size.height()
+
+
+    def set_min_size(self, min_width: float, min_height: float):
+        self.__min_width = min_width
+        self.__min_height = min_height
 
     @override_required
     def parent_rect_changed(self, rect: QRectF):

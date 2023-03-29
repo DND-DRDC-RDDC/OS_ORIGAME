@@ -359,7 +359,8 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
 
         self.signals = self.PlotSignals()
 
-        self.__figure = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, facecolor=PlotPart.DEFAULT_FACE_COLOR)
+        self.__figure = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, facecolor=PlotPart.DEFAULT_FACE_COLOR, layout="tight")
+        self.set_dpi(int(self.__figure.dpi)) # default value by matplotlib
         self.__script_str = None
         self.__clear_data_on_each_plot = True
         self.__plot_update_reqd__possible = False
@@ -449,6 +450,8 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         try once more. Any exception raised in the script will get trapped and
         put in the part's last_exec_error_info property. No exceptions should escape from this method.
         """
+        self.__figure.set_dpi(self.dpi)
+
         if self.__try_reset_fig:
             self.reset_fig()
             if self.has_alerts():
@@ -501,6 +504,15 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         self.__plot_update_reqd__possible = True
         return self.__figure
 
+    def get_dpi(self) -> int:
+        """Return the dpi of the pyplot Figure instance for this part"""
+        return self.__dpi
+
+    def set_dpi(self, dpi: int):
+        """Set the dpi of the pyplot Figure instance for this part"""
+        self.__dpi = dpi
+        self.__set_min_content_size(self.__dpi)
+
     def export_fig(self, filepath: str, dpi: int = 200, file_format: str = None):
         """
         Export a snapshot of the part's figure. See documentation for export_fig() in this module (the first
@@ -522,7 +534,7 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         preview() function of the script, or the plot() function if there is no preview.
         :param script: the script to use to generate the figure.
         """
-        preview_fig = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, facecolor=PlotPart.DEFAULT_FACE_COLOR)
+        preview_fig = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, dpi=self.dpi, facecolor=PlotPart.DEFAULT_FACE_COLOR, layout="tight")
 
         script_namespace = self.get_py_namespace().copy()
         script_namespace['figure'] = preview_fig
@@ -585,6 +597,7 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
     # --------------------------- instance PUBLIC properties ----------------------------
 
     script = property(get_script, set_script)
+    dpi = property(get_dpi, set_dpi)
     figure = property(get_figure)
     axes = property(get_axes)
 
@@ -663,6 +676,9 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
 
         part_content = ori_data[CpKeys.CONTENT]
 
+        dpi = part_content.get(PpKeys.DPI)
+        self.set_dpi(dpi)
+
         script_pieces = part_content.get(PpKeys.SCRIPT)
         if script_pieces:
             # ORI script is a list of lines of code:
@@ -679,6 +695,7 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         func_ori_def = {
             # ORI script is a list of lines of code:
             PpKeys.SCRIPT: self.__script_str.split('\n'),
+            PpKeys.DPI: self.__dpi
         }
 
         ori_def[CpKeys.CONTENT].update(func_ori_def)
@@ -717,5 +734,21 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         self.__plot_update_reqd__possible = True
         return setup_fig_axes(self.__figure, rows=rows, cols=cols)
 
+    def __set_min_content_size(self, dpi: int):
+        """
+        Sets the MIN_CONTENT_SIZE of the plot part depending on the dpi of the plot.
+        These values were obtained by observation. Beyond the specifed size for each dpi, the tight layout
+        will not be applied by matplot to the plot, thus, the plot will not be displayed properly.
+        """
+        if dpi == 100:
+            self.MIN_CONTENT_SIZE = dict(width=7.5, height=8.5)
+        elif dpi == 200:
+            self.MIN_CONTENT_SIZE = dict(width=14.0, height=14.0)
+        elif dpi == 300:
+            self.MIN_CONTENT_SIZE = dict(width=19.5, height=19.5)
+        elif dpi == 400:
+            self.MIN_CONTENT_SIZE = dict(width=26.0, height=26.0)
+        elif dpi == 500:
+            self.MIN_CONTENT_SIZE = dict(width=35.5, height=34.5)
 
 register_new_part_type(PlotPart, PpKeys.PART_TYPE_PLOT)
