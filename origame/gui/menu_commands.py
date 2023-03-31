@@ -434,12 +434,14 @@ class ScenarioManagerBridge(QObject):
         def on_load_completed(scenario: Scenario, non_serialized_obj: list[str]):
             get_progress_bar().stop_progress()
             scene_undo_stack().clear()
-            msg = "The following objects were not loaded: \n"
-            for count, item in enumerate(non_serialized_obj):
-                msg += f"{count+1}. {SaveError.get_type_from_json(item)} in {SaveError.get_location_from_json(item)} \n"
 
-            exec_modal_dialog("Unsaved Objects", "There are non-serializable objects in the loaded file. These objects were not loaded.",
-                          QMessageBox.Warning, buttons=[QMessageBox.Ok], detailed_message=msg)
+            if non_serialized_obj:
+                msg = "The following objects were not loaded: \n"
+                for count, item in enumerate(non_serialized_obj):
+                    msg += f"{count+1}. {SaveError.get_type_from_json(item)} in {SaveError.get_location_from_json(item)} \n"
+
+                exec_modal_dialog("Unsaved Objects", "There are non-serializable objects in the loaded file. These objects were not loaded.",
+                            QMessageBox.Warning, buttons=[QMessageBox.Ok], detailed_message=msg)
 
         get_progress_bar().start_busy_progress('Loading')
         AsyncRequest.call(self.__scenario_manager.load, filename,
@@ -614,12 +616,13 @@ class ScenarioManagerBridge(QObject):
         self.__save_was_successful = True
         get_progress_bar().stop_progress()
 
-        msg = "The following objects were not saved: \n"
-        for count, item in enumerate(non_serialized_obj):
-            msg += f"{count+1}. {SaveError.get_type_from_json(item)} in {SaveError.get_location_from_json(item)} \n"
+        if non_serialized_obj:
+            msg = "The following objects were not saved: \n"
+            for count, item in enumerate(non_serialized_obj):
+                msg += f"{count+1}. {SaveError.get_type_from_json(item)} in {SaveError.get_location_from_json(item)} \n"
 
-        exec_modal_dialog("Unsaved Objects", "There are non-serializable objects in the saved file. These objects were not saved.",
-                          QMessageBox.Warning, buttons=[QMessageBox.Ok], detailed_message=msg)
+            exec_modal_dialog("Unsaved Objects", "There are non-serializable objects in the saved file. These objects were not saved.",
+                            QMessageBox.Warning, buttons=[QMessageBox.Ok], detailed_message=msg)
 
     def __save_failed(self, err_info: AsyncErrorInfo):
         """
