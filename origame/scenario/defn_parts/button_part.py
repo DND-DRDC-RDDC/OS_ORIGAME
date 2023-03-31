@@ -345,6 +345,15 @@ class ButtonPart(BasePart):
         """
         return self._state
 
+    def set_state(self, state: ButtonStateEnum):
+        """
+        Set the state of the button.
+        :param: The new state of the button.
+        """
+        self._state = state
+        if self._anim_mode_shared:
+            self.signals.sig_button_state_changed.emit(self._state.value)
+
     def get_button_action(self) -> ButtonActionEnum:
         """
         This function returns the button action.
@@ -361,9 +370,7 @@ class ButtonPart(BasePart):
                 self.signals.sig_button_action_changed.emit(self.__button_action.value)
             # Design decisions:
             # When the button action changes, we set the button state to its default, i.e., released.
-            self._state = ButtonStateEnum.released
-            if self._anim_mode_shared:
-                self.signals.sig_button_state_changed.emit(self._state.value)
+            self.set_state(ButtonStateEnum.released)
 
     def get_button_trigger_style(self) -> ButtonTriggerStyleEnum:
         """
@@ -418,16 +425,14 @@ class ButtonPart(BasePart):
 
         if self.__button_action == ButtonActionEnum.momentary:
             if self._state == ButtonStateEnum.released:
-                self._state = ButtonStateEnum.pressed
+                self.set_state(ButtonStateEnum.pressed)
         elif self.__button_action == ButtonActionEnum.toggle:
             if self._state == ButtonStateEnum.pressed:
-                self._state = ButtonStateEnum.released
+                self.set_state(ButtonStateEnum.released)
             else:
-                self._state = ButtonStateEnum.pressed
+                self.set_state(ButtonStateEnum.pressed)
 
         if current_state != self._state:
-            if self._anim_mode_shared:
-                self.signals.sig_button_state_changed.emit(self._state.value)
             self.__trigger_linked_parts()
 
     def on_user_release(self):
@@ -436,9 +441,7 @@ class ButtonPart(BasePart):
         """
         if self.__button_action == ButtonActionEnum.momentary:
             if self._state == ButtonStateEnum.pressed:
-                self._state = ButtonStateEnum.released
-                if self._anim_mode_shared:
-                    self.signals.sig_button_state_changed.emit(self._state.value)
+                self.set_state(ButtonStateEnum.released)
                 self.__trigger_linked_parts()
 
     @override(BasePart)
@@ -475,7 +478,7 @@ class ButtonPart(BasePart):
     image_id_released = property(get_image_id_released, set_image_id_released)
     image_path_pressed = property(get_image_pressed_path, set_image_pressed_path)
     image_path_released = property(get_image_released_path, set_image_released_path)
-    state = property(get_state)
+    state = property(get_state, set_state)
 
     # --------------------------- CLASS META data for public API ------------------------
 
@@ -484,6 +487,7 @@ class ButtonPart(BasePart):
         button_trigger_style,
         image_path_pressed, image_path_released,
         rotation_2d_pressed, rotation_2d_released,
+        state
     )
     META_AUTO_SCRIPTING_API_EXTEND = META_AUTO_EDITING_API_EXTEND + (
         get_button_action, set_button_action,
@@ -492,6 +496,7 @@ class ButtonPart(BasePart):
         get_image_released_path, set_image_released_path,
         get_rotation_2d_pressed, set_rotation_2d_pressed,
         get_rotation_2d_released, set_rotation_2d_released,
+        get_state, set_state
     )
     META_SCRIPTING_CONSTANTS = (ButtonTriggerStyleEnum, ButtonActionEnum, ButtonStateEnum)
 
@@ -508,6 +513,7 @@ class ButtonPart(BasePart):
         # pressed and released are optional; the current state will be used if not specified
         self.rotation_2d_pressed = part_content.get(BtnKeys.ROTATION_2D_PRESSED, self.__rotation_2d_pressed)
         self.rotation_2d_released = part_content.get(BtnKeys.ROTATION_2D_RELEASED, self.__rotation_2d_released)
+        self.state = ButtonStateEnum[part_content[BtnKeys.BUTTON_STATE].lower()]
 
         image_dict = self._shared_scenario_state.image_dictionary
 
@@ -558,6 +564,7 @@ class ButtonPart(BasePart):
 
         button_ori_def = {
             BtnKeys.BUTTON_ACTION: self.__button_action.name,
+            BtnKeys.BUTTON_STATE: self._state.name,
             BtnKeys.BUTTON_TRIGGER_STYLE: self.__button_trigger_style.name,
             BtnKeys.ROTATION_2D_PRESSED: self.__rotation_2d_pressed,
             BtnKeys.ROTATION_2D_RELEASED: self.__rotation_2d_released,
@@ -595,6 +602,7 @@ class ButtonPart(BasePart):
         BasePart._get_ori_snapshot_local(self, snapshot, snapshot_slow)
         snapshot.update({
             BtnKeys.BUTTON_ACTION: self.__button_action,
+            BtnKeys.BUTTON_STATE: self._state,
             BtnKeys.BUTTON_TRIGGER_STYLE: self.__button_trigger_style,
             BtnKeys.ROTATION_2D_PRESSED: self.__rotation_2d_pressed,
             BtnKeys.ROTATION_2D_RELEASED: self.__rotation_2d_released,

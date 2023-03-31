@@ -1727,7 +1727,7 @@ class ButtonPart2dContent(QWidget):
     The content panel of a ButtonPartWidget
     """
 
-    def __init__(self, logical_owner: QWidget):
+    def __init__(self, logical_owner: QWidget, button_pressed: bool = False):
         """
         The Button Part GUI is initialized with the momentary image by default.
         :param logical_owner: The widget that holds this widget - the logical owner of this widget in
@@ -1735,7 +1735,7 @@ class ButtonPart2dContent(QWidget):
         """
         super().__init__()
         self.ui_button_part = Ui_ButtonPartWidget()
-        self.ui_button_part.setupUi(self)
+        self.ui_button_part.setupUi(self, button_pressed)
         self.ui_button_part.push_button.set_logical_owner(logical_owner)
 
     def set_image_pressed(self, new_path: str = None):
@@ -1786,7 +1786,10 @@ class ButtonPartWidget(FramedPartWidget):
         self.__rotation_2d_released = 0
 
         self._update_size_from_part()
-        self._set_content_widget(ButtonPart2dContent(self))
+        if part.button_action == ButtonActionEnum.toggle and part.state == ButtonStateEnum.pressed:
+            self._set_content_widget(ButtonPart2dContent(self, button_pressed=True))
+        else:
+            self._set_content_widget(ButtonPart2dContent(self))
 
         def _get_init_data():
             return (part.button_action, part.state,
@@ -1852,6 +1855,11 @@ class ButtonPartWidget(FramedPartWidget):
                 self._content_widget.ui_button_part.push_button.setChecked(True)
             else:
                 self._content_widget.ui_button_part.push_button.setChecked(False)
+        elif self.__button_action == ButtonActionEnum.toggle:
+            if button_state == ButtonStateEnum.pressed:
+                self._content_widget.ui_button_part.push_button.setChecked(False)
+            else:
+                self._content_widget.ui_button_part.push_button.setChecked(True)
 
     def __on_button_action_changed(self, button_action: int):
         """
