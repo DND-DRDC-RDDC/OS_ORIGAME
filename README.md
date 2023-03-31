@@ -24,18 +24,18 @@ These instructions are for running ORIGAME on python 3.8 and 3.11
 4. Clone or download ORIGAME to a project folder on your system
 
 5. From the project folder, create a virtual environment for ORIGAME for each Python version
-	- e.g. "C:\Python38\python -m venv venv8"
-	- e.g. "C:\Python311\python -m venv venv11"
+	- e.g. `C:\Python38\python -m venv venv8`
+	- e.g. `C:\Python311\python -m venv venv11`
 
 6. Activate a virtual environment and install dependencies in "requirements.txt". Deactivate the virtual environment
 if not in use.
-	- "venv11\Scripts\activate"
-	- "pip install -r requirements.txt"
-	- "deactivate"
+	- `venv11\Scripts\activate`
+	- `pip install -r requirements.txt`
+	- `deactivate`
 
 7. Activate the desired virtual environment, and launch ORIGAME GUI.
-	- "venv11\Scripts\activate"
-	- "py .\origame_gui.py"
+	- `venv11\Scripts\activate`
+	- `py .\origame_gui.py`
 
 Visit this [this page](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#activating-a-virtual-environment) for more information about virtual environments.
 
