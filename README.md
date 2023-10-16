@@ -1,7 +1,7 @@
 # ORIGAME
 ORIGAME is a Python-based discrete event modelling and simulation environment.
 
-It was jointly developed by Defence Research and Development Canada - Centre for Operational Research and Analysis (DRDC-CORA) and Director General Military Personnel Research and Analysis (DGMPRA).
+It was jointly developed by two research organizations within the Canadian Department of National Defence: Defence Research and Development Canada - Centre for Operational Research and Analysis (DRDC-CORA) and Director General Military Personnel Research and Analysis (DGMPRA).
 
 (c) Her Majesty the King in Right of Canada
 
