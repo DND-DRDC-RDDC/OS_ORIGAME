@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.3. Clock Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.2.4. Data Part" href="data_api.html" />
+    <link rel="prev" title="5.2.2. Button Part" href="button_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="clock-part">
+<h1>5.2.3. Clock Part<a class="headerlink" href="#clock-part" title="Permalink to this headline">¶</a></h1>
+<p>The clock part has been deprecated and can no longer be created in new scenarios but continues to be fully supported in previously built scenarios. For alternative time options see <a class="reference internal" href="datetime_part_ref.html#datetime-part-ref"><span class="std std-ref">Datetime part</span></a> and <a class="reference internal" href="time_part_ref.html#time-part-ref"><span class="std std-ref">Time part</span></a>.</p>
+<p>Each Clock Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> by using link.<em>&lt;part_alias&gt;</em>.<em>&lt;scripting_api&gt;</em>, where <em>&lt;part_alias&gt;</em> is the link name, and <em>&lt;scripting_api&gt;</em> are the methods listed below:</p>
+<p><strong>delay(ticks=&lt;ticks&gt;)</strong> or <strong>delay(&lt;ticks&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Get the simulation time corresponding to a specified delay using tick time. Invoke this method with just one parameter, with or without the keyword <em>ticks</em>.</li>
+<li>Parameters: The [float] delay in &lt;ticks&gt; specified with or without the keyword: ticks=.</li>
+<li>Returns: The [float] time in days corresponding to the current time plus the specified time delta.</li>
+</ul>
+<p><strong>delay(years=&lt;years&gt;, months=&lt;months&gt;, days=&lt;days&gt;, hours=&lt;hours&gt;, minutes=&lt;minutes&gt;, seconds=&lt;seconds&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Get the simulation time corresponding to a specified delay using date and time parameters. Specify at least one date or time keyword parameter to calculate a delay using date or time. All unused parameters default to zero. If only one parameter is used without a keyword, the <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> assumes ticks are specified (see previous <em>delay</em> use case).</li>
+<li>Parameters: The [float] delay specified with at least one of: years=, months=, days=, hours=, minutes=, seconds=.</li>
+<li>Returns: The [float] time in days corresponding to the current time plus the specified time delta.</li>
+</ul>
+<p><strong>date_time</strong></p>
+<ul class="simple">
+<li>Property: Get or set the date_time used by this clock. e.g. date_time = clock.date_time or clock.date_time = date_time.</li>
+</ul>
+<p><strong>get_date_time()</strong></p>
+<ul class="simple">
+<li>Description: Get the current data/time setting for the clock part.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [datetime] object of the clock.</li>
+</ul>
+<p><strong>set_date_time(&lt;date_time&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Get the current data/time setting for the clock part.</li>
+<li>Parameters: The [datetime] &lt;date_time&gt; object of the clock.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>second</strong></p>
+<ul class="simple">
+<li>Property: Get or set the seconds used by this clock. e.g. seconds = clock.second or clock.second = seconds.</li>
+</ul>
+<p><strong>get_second()</strong></p>
+<ul class="simple">
+<li>Description: Get the second portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [int] second value of the clock.</li>
+</ul>
+<p><strong>set_second(&lt;second&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the second portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: The [int] &lt;second&gt; value of the clock.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>minute</strong></p>
+<ul class="simple">
+<li>Property: Get or set the minutes used by this clock. e.g. mins = clock.minute or clock.minute = mins.</li>
+</ul>
+<p><strong>get_minute()</strong></p>
+<ul class="simple">
+<li>Description: Get the minute portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [int] minute value of the clock.</li>
+</ul>
+<p><strong>set_minute(&lt;minute&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the minute portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: The [int] &lt;minute&gt; value of the clock.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>hour</strong></p>
+<ul class="simple">
+<li>Property: Get or set the hours used by this clock. e.g. hours = clock.hour or clock.hour = hours.</li>
+</ul>
+<p><strong>get_hour()</strong></p>
+<ul class="simple">
+<li>Description: Get the hour portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [int] hour value of the clock.</li>
+</ul>
+<p><strong>set_hour(&lt;hour&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the hour portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: The [int] &lt;hour&gt; value of the clock.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>day</strong></p>
+<ul class="simple">
+<li>Property: Get or set the days used by this clock. e.g. days = clock.day or clock.day = days.</li>
+</ul>
+<p><strong>get_day()</strong></p>
+<ul class="simple">
+<li>Description: Get the day portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [int] day value of the clock.</li>
+</ul>
+<p><strong>set_day(&lt;day&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the day portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: The [int] &lt;day&gt; value of the clock.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>month</strong></p>
+<ul class="simple">
+<li>Property: Get or set the months used by this clock. e.g. months = clock.month or clock.month = months.</li>
+</ul>
+<p><strong>get_month()</strong></p>
+<ul class="simple">
+<li>Description: Get the month portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [int] month value of the clock.</li>
+</ul>
+<p><strong>set_month(&lt;month&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the month portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: The [int] &lt;month&gt; value of the clock.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>year</strong></p>
+<ul class="simple">
+<li>Property: Get or set the years used by this clock. e.g. years = clock.year or clock.year = years.</li>
+</ul>
+<p><strong>get_year()</strong></p>
+<ul class="simple">
+<li>Description: Get the year portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [int] year value of the clock.</li>
+</ul>
+<p><strong>set_year(&lt;year&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the year portion of the clock&#8217;s calender date/time.</li>
+<li>Parameters: The [int] &lt;year&gt; value of the clock.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>tick_period_days</strong></p>
+<ul class="simple">
+<li>Property: Get or set the tick period (in days) used by this clock. e.g. tick_period = clock.tick_period_days or clock.tick_period_days = tick_period.</li>
+</ul>
+<p><strong>get_tick_period_days()</strong></p>
+<ul class="simple">
+<li>Description: Get the tick period in days for this instance&#8217;s tick timer.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [float] tick period duration in days.</li>
+</ul>
+<p><strong>set_tick_period_days(&lt;days&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the tick period in days for this instance&#8217;s tick timer.</li>
+<li>Parameters: The [float] new period duration in &lt;days&gt; for a time tick.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>tick_value</strong></p>
+<ul class="simple">
+<li>Property: Get or set the tick value used by this clock. e.g. ticks = clock.tick_value or clock.tick_value = ticks.</li>
+</ul>
+<p><strong>get_tick_value()</strong></p>
+<ul class="simple">
+<li>Description: Get the number of clock ticks.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [float] number of ticks.</li>
+</ul>
+<p><strong>set_tick_value(&lt;ticks&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the number of clock ticks. The tick value can be negative.</li>
+<li>Parameters: The [float] number of &lt;ticks&gt; to set.</li>
+<li>Returns: None.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="button_api.html" title="previous chapter">5.2.2. Button Part</a></li>
+      <li>Next: <a href="data_api.html" title="next chapter">5.2.4. Data Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.13. Plot Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.2.14. Pulse Part" href="pulse_api.html" />
+    <link rel="prev" title="5.2.12. Node Part" href="node_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plot-part">
+<h1>5.2.13. Plot Part<a class="headerlink" href="#plot-part" title="Permalink to this headline">¶</a></h1>
+<p>Each Library Part shares a global set of API that is discussed in <a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Programming Reference</span></a>. In addition, the Plot Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> by using link.<em>&lt;part_alias&gt;</em>.<em>&lt;scripting_api&gt;</em>, where <em>&lt;part_alias&gt;</em> is the link name, and <em>&lt;scripting_api&gt;</em> are the methods listed below:</p>
+<p><strong>figure</strong></p>
+<ul class="simple">
+<li>Property: Get the pyplot figure instance of the plot part. e.g. fig = plot.figure.</li>
+</ul>
+<p><strong>reset_fig(&lt;raise_on_fail&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Clear the figure of all plots and rerun the script&#8217;s configure() function. Does NOT run the script&#8217;s plot() function (press the &#8220;Update the Plot&#8221; button).</li>
+<li>Parameters: [optional] Flag indicates if an exception should be raised if an error occurs while resetting the figure. Default is True.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>get_axes()</strong></p>
+<ul class="simple">
+<li>Description: Get one or more axes from the plot&#8217;s figure.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [OneOrMoreAxes] is composed of either a single pyplot.Axes or a List[pyplot.Axes].</li>
+</ul>
+<p><strong>update_fig()</strong></p>
+<ul class="simple">
+<li>Description: Refresh the figure plot data.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>export_fig(&lt;filepath&gt;, [optional] &lt;resolution&gt;, [optional] &lt;format&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Export a snapshot of the plot.</li>
+<li>Parameters: The [str] file path including file name, [int] dots per inch resolution (default=200), [str] file format (default=PNG).</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>export_data(&lt;filepath&gt;, [optional] &lt;sheet&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Export the plot data.</li>
+<li>Parameters: The [str] file path including file name, optional [str] name of the sheet to export to.</li>
+<li>Returns: A [bool] result indicating if export was successful.</li>
+</ul>
+<p><strong>Matplotlib plot methods: axes.plot(*args), axes.hist(*args), axes.pie(*args), axes.scatter(*args)</strong></p>
+<ul class="simple">
+<li>Description: Set chart type for each series.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="node_api.html" title="previous chapter">5.2.12. Node Part</a></li>
+      <li>Next: <a href="pulse_api.html" title="next chapter">5.2.14. Pulse Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

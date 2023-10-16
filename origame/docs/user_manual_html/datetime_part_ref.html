@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.5. Datetime Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.6. File Part" href="file_part_ref.html" />
+    <link rel="prev" title="5.1.4. Data Part" href="data_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="datetime-part">
+<span id="datetime-part-ref"></span><h1>5.1.5. Datetime Part<a class="headerlink" href="#datetime-part" title="Permalink to this headline">¶</a></h1>
+<p>The datetime part is used to schedule future events by defining the time at which the signals emitted by the function part or parts, linked to the datetime part, should be triggered. Any specified time or time delay defined in the simulation must be associated with a particular datetime part. The current time can be set at any time. Additionally, the current date (year, month, day) and time (hour, minute, second) can be set at any time. New datetime parts can be created by right-clicking on a blank part of the Model View and selecting <em>New Part &gt; Datetime</em> from the context menu.</p>
+<p>When the datetime part is called with a time or time interval parameter, it computes a global time at which the event will be executed so that all pending events in the simulation can be sorted according to their global time. However, the user only ever interacts with times according to specific datetime parts.</p>
+<p>As an example of how to use a datetime part to schedule a future event, consider a function part with alias &#8220;queue_signals&#8221; that has been linked to a datetime part with alias &#8220;datetime&#8221; (link from the function part to the datetime part). &#8220;queue_signals&#8221; will use the application <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> to get a future time from the datetime and then use the signal() method to add events to the Event Queue that, in this case, will correspond to triggering other function parts to run at specific future times. Assume for this example that this other function part is called &#8220;foo&#8221; and has been linked to &#8220;queue_signals&#8221; (link from &#8220;queue_signals&#8221; to &#8220;foo&#8221;). The table below lists the supported call types for scheduling &#8220;foo&#8221; to execute at a future time on the datetime.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="54%" />
+<col width="46%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Datetime call type (<a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> call in &#8220;queue_signals&#8221;)</th>
+<th class="head">Event Execution Time</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>signal(link.foo, args=(), time=link.datetime(2012, 1, 1), priority=0)</td>
+<td>Execute &#8220;foo&#8221; at 12:00 am on January 1, 2012 according to &#8220;datetime&#8221;</td>
+</tr>
+<tr class="row-odd"><td>signal(link.foo, args=(), time=link.datetime(2012, 1, 1, 14, 30, 15), priority=0)</td>
+<td>Execute &#8220;foo&#8221; at 14:30:15 on January 1, 2012 according to &#8220;datetime&#8221;</td>
+</tr>
+<tr class="row-even"><td>signal(link.foo, args=(), time=link.datetime.delay(months=2, days=10), priority=0)</td>
+<td>Execute &#8220;foo&#8221; after 2 months and 10 days according to &#8220;datetime&#8221;</td>
+</tr>
+</tbody>
+</table>
+<p>The datetime part behaves like a real wall clock in the sense that it can be set to any time the user wants and the datetime will tick forward from that time as global time advances. This allows different models to use different datetime parts within the same simulation scenario. The following are two examples of this type of scenario:</p>
+<ol class="arabic simple">
+<li>The case where each model has a datetime with a different delay: a start–up function A of model A is wired to a datetime and signals itself to be run at datetime.delay(days=6). Similarly, a start–up function B of model B is wired to another datetime and signals itself to be run at datetime.delay(days=7). Then when model A is run on its own, function part A is re–run at 6 days, then 12 days, etc. When model B is run on its own, its part B is run at 7 days, then 14 days, etc. When both sub–models are brought together, they still execute at their individual delays, such that both parts are re–run at 6, 7, 12, 14,… days. The order of events is preserved, as are the time deltas between the events they produce.</li>
+<li>For models that use different datetime parts, the reset function parts must be edited to set the datetime parts at the same time. If the models only use relative delays, no further work is necessary to use the two models in the same scenario. If one or both of the models use absolute times, the model will have to be edited. This shows that absolute times should only be used by reset/start–up functions for increased modularity.</li>
+</ol>
+<p>Double-clicking on the part&#8217;s frame or right-clicking and selecting &#8220;Edit...&#8221; opens an editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-datetime-part-and-editor"><span class="std std-numref">Figure 5.5</span></a>, that allows various properties of the part to be edited or viewed:</p>
+<ul class="simple">
+<li>the start date (YYYY/MM/DD),</li>
+<li>the start time (HH:MM:SS).</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-datetime-part-and-editor"></span><img alt="_images/part_and_editor_datetime.png" src="_images/part_and_editor_datetime.png" />
+<p class="caption"><span class="caption-number">Fig. 5.5 </span><span class="caption-text">The Datetime part and editor dialog.</span></p>
+</div>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="data_part_ref.html" title="previous chapter">5.1.4. Data Part</a></li>
+      <li>Next: <a href="file_part_ref.html" title="next chapter">5.1.6. File Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

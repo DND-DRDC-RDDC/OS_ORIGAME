@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.1. Actor Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.2. Button Part" href="button_part_ref.html" />
+    <link rel="prev" title="5. USING PARTS" href="using parts.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="actor-part">
+<span id="actor-part-ref"></span><h1>5.1.1. Actor Part<a class="headerlink" href="#actor-part" title="Permalink to this headline">¶</a></h1>
+<p>Actor parts are used to modularize, organize, and encapsulate related implementation details of a model into a hierarchy of parent and child actors. Actors act as logic containers that organize the scenario into different components. Further, since actors can contain other actors, a model hierarchy can be developed which allows the creation of model sub-systems down to the desired level of detail. The model hierarchy of parent and child actors can be viewed in the Actor Hierarchy panel. By clicking on an actor listed in the hierarchy, its contents can be viewed in the Model View. The Model View always displays the contents of a single actor. By default, the application displays the contents of the top-level &#8220;root&#8221; actor of a scenario on application start-up. An actors contents can also be viewed in the Model View by clicking the down-arrow located on an actor&#8217;s frame. New actor parts can be created by right-clicking on a blank part of the Model View and selecting <em>New Part &gt; Actor</em> from the context menu.</p>
+<p>Actors can also be created by importing one scenario into another, where the imported scenario becomes a new child actor. Once created, they can help simplify old models by sub-dividing them into smaller components. This can be accomplished by cutting or copying part selections and pasting them into a new actor part.</p>
+<p>To facilitate link connections across the actor boundary, all parts can raise their <em>Interface Level</em> which exposes the part to link connections at higher levels in a model&#8217;s actor hierarchy. The interface level of a part is accessed via the Object Properties panel after the part is selected. A drop down menu indicates what the current level is and facilitates raising or lowering the interface level within the actor hierarchy. The level&#8217;s value indicates the number of actors (level 1 is the part&#8217;s parent actor) to which the part should be exposed. When a part&#8217;s interface level is increased to level <em>n</em>, the part appears as a port on the n<sup>th</sup> actor and all the actors located in the hierarchy below it. See section <a class="reference internal" href="using origame.html#ref-ifx-parts"><span class="std std-ref">Interface Parts</span></a> for more information.</p>
+<p>Other parts inside the actor can link to their parent actor by directly wiring to the actor proxy widget located at the centre of the Model View when viewing the actor&#8217;s contents. Linking to the parent might be used to change the parent actor’s icon or to change its position (as it appears within its parent).</p>
+<p>Double-clicking the actor part or right-clicking and selecting &#8220;Edit...&#8221; opens an editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-actor-part-and-editor"><span class="std std-numref">Figure 5.1</span></a>, that allows various properties of the part to be edited or viewed:</p>
+<ul class="simple">
+<li>selection of the part&#8217;s image file (default or custom),</li>
+<li>image orientation.</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-actor-part-and-editor"></span><img alt="_images/part_and_editor_actor.png" src="_images/part_and_editor_actor.png" />
+<p class="caption"><span class="caption-number">Fig. 5.1 </span><span class="caption-text">The Actor part and editor dialog.</span></p>
+</div>
+<p>Images selected for the actor part are saved to the <em>/images</em> subfolder located in the scenario directory.</p>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="using parts.html" title="previous chapter">5. USING PARTS</a></li>
+      <li>Next: <a href="button_part_ref.html" title="next chapter">5.1.2. Button Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.14. Pulse Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.15. Sheet Part" href="sheet_part_ref.html" />
+    <link rel="prev" title="5.1.13. Plot Part" href="plot_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pulse-part">
+<span id="pulse-part-ref"></span><h1>5.1.14. Pulse Part<a class="headerlink" href="#pulse-part" title="Permalink to this headline">¶</a></h1>
+<p>Pulse parts can be used to place events on the event queue at regular periods. The pulse part defines a pulse period, state, and priority. When a scenario is started, the sim controller adds all pulse parts with an &#8216;active&#8217; state to the Event Queue at time zero and with the priority defined in the pulse part. When the pulse event executes, an event corresponding to each part linked to the pulse will be added to the queue at <a class="reference internal" href="notes.html#term-asap"><span class="xref std std-term">ASAP</span></a> priority. Each of those events then triggers execution of their respective parts. The pulse also adds a new event to the queue corresponding to the next pulse.</p>
+<p>Double-clicking on the pulse part&#8217;s frame or right-clicking and selecting &#8220;Edit...&#8221; opens an editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-pulse-part-and-editor"><span class="std std-numref">Figure 5.14</span></a>, that allows the properties of the part to be edited or viewed:</p>
+<ul class="simple">
+<li>the pulse period defined in terms of the number of weeks, days, hours, minutes, and seconds of the pulse frequency,</li>
+<li>the pulse state which can be either &#8216;Active&#8217; or &#8216;Inactive&#8217;,</li>
+<li>the pulse priority which is specified as a floating point value ranging from 0.0 to a maximum of one million.</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-pulse-part-and-editor"></span><img alt="_images/part_and_editor_pulse.png" src="_images/part_and_editor_pulse.png" />
+<p class="caption"><span class="caption-number">Fig. 5.14 </span><span class="caption-text">The Pulse part and editor dialog.</span></p>
+</div>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="plot_part_ref.html" title="previous chapter">5.1.13. Plot Part</a></li>
+      <li>Next: <a href="sheet_part_ref.html" title="next chapter">5.1.15. Sheet Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

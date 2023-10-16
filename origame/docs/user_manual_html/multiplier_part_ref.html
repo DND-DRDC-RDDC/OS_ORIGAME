@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.11. Multiplier Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.12. Node Part" href="node_part_ref.html" />
+    <link rel="prev" title="5.1.10. Library Part" href="library_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="multiplier-part">
+<span id="multiplier-part-ref"></span><h1>5.1.11. Multiplier Part<a class="headerlink" href="#multiplier-part" title="Permalink to this headline">¶</a></h1>
+<p>Multiplier parts, shown in <a class="reference internal" href="#fig-multiplier"><span class="std std-numref">Figure 5.11</span></a>, is represented in the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> as a ring with several spokes radiating from it, are used to call a group of executable parts at once. The linked parts must all accept the same number of parameters. The multiplier can be linked to any executable part such as function parts, <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> parts, other multipliers, and node parts that are linked to function, <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a>, or multiplier parts.  When the multiplier is called or signalled (possibly including parameters) by another part, it will call every part that it is linked to, passing the incoming parameters in each call. For example, a multiplier can be used to send a reset signal throughout a simulation. There are no restrictions on the number of links that can go into or out of a multiplier part. When multiplier parts are added to the Event Queue, they are added with the time specified in the signal, but the executable parts called by the multiplier are placed on the queue with priority <a class="reference internal" href="notes.html#term-asap"><span class="xref std std-term">ASAP</span></a>.</p>
+<p>The part frame of the multiplier is not visible and thus it&#8217;s name is not displayed.</p>
+<p>There is no editor for the multiplier part. The only attributes that can be edited are its name and position which are edited using the <em>Object Properties</em> panel.</p>
+<div class="figure align-center" id="id1">
+<span id="fig-multiplier"></span><img alt="_images/part_multiplier.png" src="_images/part_multiplier.png" />
+<p class="caption"><span class="caption-number">Fig. 5.11 </span><span class="caption-text">The Multiplier part.</span></p>
+</div>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="library_part_ref.html" title="previous chapter">5.1.10. Library Part</a></li>
+      <li>Next: <a href="node_part_ref.html" title="next chapter">5.1.12. Node Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

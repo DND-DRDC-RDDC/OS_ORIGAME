@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6. USING THE ORIGAME CONSOLE VARIANT &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="next" title="7. Glossary" href="notes.html" />
+    <link rel="prev" title="5.2.19. Variable Part" href="variable_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-the-origame-console-variant">
+<h1>6. USING THE ORIGAME CONSOLE VARIANT<a class="headerlink" href="#using-the-origame-console-variant" title="Permalink to this headline">¶</a></h1>
+<p>The ORIGAME Console is run from the Windows Command prompt. The general usage of ORIGAME Console is as follows:</p>
+<dl class="docutils">
+<dt>usage: origame_con.py [–h] [–b] [–l] [&#8211;dev_log] [&#8211;dev_no_dep_warn]</dt>
+<dd>[&#8211;dev_log_raw_events] [&#8211;dev_no_wiring_fixes_on_load]
+[–t MAX_SIM_TIME_DAYS] [–x MAX_WALL_CLOCK_SEC]
+[–f REALTIME_SCALE] [–s SEED_FILE_PATH]
+[–v NUM_VARIANTS] [–r NUM_REPLICS_PER_VARIANT]
+[–c NUM_CORES]
+scenario_path</dd>
+</dl>
+<p>Each positional argument is described in the table below. The mandatory positional argument is the <em>scenario_path</em> that identifies where the scenario definition is and what the file is called. An example use case is provided below, where the Windows Command prompt is opened in the directory <strong>python34\scripts</strong>:</p>
+<p>&gt; Python.exe origame_con.py c:\myscripts\myscenario.ori –v23 –r4</p>
+<p>The above example would run the scenario file &#8220;myscenario.ori&#8221; for 23 variants and 4 replications.</p>
+<p>If ORIGAME Console is run on a <a class="reference internal" href="notes.html#term-pc"><span class="xref std std-term">PC</span></a> where <strong>only</strong> Python34 is installed, <em>Python.exe</em> can be called without a prefixed path to its location in the file hierarchy, as in the above example. However, if multiple versions of Python are installed, then the full path to Python34 must be included. For example:</p>
+<p>&gt; C:\Python34\Python.exe origame_con.py c:\myscripts\myscenario.ori –v23 –r4</p>
+<p>The mandatory and optional positional arguments are described in the following table. This table can be displayed in the Command Window by typing:</p>
+<p>&gt; Python.exe origame_con.py –h</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="37%" />
+<col width="63%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Positional Arguments:</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>scenario_path</td>
+<td>Mandatory. Scenario definition file pathname. Can be relative path.</td>
+</tr>
+<tr class="row-odd"><td>–h, ––help</td>
+<td>Optional. Show this help message and exit.</td>
+</tr>
+<tr class="row-even"><td>–b, ––batch_replic_save</td>
+<td>Optional. Turn off saving of final scenario state by each batch replication.</td>
+</tr>
+<tr class="row-odd"><td>–l, ––logging</td>
+<td>Optional. Turn logging off.</td>
+</tr>
+<tr class="row-even"><td>––dev_log</td>
+<td>Optional. Developer option to log at system debug level.</td>
+</tr>
+<tr class="row-odd"><td>––dev_no_dep_warn</td>
+<td>Optional. Developer option to turn off logging of prototype <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> deprecation
+warnings.</td>
+</tr>
+<tr class="row-even"><td>––dev_log_raw_events</td>
+<td>Optional. Developer option to turn on logging of sim event push/pops raw data.</td>
+</tr>
+<tr class="row-odd"><td>––dev_no_wiring_fixes_on_load</td>
+<td>Optional. Developer option to turn off fixing of invalid links on scenario load.</td>
+</tr>
+<tr class="row-even"><td>–t MAX_SIM_TIME_DAYS,
+––max_sim_time_days MAX_SIM_TIME_DAYS</td>
+<td>Optional. Simulation cut-off time in days. Default runs till no events (or max
+real-time reached, if set; whichever occurs first).</td>
+</tr>
+<tr class="row-odd"><td>–x MAX_WALL_CLOCK_SEC,
+––max_wall_clock_sec MAX_WALL_CLOCK_SEC</td>
+<td>Optional. Real-time cut-off time in seconds. Default runs till no events (or max
+sim time reached, if set; whichever occurs first).</td>
+</tr>
+<tr class="row-even"><td>–f REALTIME_SCALE,
+––realtime_scale REALTIME_SCALE</td>
+<td>Optional. Turn on real-time mode, using the given scale factor. Default is
+as-fast-as-possible.</td>
+</tr>
+<tr class="row-odd"><td>–s SEED_FILE_PATH,
+––seed_file_path SEED_FILE_PATH</td>
+<td>Optional. Seed file pathname. Can be relative path. Default causes seeds to be
+randomly generated.</td>
+</tr>
+<tr class="row-even"><td>–v NUM_VARIANTS,
+––num_variants NUM_VARIANTS</td>
+<td>Optional. The number of scenario variants to be run. Default runs a single variant.</td>
+</tr>
+<tr class="row-odd"><td>–r NUM_REPLICS_PER_VARIANT,
+––num_replics_per_variant NUM_REPLICS_PER_VARIANT</td>
+<td>Optional. The number of scenario replications to be run for a scenario variant.
+Default runs a single replication for a variant.</td>
+</tr>
+<tr class="row-even"><td>–c NUM_CORES,
+––num_cores NUM_CORES</td>
+<td>Optional. The maximum number of cores to utilize for the configured scenario run.
+Zero distributes batch replications across all available cores. Default number of
+cores is 1.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="variable_api.html" title="previous chapter">5.2.19. Variable Part</a></li>
+      <li>Next: <a href="notes.html" title="next chapter">7. Glossary</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

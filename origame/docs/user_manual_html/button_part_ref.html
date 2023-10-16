@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.2. Button Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.3. Clock Part" href="clock_part_ref.html" />
+    <link rel="prev" title="5.1.1. Actor Part" href="actor_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="button-part">
+<span id="button-part-ref"></span><h1>5.1.2. Button Part<a class="headerlink" href="#button-part" title="Permalink to this headline">¶</a></h1>
+<p>Buttons are used to trigger the immediate execution of the function part or parts to which they are linked. A button can be configured to work as either a push button (&#8220;momentary&#8221; type) or toggle switch (&#8220;toggle&#8221; type), and to trigger &#8216;on&#8217; events, &#8216;off&#8217; events, or both. These configurations can be accessed from the parts editor dialog accessed by double-clicking the part&#8217;s frame. New button parts can be created by right-clicking on a blank part of the Model View and selecting <em>New Part &gt; Button</em> from the context menu.</p>
+<p>In order for the button part to trigger events, it must be linked to one or more function parts. To create a link, right-click on the button and choose <em>Create Link</em> and then click on a function part. When configured as a push-button, the button state matches the mouse click state. In the toggle configuration, the button part state toggles on each mouse down-click event. When the user left-clicks on the button part, it will immediately call any function parts to which it is linked.</p>
+<p><strong>button_state parameter:</strong>
+Linked function parts will be called with each button press. The function part may define the parameter &#8220;button_state&#8221; as the first parameter but this is not required. When it is defined, when the button is pressed it will pass an enumerated value <em>ButtonStateEnum</em> that is set to <em>pressed</em> (value == 0). When the user releases the left-click, the button will again call any linked function parts with the value <em>released</em> (value == 1).</p>
+<p>If the user clicks down on the button part and drags the mouse pointer off the button part without releasing the mouse button, a <em>released</em> event will be triggered. The button part can also be configured to call any linked function parts on down press events only, or release events only. The button part uses two icons to display the button in the pressed and not pressed states.</p>
+<p>Double-clicking on the button part&#8217;s frame or right-clicking and selecting &#8220;Edit...&#8221; opens an editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-button-part-and-editor"><span class="std std-numref">Figure 5.2</span></a>, that allows various properties of the part to be edited or viewed:</p>
+<ul class="simple">
+<li>type selection: momentary or toggle,</li>
+<li>event selection: switch on or off,</li>
+<li>selection of the part&#8217;s image file (default or custom) for the on and off states,</li>
+<li>image orientation.</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-button-part-and-editor"></span><img alt="_images/part_and_editor_button.png" src="_images/part_and_editor_button.png" />
+<p class="caption"><span class="caption-number">Fig. 5.2 </span><span class="caption-text">The Button part and editor dialog.</span></p>
+</div>
+<p>Images selected for the button part are saved to the <em>/images</em> subfolder located in the scenario directory.</p>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="actor_part_ref.html" title="previous chapter">5.1.1. Actor Part</a></li>
+      <li>Next: <a href="clock_part_ref.html" title="next chapter">5.1.3. Clock Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

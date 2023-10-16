@@ -1,0 +1,435 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Running Simulations &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="next" title="5. USING PARTS" href="using parts.html" />
+    <link rel="prev" title="3. USING ORIGAME" href="using origame.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="running-simulations">
+<span id="ref-running-simulations"></span><h1>4. Running Simulations<a class="headerlink" href="#running-simulations" title="Permalink to this headline">¶</a></h1>
+<p>A scenario can be run in the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> variant in either a <em>Main</em> simulation where a single simulation is performed, or in a <em>Batch</em> simulation where multiple simulations are performed. A Main simulation can be run in Animated Mode, where the <a class="reference internal" href="using origame.html#ref-model-view"><span class="std std-ref">Model View</span></a> may change dynamically during scenario execution, or Non-Animated Mode where the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> remains unchanged. A Batch simulation is always non-animated.</p>
+<p>Simulation scenarios can be configured to run in a combination of <em>variants</em> and in <em>replications</em>. Multiple <em>variants</em> of a scenario are configured by running with different scenario parameters while multiple <em>replications</em> are configured by running with different seed values. Each combination of variant and replication will produce a unique simulation result. For example, consider a batch simulation of an occupation modelled over a period of 20 years with three different attrition rates. The three attrition rates represent the three &#8220;variants&#8221; and if each scenario is to be simulated 100 times (i.e. 100 &#8220;replications per variant&#8221;) then 100 seed values are used to generate the statistical outputs for analysis.</p>
+<p>If multiple scenario replications or variants are required, a Batch run should be selected. A Main run is only applicable to running a scenario in <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> Mode for a single scenario variant/replication combination, with either Animation Mode on or off.</p>
+<p>Each simulation run produces a <a class="reference internal" href="notes.html#term-csv"><span class="xref std std-term">CSV</span></a> log-file automatically named &#8220;log.csv&#8221; in to the current user&#8217;s AppData folder: <em>C:\...\AppData\Local\DRDC\OrigameGui\Logs</em>. The log file can be saved manually to a different location at any time by pressing the <em>Save...</em> button on the <em>Application Log</em> panel. Batch simulations produce a log-file for each corresponding run within a subfolder created in the same directory as the batch scenario file. This is described in more detail in the following sections.</p>
+<p>The following sections discuss how to run Main and Batch simulations where multiple variants and replications of a scenario are configured.</p>
+<div class="section" id="main-simulations">
+<span id="ref-main-sim"></span><h2>4.1. Main Simulations<a class="headerlink" href="#main-simulations" title="Permalink to this headline">¶</a></h2>
+<p>A single simulation can be run and controlled by using the Main Simulation controls and settings available from:</p>
+<ol class="arabic simple">
+<li>The <a class="reference internal" href="using origame.html#ref-main-sim-control"><span class="std std-ref">Main Simulation Control panel</span></a>,</li>
+<li>The <a class="reference internal" href="using origame.html#ref-toolbar"><span class="std std-ref">application Toolbar</span></a>,</li>
+<li>The <a class="reference internal" href="using origame.html#ref-menus"><span class="std std-ref">Simulation menu</span></a>.</li>
+</ol>
+<p>The Main Simulation Control tab is shown in <a class="reference internal" href="#fig-simulation-control-main2"><span class="std std-numref">Figure 4.1</span></a> and contains both status read-outs and control options.</p>
+<p>On the top left of the panel, the simulation status readout will initially be shown as <em>Paused</em> with &#8220;0% complete&#8221;. When the simulation is run, the status will change to display the <em>Running</em> state. If a stop time has been specified, the percent complete will increment based on the progress of time relative to the stop time set. Two stop times can be set via the Main Simulation Control panel: <em>Sim Stop Time</em> and <em>Wall Clock Stop Time</em>. Clicking either pencil icons in the top-center of the panel will open a dialog where a stop time can be entered in units of days, hours, minutes, and seconds. If both stop times are set, the percentage complete will be based on the stop time that occurs first.  In the case of simulation stop time, the percentage complete is based on progress of simulation time relative to the simulation stop time; alternately, in the case of wall clock stop time, the percentage is based on the advancement of real-time (i.e. the computer clock) relative to the wall clock stop time. Sim and wall clock time readouts with corresponding reset buttons are located in the top right part of the panel along with a readout for the number of events on the <a class="reference internal" href="using origame.html#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a> and a corresponding <em>Clear Queue</em> button.</p>
+<p>The main control panel also allows <em>Animation</em> and <em>Debug</em> modes (which are only applicable to &#8220;Main&#8221; simulations) to be toggled and a random seed to be set for the scenario&#8217;s random number generator. The latter option opens a dialog where the user-specified seed can be entered. The dialog includes directions for selecting an acceptable seed value and will indicate when an acceptable value is entered by highlighting the input field in green and enabling the <em>OK</em> button. Entering an invalid value will disable the <em>OK</em> button and highlight the input field in red. The dialog also includes a <em>Generate</em> button that will automatically generate a valid seed and a checkbox which allows the Reset Seed to be used instead.</p>
+<p>On the lower left of the main control panel are controls to <em>Run Simulation</em>, <em>Play</em> (<em>Pause</em> when running), and <em>Step</em> the simulation. The <em>Run Simulation</em> button will run all reset parts, run all startup parts, and then run the simulation. Control options to perform these actions individually are available via the <em>Reset Sim</em> and <em>Start Sim</em> buttons, the first which resets the simulation and wall clock times to zero and runs all the reset parts, and the second which runs all startup parts and starts the simulation. The <em>End Sim</em> button runs the finish parts and stops the simulation.</p>
+<p>Four buttons on the lower right of the panel are the &#8220;run role&#8221; buttons where the role refers to the Setup, Reset, Startup, and Finish roles. These pertain to parts with roles and are only enabled when the simulation is paused and when a part with the role exists. Clicking an enabled button will run all parts with the corresponding role.</p>
+<div class="figure align-center" id="id1">
+<span id="fig-simulation-control-main2"></span><img alt="_images/simulation_control_main.png" src="_images/simulation_control_main.png" />
+<p class="caption"><span class="caption-number">Fig. 4.1 </span><span class="caption-text">The Main Simulation Control and Status panel.</span></p>
+</div>
+<p>The following table summarizes the Main Simulation Control panel status read-outs and controls.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Main Simulation Control</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Sim Stop Time</td>
+<td>Set the maximum simulation time. Simulation will advance to, but not beyond this
+time. Percent complete status shown based on this time if it occurs first.</td>
+</tr>
+<tr class="row-odd"><td>Wall Clock Stop Time</td>
+<td>Set the maximum wall clock time. Simulation will advance to, but not beyond this
+time. Percent complete status shown based on this time if it occurs first.</td>
+</tr>
+<tr class="row-even"><td>Animation</td>
+<td>Toggles <em>Animation Mode</em>. If toggled <strong>off</strong>, the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a>
+<a class="reference internal" href="using origame.html#ref-model-view"><span class="std std-ref">Model View</span></a> and <a class="reference internal" href="using origame.html#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>
+will appear static. If toggled <strong>on</strong>, then they will change dynamically as
+discrete events are processed.</td>
+</tr>
+<tr class="row-odd"><td>Debug</td>
+<td>Toggles <em>Debug Mode</em>. If toggled <strong>off</strong>, the scenario will execute and break-
+points that have been set will not be triggered. If toggled <strong>on</strong>, simulation
+execution will pause at each break-point as shown in
+<a class="reference internal" href="#fig-debugger"><span class="std std-numref">Figure 4.2</span></a>.</td>
+</tr>
+<tr class="row-even"><td>Set Seed</td>
+<td>Opens a dialog that allows the user to set a seed for the application&#8217;s random
+number generator.</td>
+</tr>
+<tr class="row-odd"><td>Clear Queue
+Run Simulation</td>
+<td>Removes all events from the <a class="reference internal" href="using origame.html#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>.
+Performs all the following actions: Run reset parts, run startup parts, run
+simulation.</td>
+</tr>
+<tr class="row-even"><td>Reset Sim</td>
+<td>Reset simulation and wall clock times and run reset parts.</td>
+</tr>
+<tr class="row-odd"><td>Start Sim</td>
+<td>Run startup parts and run simulation.</td>
+</tr>
+<tr class="row-even"><td>End Sim</td>
+<td>Run finish parts and pause the simulation.</td>
+</tr>
+<tr class="row-odd"><td>Play / Pause</td>
+<td>Toggles run the simulation / pause the simulation.</td>
+</tr>
+<tr class="row-even"><td>Step</td>
+<td>After pausing the simulation, pressing <em>Step</em> will advance to the next discrete
+time step, processing the next event. This option is only available when paused.</td>
+</tr>
+<tr class="row-odd"><td>Run Setup Parts...</td>
+<td>Runs all Setup parts. Only available when paused and when Setup parts exist.</td>
+</tr>
+<tr class="row-even"><td>Run Reset Parts</td>
+<td>Runs all Reset parts. Only available when paused and when Reset parts exist.</td>
+</tr>
+<tr class="row-odd"><td>Run Startup Parts</td>
+<td>Runs all Startup parts. Only available when paused and when Startup parts exist.</td>
+</tr>
+<tr class="row-even"><td>Run Finish Parts</td>
+<td>Runs all Finish parts. Only available when paused and when Finish parts exist.</td>
+</tr>
+<tr class="row-odd"><td>Settings</td>
+<td>Open the Main Simulation settings panel as shown in
+<a class="reference internal" href="#fig-main-sim-settings"><span class="std std-numref">Figure 4.3</span></a>.</td>
+</tr>
+</tbody>
+</table>
+<div class="figure align-center" id="id2">
+<span id="fig-debugger"></span><img alt="_images/debugger.png" src="_images/debugger.png" />
+<p class="caption"><span class="caption-number">Fig. 4.2 </span><span class="caption-text">The debug window opens automatically at break-points.</span></p>
+</div>
+<p>The <em>Settings</em> button in the lower right of the Main Simulation Control panel opens the the Main Simulation Settings panel shown in <a class="reference internal" href="#fig-main-sim-settings"><span class="std std-numref">Figure 4.3</span></a>. The settings are described in the following table. Note that the settings are <strong>not</strong> saved in the scenario file but in another file in the same folder with the extension &#8221;.ssj&#8221;.</p>
+<div class="figure align-center" id="id3">
+<span id="fig-main-sim-settings"></span><img alt="_images/main_sim_settings.png" src="_images/main_sim_settings.png" />
+<p class="caption"><span class="caption-number">Fig. 4.3 </span><span class="caption-text">The Main Simulation Settings Panel.</span></p>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Main Simulation Settings</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Variant #</td>
+<td>A numerical <a class="reference internal" href="notes.html#term-id"><span class="xref std std-term">ID</span></a> for this scenario parameter variant.</td>
+</tr>
+<tr class="row-odd"><td>Replication #</td>
+<td>A numerical <a class="reference internal" href="notes.html#term-id"><span class="xref std std-term">ID</span></a> for this scenario seed replication.</td>
+</tr>
+<tr class="row-even"><td>Reset seed</td>
+<td>Automatically generate, load, save, or manually generate the reset seed value.</td>
+</tr>
+<tr class="row-odd"><td>Time</td>
+<td>Select the Time mode to process events. By default, events are processed
+<em>Immediately</em>, one after the other.
+This can be changed to scaled <em>Real-time</em> according to the ratio of real-time to
+simulation time. For example, a ratio of 2:1 results in double-time, i.e. 1
+simulation minute between events elapses in 30 seconds real-time.</td>
+</tr>
+<tr class="row-even"><td>Reset simulation
+options</td>
+<td>Options for configuring how the simulation resets. Resetting the simulation will
+pause the simulation if it&#8217;s running. It will also do the following if selected:
+<em>Zero simulation time</em>: reset the simulation time to zero;
+<em>Zero wall clock time</em>: reset the wall clock time to zero;
+<em>Clear event queue</em>: clear the event queue of all events;
+<em>Apply random seed</em>: apply a new random seed;
+<em>Run Reset parts</em>: run all Reset parts in the model.</td>
+</tr>
+<tr class="row-odd"><td>Start simulation
+options</td>
+<td>Options for configuring how the simulation starts. Starting the simulation will
+run the simulation if it&#8217;s paused after it does the following if selected:
+<em>Run Startup parts</em>: run all Startup parts in the model.</td>
+</tr>
+<tr class="row-even"><td>End simulation
+options</td>
+<td>Options for configuring how the simulation ends. Ending the simulation will
+pause the simulation if it&#8217;s running after it does the following if selected:
+<em>Simulation time</em>: end the simulation at this simulation time;
+<em>Wall clock time</em>: end the simulation at this wall clock time;
+<em>Zero events</em>: end the simulation;
+<em>Run finish functions</em>: run all Finish parts in the model.</td>
+</tr>
+</tbody>
+</table>
+<p>During a GUI session, the simulation can be in either the <em>Paused</em> or <em>Running</em> states. While <em>Running</em>, the GUI has two modes of operation:</p>
+<ul class="simple">
+<li><em>Animated</em>: the simulation engine will continuously process events off of the <a class="reference internal" href="using origame.html#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>, and it will continuously refresh the simulation display in the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> so that any animated effects such as the movement of parts and updating part displays will be observed.</li>
+<li><em>Non-Animated</em>: the simulation engine will continuously processes events off the <a class="reference internal" href="using origame.html#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a> until there are no events remaining, however, the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> display will not be refreshed. This mode will typically be used for performance reasons once a model has been tested and the user wishes to perform a simulation as quickly as possible..</li>
+</ul>
+<p>While <em>Paused</em>, the GUI is always &#8220;animated&#8221;. If the simulation is <em>Running</em> and <em>Non-Animated</em>, and either the user changes the state to <em>Paused</em> or toggles Animation mode to <em>ON</em>, then the current state of the scenario browser and Model View will start to be animated.</p>
+<p>While <em>Running</em>, the simulation can be set to use either of two different time modes that include &#8220;Immediate&#8221; and &#8220;Real time&#8221;:</p>
+<ul class="simple">
+<li><em>Immediate</em>: events are processed as fast as possible.</li>
+<li><em>Real time</em>: events are processed in step with with a scaled version of real time. This means that in addition to the base case where one minute of real time corresponds to one minute of simulation time, the user could also select the scale so that two minutes of real time correspond to one minute of simulation time for example. In this mode, delays in the model will correspond to real time delays as the simulation executes.</li>
+</ul>
+<p>In the Paused state, the simulation state is frozen and the simulation engine does not retrieve events from the <a class="reference internal" href="using origame.html#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>. In this state, the user can carry out model building actions in the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> such as creating, manipulating and interconnecting parts. The user can manually step the simulation forward in the Paused state. The step will retrieve and process the next event on the <a class="reference internal" href="using origame.html#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>. Any simulation state changes are &#8220;animated&#8221; in the GUI.</p>
+<p>The status of the simulation can be observed in the <em>Main Simulation Control</em> panel, shown in <a class="reference internal" href="using origame.html#fig-simulation-control-main"><span class="std std-numref">Figure 3.14</span></a>. For <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a>-run single simulations, the panel displays the relevant updates which include the simulation <em>State</em> (as described above), the <em>Elapsed Sim Time</em>, and the <em># Events</em> left to process.</p>
+<p>As the simulation executes, the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> displays event indicators showing which parts have pending events. The event <a class="reference internal" href="using origame.html#ref-indicators-markers"><span class="std std-ref">indicators</span></a> are displayed on the side of the part in the upper left corner.</p>
+</div>
+<div class="section" id="batch-simulations">
+<span id="ref-batch-sim"></span><h2>4.2. Batch Simulations<a class="headerlink" href="#batch-simulations" title="Permalink to this headline">¶</a></h2>
+<p>A batch simulation consists of running a number of <em>replications</em> of a main simulation where each replication has its own random seed and is run in a separate process. Each replication can also be based on a different <em>variant</em> of the model where each variant has small changes made to the base model. Outputs from a batch simulation are identified by their corresponding variant and replication IDs. The outputs are placed in a folder with the timestamp and number of variants and number of replications per variant defined in folder name. Each replication has its own subfolder.</p>
+<p>A batch simulation can be run and controlled by the <em>Batch Simulation</em> options available in one of three access points of the applications:</p>
+<ol class="arabic simple">
+<li>The <a class="reference internal" href="using origame.html#ref-batch-sim-control"><span class="std std-ref">Batch Simulation Control panel</span></a>,</li>
+<li>The <a class="reference internal" href="using origame.html#ref-toolbar"><span class="std std-ref">application Toolbar</span></a>,</li>
+<li>The <a class="reference internal" href="using origame.html#ref-menus"><span class="std std-ref">Simulation menu</span></a>.</li>
+</ol>
+<p><a class="reference internal" href="#fig-simulation-control-batch2"><span class="std std-numref">Figure 4.4</span></a> shows the Batch Simulation Control tab that features status and control components, and common batch settings.</p>
+<p>The drop-down menu beside the <em>Open Batch Folder</em> button is used to select a batch folder in the same location as the opened scenario. The selected folder can be opened using the <em>Open Batch Folder</em> button. By default, the latest batch folder is selected once a scenario is loaded or saved. If there is no scneario opened, or there are no batch folders in the location of the opened scenario, the drop-down menu will be empty and the <em>Open Batch Folder</em> button will be disabled. On the top left of the panel, the simulation status readout will initially be shown as <em>Ready</em>. When the simulation is running, the status will change to display the <em>Running</em> state and the percent complete based upon the number of simulations completed out of the total number of variants and replications specified. The number of variants and replications can be input directly via the control panel along with the desired number of computer cores to use (one core is used per simulation). Specifying zero cores will automatically use the maximum number available.</p>
+<p>While the batch simulation is running, the panel displays the average time per replication and the estimated time remaining for the batch run to complete. After a batch simulation run, the new batch folder is automatically selected in the drop-down menu. The <em>Open Batch Folder</em> will open the folder to the directory containing the batch output. Also, displayed in the top right of the panel are the number of replications finished, running, and failed, and the number of variants finished and failed.</p>
+<p>On the lower left of the batch control panel are controls to <em>Run Batch Simulation</em> and <em>Pause</em>, the latter of which is disabled while in the <em>Ready</em> state. Once the batch status has transitioned to <em>Running</em>, the <em>Run Batch Simulation</em> changes to <em>Abort</em> and <em>Pause</em> becomes enabled. Pausing the simulation will cause the <em>Pause</em> button to change to <em>Play</em>. Pressing the <em>Abort</em> button will stop the batch run after the user confirms the action from the pop-up dialog. The simulation status will then changed to <em>Aborted</em> and the <em>Abort</em> button changes to <em>New</em>. Alternatively, if the batch run completes, the status will change to <em>Completed</em> and, as before, the <em>New</em> button appears. Pressing the <em>New</em> button will reset the batch simulation to the <em>Ready</em> state after the user confirms the action from the pop-up dialog, and a new batch run can be configured and run.</p>
+<div class="figure align-center" id="id4">
+<span id="fig-simulation-control-batch2"></span><img alt="_images/simulation_control_batch.png" src="_images/simulation_control_batch.png" />
+<p class="caption"><span class="caption-number">Fig. 4.4 </span><span class="caption-text">The Batch Simulation Control and Status panel.</span></p>
+</div>
+<p>The following table provides a summary of the Batch Simulation Control panel.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Batch Simulation Control</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Variants</td>
+<td>The total number of variants in the batch run.</td>
+</tr>
+<tr class="row-odd"><td>Reps per variant</td>
+<td>The total number of replications per variant in the batch run.</td>
+</tr>
+<tr class="row-even"><td>Use cores</td>
+<td>The number of cores to use (one core per simulation). Setting 0 uses all available.</td>
+</tr>
+<tr class="row-odd"><td>Batch folders menu</td>
+<td>Selects a batch folder in the location of the opened scenario.</td>
+</tr>
+<tr class="row-even"><td>Open Batch Folder</td>
+<td>Opens the selected folder in the drop-own menu</td>
+</tr>
+<tr class="row-odd"><td>Run Batch Simulation</td>
+<td>Starts running the batch simulation.</td>
+</tr>
+<tr class="row-even"><td>Pause / Play</td>
+<td>Toggles pausing and running the simulation.</td>
+</tr>
+<tr class="row-odd"><td>Settings</td>
+<td>Open the Batch Simulation settings panel as shown in
+<a class="reference internal" href="#fig-batch-sim-settings"><span class="std std-numref">Figure 4.5</span></a>.</td>
+</tr>
+</tbody>
+</table>
+<p>The <em>Settings</em> button in the lower right of the panel opens the the Batch Simulation Settings panel shown in <a class="reference internal" href="#fig-batch-sim-settings"><span class="std std-numref">Figure 4.5</span></a>. Each setting is described in the following table. Note that the settings are <strong>not</strong> saved with the scenario but in a separate file in the same folder with the extension &#8221;.bssj&#8221;.</p>
+<div class="figure align-center" id="id5">
+<span id="fig-batch-sim-settings"></span><img alt="_images/batch_sim_settings.png" src="_images/batch_sim_settings.png" />
+<p class="caption"><span class="caption-number">Fig. 4.5 </span><span class="caption-text">The Batch Simulation Settings Panel.</span></p>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Batch Simulation Settings</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Variants</td>
+<td>The number of variants of this scenario. The number of variants is the
+number of parameter sets to change in the scenario from run to run.</td>
+</tr>
+<tr class="row-odd"><td>Reps per variant</td>
+<td>The number of replications on this variant to perform.
+A new seed value is generated per replication per variant to create a stochastic
+model output.</td>
+</tr>
+<tr class="row-even"><td>Use cores</td>
+<td>Set the number of computer cores to use of the number available.
+Generally, the more cores used, the faster the batch simulation is
+performed. Setting 0 uses all available cores.</td>
+</tr>
+<tr class="row-odd"><td>Random seeds</td>
+<td>Automatically generate, load, save, or manually generate the random seed table.</td>
+</tr>
+<tr class="row-even"><td>Save scenario before Exit</td>
+<td>Save the scenario&#8217;s final state on exit.</td>
+</tr>
+<tr class="row-odd"><td>Same run settings as main
+simulation</td>
+<td>Use the same settings for the following options (Reset, Start, End) as set for
+main simulation.</td>
+</tr>
+<tr class="row-even"><td>Reset simulation options</td>
+<td>Options for configuring how the simulation resets.
+<em>Zero simulation time</em>: reset the simulation time to zero;
+<em>Zero wall clock time</em>: reset the wall clock time to zero;
+<em>Clear event queue</em>: clear the event queue of all events;
+<em>Apply random seed</em>: apply a new random seed;
+<em>Run Reset parts</em>: run all Reset parts in the model.</td>
+</tr>
+<tr class="row-odd"><td>Start simulation options</td>
+<td>Options for configuring how the simulation starts.
+<em>Run Startup parts</em>: run all Startup parts in the model.</td>
+</tr>
+<tr class="row-even"><td>End simulation options</td>
+<td>Options for configuring how the simulation ends.
+<em>Simulation time</em>: end the simulation at this simulation time;
+<em>Wall clock time</em>: end the simulation at this wall clock time;
+<em>Zero events</em>: end the simulation;
+<em>Run finish functions</em>: run all Finish parts in the model.</td>
+</tr>
+</tbody>
+</table>
+<p>The status of the simulation can be observed in the <em>Batch Simulation Control</em> panel, as shown in <a class="reference internal" href="using origame.html#fig-simulation-control-batch"><span class="std std-numref">Figure 3.15</span></a>. For batch-run simulations, the panel displays the relevant updates which include the simulation state (&#8220;Ready&#8221;, &#8220;Running&#8221;, &#8220;Paused&#8221;, &#8220;Completed&#8221;, &#8220;Aborted&#8221;), percent complete, and the status of the variants and replications that includes the total number of running, finished, and failed simulations. The <em>Open Batch Folder</em> button opens the folder containing the batch simulation outputs. The folder name is a combination of the string &#8216;batch_&#8217; + &#8216;YYYY–MM–DD–HH–MM–SS&#8217; + &#8216;VxR&#8217; (V is the number of variants, R is the number of replications). Inside the folder, a copy of the scenario used to perform the batch simulation is saved, along with the seeds used in a comma-separated-value file, and a subfolder for each variant-replication of the scenario that contains a copy of the scenario in the end-state of the run (if the settings are configured to save it) and the corresponding log-file.</p>
+<div class="section" id="batch-data-processing">
+<h3>4.2.1. Batch Data Processing<a class="headerlink" href="#batch-data-processing" title="Permalink to this headline">¶</a></h3>
+<p>Origame provides the ability for function and library parts to generate and process batch data via the <em>batch</em> object available to scripts. This object provides two primary methods:</p>
+<ul>
+<li><p class="first"><strong>set_replication_data</strong>(<code class="docutils literal"><span class="pre">**</span></code>data): parts that call this will generate batch data when run as part of a batch simulation. Typically, the parts that call this method would have the <em>Finish</em> role, but this is not necessary as the method can be called at any time. Each data keyword argument name is the name of a table that stores the value set by each replication. The tables are created automatically, based on the keyword argument names.</p>
+<blockquote>
+<div><p>For example, if a <em>Finish</em> function part calls set_replication_data(a=A, b=B), with A and B being some data computed by the part, then once completed table &#8220;a&#8221; will have one value of A per replication, and similarly table &#8220;b&#8221; will have one value of B per replication. All data is stored in a file called batch_data.sqlite.db in the batch folder of the batch run.</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>load_data</strong>(variant_id): parts that call this will automatically load the batch_data.sqlite.db file found in the same folder as the scenario, and will return the data specific to the given variant. Typically such parts would have the “<em>Batch</em>” role since Origame automatically executes all <em>Batch</em> role parts at the end of a batch and saves the resulting scenario in the batch folder. Without the batch role, you will have to run the parts that call load_data() manually from the GUI to see the results of processing the batch data.</p>
+<blockquote>
+<div><p>For example, in the previous example if the scenario was built to support two variants, then data2 = batch.load_data(2) would cause data2 to have two keys, &#8220;a&#8221; and &#8220;b&#8221;: data[‘a’] would be a numpy array of A values (one per replication), and data[‘b’] would be a numpy array of all B values.</p>
+</div></blockquote>
+</li>
+</ul>
+<p>The process is illustrated in <a class="reference internal" href="#fig-batch-data-processing"><span class="std std-numref">Figure 4.6</span></a> below.</p>
+<div class="figure align-center" id="id6">
+<span id="fig-batch-data-processing"></span><img alt="_images/batch_data_processing.png" src="_images/batch_data_processing.png" />
+<p class="caption"><span class="caption-number">Fig. 4.6 </span><span class="caption-text">Batch data processing overview.</span></p>
+</div>
+<p>There are other useful methods on the batch object available to scripts:</p>
+<ul class="simple">
+<li><strong>write_replication_data</strong>(): causes the data set so far by calls to set_replication_data() in the currently running replication to be written to the batch.sqlite.db database. If this method is not called, the data is automatically saved before the replication exits. This method can be useful to save data early, for instance because a replication crashes.</li>
+<li><strong>add_allowed_data_keys</strong>(<code class="docutils literal"><span class="pre">*</span></code>key_names): when this method is called, then all subsequent calls to set_replication_data() must provide valid data keys that match the given names. This method would typically be called in a Startup or Reset role function part.</li>
+</ul>
+<p>While building and testing a scenario, it can be useful to test the <em>Finish</em> and <em>Batch</em> role scripts to verify that they will work, without having to run an entire batch. The following methods could be used towards this:</p>
+<ul class="simple">
+<li><strong>write_test_replication_data</strong>(replication id, variant id, <code class="docutils literal"><span class="pre">**</span></code>data): while building the scenario and testing, this method is useful for generating data for several replications without having to run a batch simulation. The script should contain a block of code that generates “representative” or “expected” data, thus allowing you to test that the <em>Finish</em> and <em>Batch</em> role parts run correctly. Before a batch simulation, the block of code should be disabled (for example, by creating a call parameter that has a default value of False).</li>
+<li><strong>get_replication_data</strong>(): get all the data set so far by the currently loaded scenario. For example if a scenario contains <em>Finish</em> function part A that calls set_replication_data(a=1, b=2) and <em>Finish</em> function part B that calls set_replication_data(c=3, d=4), then you may run all <em>Finish</em> parts, then run a function part that calls get_replication_data(): it will receive a dict(a=1, b=2, c=3, d=4).</li>
+<li><strong>get_key_names</strong>(): get the keys saved so far to a batch data file. In the example for load_data(), this method would return [“a”, “b”].</li>
+<li><strong>has_data</strong>(): returns True only if the data file exists and has data in it.</li>
+</ul>
+<p>Methods will by default assume that a batch data file is in the folder of the scenario loaded. They can be given a path and a path type if this is not suitable. Note that a batch folder has a copy of the scenario used for the batch run, and the batch data is in that folder. Hence running a batch part only makes sense in two situations:</p>
+<ul class="simple">
+<li>If a scenario of a batch folder is opened in the GUI, then all batch data operations are using the batch data produced by the batch simulation.</li>
+<li>While testing the batch processing of a scenario, before running a batch simulation, batch operations are then operating on a “scratch” batch data file saved in the scenario folder; this file can be edited at will without affecting any batch run’s folder.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. Running Simulations</a><ul>
+<li><a class="reference internal" href="#main-simulations">4.1. Main Simulations</a></li>
+<li><a class="reference internal" href="#batch-simulations">4.2. Batch Simulations</a><ul>
+<li><a class="reference internal" href="#batch-data-processing">4.2.1. Batch Data Processing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="using origame.html" title="previous chapter">3. USING ORIGAME</a></li>
+      <li>Next: <a href="using parts.html" title="next chapter">5. USING PARTS</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

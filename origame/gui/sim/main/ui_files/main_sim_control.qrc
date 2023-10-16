@@ -1,0 +1,19 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>../../../icons/clear_queue.png</file>
+    <file>../../../icons/button_pausesim.svg</file>
+    <file>../../../icons/button_playsim.svg</file>
+    <file>../../../icons/button_resetsim.svg</file>
+    <file>../../../icons/button_runmain.svg</file>
+    <file>../../../icons/button_simsettings.svg</file>
+    <file>../../../icons/button_startsim.svg</file>
+    <file>../../../icons/button_stepsim.svg</file>
+    <file>../../../icons/button_stopsim.svg</file>
+    <file>../../../icons/pencil.svg</file>
+    <file>../../../icons/reset_value.svg</file>
+    <file>../../../icons/role_finish.svg</file>
+    <file>../../../icons/role_reset.svg</file>
+    <file>../../../icons/role_setup.svg</file>
+    <file>../../../icons/role_startup.svg</file>
+  </qresource>
+</RCC>

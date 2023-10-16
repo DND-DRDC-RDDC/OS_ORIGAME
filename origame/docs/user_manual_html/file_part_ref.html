@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.6. File Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.7. Function Part" href="function_part_ref.html" />
+    <link rel="prev" title="5.1.5. Datetime Part" href="datetime_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-part">
+<span id="file-part-ref"></span><h1>5.1.6. File Part<a class="headerlink" href="#file-part" title="Permalink to this headline">¶</a></h1>
+<p>The file part is used to reference a file or folder to be accessed by the model. The reference is made by specifying a path which can be either absolute or relative (i.e. a full path to a file, or just a file name). Relative paths can be specified as relative to the scenario folder by checking the &#8220;Relative to Scenario Folder&#8221; check box. Relative paths that are not specified as relative to the scenario folder are essentially relative to the current working directory, so typically such file part paths would be combined with other file parts to create absolute paths. It is the user&#8217;s responsibility to make proper use of the file part paths in their model.</p>
+<p>The file part provides a rich API for path manipulation. This API is a superset of that of pathlib.Path class from Python&#8217;s standard library. For example, Path methods such as <em>read_text</em>, <em>write_text</em>, <em>parent</em>, <em>name</em>, <em>suffix</em>, <em>is_absolute</em>, <em>exists</em>, <em>joinpath</em>, <em>mkdir</em>, <em>cwd</em>, etc, are directly available from the file part object. File path manipulation based on os.path should be avoided, in favor of the Path API provided by the File part type.</p>
+<p>Double-clicking on the file part&#8217;s frame or right-clicking and selecting &#8220;Edit...&#8221; opens an editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-file-part-and-editor"><span class="std std-numref">Figure 5.6</span></a>, that allows various properties of the part to be edited or viewed:</p>
+<ul class="simple">
+<li>a path to a file or folder.</li>
+<li>a browse-to-File button that opens a dialog that allows a file to be selected.</li>
+<li>a browse-to-Folder button that opens a dialog that allows a folder to be selected.</li>
+<li>a check box that allows the user to specify if the path is to be treated as relative to the scenario folder. When this box is checked, the part will automatically prepend the path to the scenario folder whenever the path of the file part is used in Path operations.</li>
+</ul>
+<p>Example 1: a File part that contains C:pathtofile.txt: then from a Function part linked to it via a link called &#8220;file&#8221;, link.file.filepath returns a Path instance pointing to C:pathtofile; link.file.exists() tests whether that file exists on the filesystem; etc.</p>
+<p>Example 2: a File part that contains a relative path &#8220;file.txt&#8221;, and relative-to-scenario=False: with a scenario as in example 1, link.file.filepath returns &#8220;file.txt&#8221;, so link.file.exists() would test whether that file exists in the folder that is the application&#8217;s current working directory. Since this is rarely useful, such relative file parts would typically be used in combination with other file parts, such as an &#8220;output folder&#8221; File part linked from the Function part as &#8220;output_folder&#8221;. If &#8220;output folder&#8221; contains the absolute path &#8220;C:pathtooutputfolder&#8221;, then the Function part linked to &#8220;output folder&#8221; and &#8220;file&#8221; can use the expression &#8220;link.output_folder / link.file&#8221;, which returns a Path instance pointing to C:pathtooutputfolderfile.txt.</p>
+<p>Example 3: a File part that contains a relative path &#8220;output_folder&#8221;, but relative-to-scenario=True: with a scenario as in example 1, link.output_folder.filepath returns &#8220;output_folder&#8221;, but link.file.exists() would test whether that folder exists in the scenario folder. In combination with a file part that has &#8220;file.txt&#8221; with relative-to-scenario=False, a script could do &#8220;(link.output_folder / link.file).exists() and this would work regardless of where the scenario is located on the filesystem, because the two file parts have relative paths.</p>
+<div class="figure align-center" id="id1">
+<span id="fig-file-part-and-editor"></span><img alt="_images/part_and_editor_file.png" src="_images/part_and_editor_file.png" />
+<p class="caption"><span class="caption-number">Fig. 5.6 </span><span class="caption-text">The File part and editor dialog.</span></p>
+</div>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="datetime_part_ref.html" title="previous chapter">5.1.5. Datetime Part</a></li>
+      <li>Next: <a href="function_part_ref.html" title="next chapter">5.1.7. Function Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

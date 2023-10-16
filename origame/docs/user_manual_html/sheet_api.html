@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.15. Sheet Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.2.16. SQL Part" href="sql_api.html" />
+    <link rel="prev" title="5.2.14. Pulse Part" href="pulse_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sheet-part">
+<h1>5.2.15. Sheet Part<a class="headerlink" href="#sheet-part" title="Permalink to this headline">¶</a></h1>
+<p>Each Sheet Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> by using link.<em>&lt;part_alias&gt;</em>.<em>&lt;scripting_api&gt;</em>, where <em>&lt;part_alias&gt;</em> is the link name, and <em>&lt;scripting_api&gt;</em> are the methods listed below:</p>
+<p><strong>sheet_data</strong> or <strong>get_sheet_data()</strong></p>
+<ul class="simple">
+<li>Description: Get a copy of the 2-D array of sheet part data.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [List[List[Any]]] list of lists containing the sheet data where each sub-list contains the data for one row.</li>
+</ul>
+<p><strong>num_rows</strong> or <strong>get_rows</strong></p>
+<ul class="simple">
+<li>Description: Get the number of rows.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [int] number of rows.</li>
+</ul>
+<p><strong>set_rows(&lt;num_rows&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the number of rows.</li>
+<li>Parameters: The [int] number of rows to set. Default is zero.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>num_cols</strong> or <strong>get_cols()</strong></p>
+<ul class="simple">
+<li>Description: Get the number of columns.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [int] number of columns.</li>
+</ul>
+<p><strong>set_cols(&lt;num_cols&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the number of columns.</li>
+<li>Parameters: The [int] number of columns to set. Default is zero.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>named_cols</strong> or <strong>get_named_cols()</strong></p>
+<ul class="simple">
+<li>Description: Get a map of custom column names to column indices.</li>
+<li>Parameters: None.</li>
+<li>Returns: A Dict[str, int] containing the custom names mapped to column indices.</li>
+</ul>
+<p><strong>col_widths</strong> or <strong>get_col_widths()</strong></p>
+<ul class="simple">
+<li>Description: Get the list of column widths of the sheet part.</li>
+<li>Parameters: None.</li>
+<li>Returns: A List[int] list of column widths.</li>
+</ul>
+<p><strong>index_style</strong> or <strong>get_index_style()</strong></p>
+<ul class="simple">
+<li>Description: Get the name of the current index style of the sheet part.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [str] name of the current index style.  Either &#8216;excel&#8217; or &#8216;array&#8217;.</li>
+</ul>
+<p><strong>set_index_style()</strong></p>
+<ul class="simple">
+<li>Description: Set the name of the current index style of the sheet part.</li>
+<li>Parameters: A [str] name of the current index style. Either &#8216;excel&#8217; or &#8216;array&#8217;.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>fill(&lt;callback&gt;,&lt;cell_range&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Iterates over the specified &#8216;cell_range&#8217; passing each cell row/col pair to the callback function with the result being assigned to the corresponding row/col cell in this sheet instance.</li>
+<li>Parameters: A user-defined [method] &lt;callback&gt; that takes a sheet row index [int] and column index [int] as arguments and returns an object to be set into the specified row/col cell of the sheet, a &lt;cell_range&gt; that is any of the following: [str] or [int] or [tuple].</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>find(&lt;item&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Search for a value.</li>
+<li>Parameters: The [object] <em>item</em> to look for.</li>
+<li>Returns: The [int or tuple] row, or column, or (row, column) index of the found &lt;item&gt;.</li>
+</ul>
+<p><strong>repr_data()</strong></p>
+<ul class="simple">
+<li>Description: Get string representation of the array.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [str] tabular string representation of the sheet&#8217;s data.</li>
+</ul>
+<p><strong>transpose()</strong></p>
+<ul class="simple">
+<li>Description: Transpose the array, inverting rows and columns.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>add_col(&lt;col_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Create a column.</li>
+<li>Parameters: The [int] column index &lt;col_index&gt; at which to insert the column.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>add_cols(&lt;num_cols&gt;,[optional] &lt;col_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Create multiple columns.</li>
+<li>Parameters: The [int] number of columns &lt;num_cols&gt; to add, the [int] &lt;col_index&gt; insertion point (default=<em>num_cols</em>).</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>col(&lt;col_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Get all values in specified column.</li>
+<li>Parameters: The [int] column index &lt;col_index&gt;.</li>
+<li>Returns: A [list] list of row values for the column.</li>
+</ul>
+<p><strong>del_col_name(&lt;name&gt;,&lt;col_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Unname a column.</li>
+<li>Parameters: The [str] column &lt;name&gt; to remove, the [int] &lt;col_index&gt; of the column.</li>
+<li>Returns: The new Excel column [str] label or None.</li>
+</ul>
+<p><strong>delete_col(&lt;col_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Delete a column.</li>
+<li>Parameters: The [int] &lt;col_index&gt; of the column to delete.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>delete_cols(&lt;num_cols&gt;,&lt;col_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Delete multiple columns.</li>
+<li>Parameters: The [int] number of columns &lt;num_cols&gt; to delete, the [int] index &lt;col_index&gt; of the first column to delete.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>set_col_name(&lt;col_index&gt;,&lt;col_name&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Name a column.</li>
+<li>Parameters: The [int or str] &lt;col_index&gt; (numeric or Excel-style letter) to be named, the [str] new column name &lt;col_name&gt;.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>add_row(&lt;row_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Create a row.</li>
+<li>Parameters: The [int] row index &lt;row_index&gt; at which to insert the row.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>add_rows(&lt;num_rows&gt;,[optional] &lt;row_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Create multiple rows.</li>
+<li>Parameters: The [int] number of rows &lt;num_rows&gt; to add, [int] index &lt;row_index&gt; insertion point (default=<em>num_rows</em>).</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>row(&lt;row_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Get all values in specified row.</li>
+<li>Parameters: The [int] row index &lt;row_index&gt;.</li>
+<li>Returns: A [list] list of column values for the row.</li>
+</ul>
+<p><strong>delete_row(&lt;row_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Delete a row.</li>
+<li>Parameters: The [int] &lt;row_index&gt; of the row to delete.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>delete_rows(&lt;num_rows&gt;,&lt;row_index&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Delete multiple rows.</li>
+<li>Parameters: The [int] number of rows &lt;num_rows&gt; to delete, the [int] index &lt;row_index&gt; of the first row to delete.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>clear()</strong></p>
+<ul class="simple">
+<li>Description: Clear the data in the Sheet.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>resize(&lt;num_rows&gt;,&lt;num_cols&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Change the number of rows and columns in the Sheet.</li>
+<li>Parameters: The [int] new number of rows &lt;num_rows&gt; to set, [int] the new number of columns &lt;num_cols&gt; to set.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>set_data(&lt;data&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set all values (overwrite) in the Sheet.</li>
+<li>Parameters: The [SheetPart or TablePart or int or float or str or tuple or list] new data to put into the sheet.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>copyfrom(&lt;other_sheet&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Copy data from another Sheet.</li>
+<li>Parameters: A [SheetPart] sheet part to copy.</li>
+<li>Returns: This [SheetPart] instance as a copy of &lt;other_sheet&gt;.</li>
+</ul>
+<p><strong>read_excel(&lt;xls_file&gt;,&lt;xls_sheet&gt;,&lt;xls_range&gt;,[optional] &lt;accept_empty_cells&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Import an Excel file into the Sheet.</li>
+<li>Parameters: The [str] file path, the [str] worksheet name, the [str] Excel-style sheet range, a [bool] option to accept empty cells (default=False and sets empty cells to 0, otherwise set True to accept empty cells).</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>write_excel(&lt;xls_file&gt;,&lt;xls_sheet&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Export the Sheet to an Excel file.</li>
+<li>Parameters: The [str] file path, the [str] worksheet name.</li>
+<li>Returns: None.</li>
+</ul>
+<p>The following <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> uses direct assignment to, or direct reference to, the linked part using link.&lt;part_alias&gt; notation:</p>
+<p><strong>link.&lt;sheet_alias&gt;[&lt;row&gt;,&lt;col&gt;]</strong></p>
+<ul class="simple">
+<li>Description: Get values from the Sheet.</li>
+<li>Parameters: The [int, int] &lt;row&gt; and &lt;col&gt; indexes.</li>
+<li>Returns: A [object] value at the index provided.</li>
+</ul>
+<p><strong>link.&lt;sheet_alias&gt;[&lt;row&gt;,&lt;col&gt;]=&lt;value&gt;</strong></p>
+<ul class="simple">
+<li>Description: Set values in the Sheet.</li>
+<li>Parameters: The [int, int] &lt;row&gt; and &lt;col&gt; indexes and the [object] &lt;value&gt; to set.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>if link.&lt;sheet_alias1&gt; == link.&lt;sheet_alias2&gt;</strong></p>
+<ul class="simple">
+<li>Description: Test if two Sheet Parts contain the same value.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>if link.&lt;sheet_alias1&gt; !=link.&lt;sheet_alias2&gt;</strong></p>
+<ul class="simple">
+<li>Description: Test if two Sheet Parts differ by at least one value.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>for value in link.&lt;sheet_alias&gt;:</strong></p>
+<ul class="simple">
+<li>Description: Loop through all values in a Sheet by row.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="pulse_api.html" title="previous chapter">5.2.14. Pulse Part</a></li>
+      <li>Next: <a href="sql_api.html" title="next chapter">5.2.16. SQL Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

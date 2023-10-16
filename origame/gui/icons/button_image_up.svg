@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32px"
+   height="32px"
+   id="svg19239"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="New document 107">
+  <defs
+     id="defs19241" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.197802"
+     inkscape:cx="26.894318"
+     inkscape:cy="22.786601"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     inkscape:snap-bbox="true"
+     inkscape:window-width="944"
+     inkscape:window-height="1002"
+     inkscape:window-x="960"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid19247" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata19244">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <rect
+       style="fill:#c6c6c6;fill-opacity:1;stroke:none"
+       id="rect11225-54-3-2-2-4-0-6-1-85"
+       width="28"
+       height="28"
+       x="2"
+       y="3"
+       rx="6"
+       ry="6"
+       inkscape:export-filename="D:\Workspace\ORIGAME\Application\graphics\Buttons\MomentaryOff.png"
+       inkscape:export-xdpi="523.63635"
+       inkscape:export-ydpi="523.63635" />
+    <rect
+       style="fill:#333333;fill-opacity:1;stroke:none"
+       id="rect11225-54-3-2-2-1"
+       width="26.999998"
+       height="26.999998"
+       x="2.5"
+       y="1.999939"
+       rx="5.1923075"
+       ry="5.1923075" />
+    <rect
+       style="fill:#e6e6e6;fill-opacity:1;stroke:none"
+       id="rect11225-2-79-1-3-6-5"
+       width="20.76923"
+       height="20.76923"
+       x="5.6154175"
+       y="3.0384521"
+       rx="4.1538458"
+       ry="4.1538458" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#808080;fill-opacity:1;stroke:none"
+       id="path11668-01-9"
+       sodipodi:cx="706.5"
+       sodipodi:cy="1743.8622"
+       sodipodi:rx="1.5"
+       sodipodi:ry="1.5"
+       d="m 708,1743.8622 a 1.5,1.5 0 1 1 -3,0 1.5,1.5 0 1 1 3,0 z"
+       transform="matrix(1.3846153,0,0,1.3846153,-962.23067,-2407.386)" />
+  </g>
+</svg>

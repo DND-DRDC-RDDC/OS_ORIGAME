@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.12. Node Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.13. Plot Part" href="plot_part_ref.html" />
+    <link rel="prev" title="5.1.11. Multiplier Part" href="multiplier_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="node-part">
+<span id="node-part-ref"></span><h1>5.1.12. Node Part<a class="headerlink" href="#node-part" title="Permalink to this headline">¶</a></h1>
+<p>The node part, shown in <a class="reference internal" href="#fig-node"><span class="std std-numref">Figure 5.12</span></a>, is represented in the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> as a small solid circle, is a passive part that forwards the information it receives from potentially multiple connected parts to a single part that it is connected to. They are used to break links into segments in order to create alternate arrangements of links for better visual effects.</p>
+<p>A node can be linked only to one other part, but multiple parts can be linked to a node part. If a node part is linked to a data part containing variables &#8220;num&#8221; and &#8220;count&#8221;, then a function part that is linked to the node part with alias “x” can access the data part as if it were directly linked to the data part: <em>x.num = x.count + 1</em>.</p>
+<p>Multiple node parts may be linked together to form a network. Within a node network, the direction of wiring proceeds along the link as indicated by the link&#8217;s arrowhead (i.e. node A to node B or node B to node A). Collectively a node network behaves like a single node. Thus, only a single link can connect from the node network to another part (the network exit link), but multiple links can connect other parts to the network (network entry links). Each part that has a network entry link has access to the single part that the network exit link is connected to. If a single node part or network of nodes is not linked to another part, then the node parts all reference the Python <em>None</em> value. For example, if a function part is linked to a node part with alias &#8220;x&#8221; but the node part is not linked to another part, the alias &#8220;x&#8221; will reference <em>None</em>.</p>
+<p>The part frame of the node is not visible and thus it&#8217;s name is not displayed.</p>
+<p>There is no editor for the node part. The only attributes that can be edited are its name and position which are edited using the <em>Object Properties</em> panel.</p>
+<div class="figure align-center" id="id1">
+<span id="fig-node"></span><img alt="_images/part_node.png" src="_images/part_node.png" />
+<p class="caption"><span class="caption-number">Fig. 5.12 </span><span class="caption-text">The Node part.</span></p>
+</div>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="multiplier_part_ref.html" title="previous chapter">5.1.11. Multiplier Part</a></li>
+      <li>Next: <a href="plot_part_ref.html" title="next chapter">5.1.13. Plot Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

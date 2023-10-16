@@ -1,0 +1,1287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>986</width>
+    <height>658</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Scenario: [e:\data\tictactoe.db]</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
+  <widget class="QWidget" name="central_widget">
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QFrame" name="title_frame">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>21</height>
+       </size>
+      </property>
+      <property name="palette">
+       <palette>
+        <active>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>219</red>
+            <green>219</green>
+            <blue>219</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </active>
+        <inactive>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>255</red>
+            <green>255</green>
+            <blue>255</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>219</red>
+            <green>219</green>
+            <blue>219</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </inactive>
+        <disabled>
+         <colorrole role="Base">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>219</red>
+            <green>219</green>
+            <blue>219</blue>
+           </color>
+          </brush>
+         </colorrole>
+         <colorrole role="Window">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>219</red>
+            <green>219</green>
+            <blue>219</blue>
+           </color>
+          </brush>
+         </colorrole>
+        </disabled>
+       </palette>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <property name="lineWidth">
+       <number>2</number>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="leftMargin">
+        <number>1</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="title_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>13</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Actor 2D View</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="button_goto_parent">
+         <property name="toolTip">
+          <string>Go to Parent Actor</string>
+         </property>
+         <property name="statusTip">
+          <string>Go to Parent Actor</string>
+         </property>
+         <property name="text">
+          <string>..</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QFrame" name="frame_2d">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>1</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>320</width>
+        <height>200</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="dummy_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>images/2dview.png</pixmap>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>986</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_file">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menu_preferences">
+     <property name="title">
+      <string>Preferences</string>
+     </property>
+     <addaction name="action_save_settings"/>
+    </widget>
+    <addaction name="action_new"/>
+    <addaction name="action_open"/>
+    <addaction name="action_save"/>
+    <addaction name="action_save_as"/>
+    <addaction name="separator"/>
+    <addaction name="menu_preferences"/>
+    <addaction name="separator"/>
+    <addaction name="action_import"/>
+    <addaction name="action_export"/>
+    <addaction name="separator"/>
+    <addaction name="action_quit"/>
+   </widget>
+   <widget class="QMenu" name="menu_edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_view">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menu_part_view_mode">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="title">
+      <string>Model View</string>
+     </property>
+    </widget>
+    <addaction name="menu_part_view_mode"/>
+    <addaction name="separator"/>
+    <addaction name="action_restore_default_view"/>
+    <addaction name="separator"/>
+    <addaction name="action_toggle_toolbar"/>
+   </widget>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="action_user_manual"/>
+    <addaction name="action_show_examples"/>
+    <addaction name="action_parts_reference"/>
+    <addaction name="action_python_reference"/>
+    <addaction name="action_python_tutorials"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout_2"/>
+   </widget>
+   <widget class="QMenu" name="menu_simulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <addaction name="action_debug"/>
+    <addaction name="action_toggle_animation"/>
+    <addaction name="separator"/>
+    <addaction name="action_play_pause_sim"/>
+    <addaction name="action_step_sim"/>
+    <addaction name="separator"/>
+    <addaction name="action_reset_sim"/>
+    <addaction name="action_clear_events"/>
+    <addaction name="separator"/>
+    <addaction name="action_main_sim_settings"/>
+    <addaction name="action_run_sim"/>
+    <addaction name="separator"/>
+    <addaction name="action_batch_simulation_settings"/>
+    <addaction name="action_start_batch_simulation"/>
+   </widget>
+   <addaction name="menu_file"/>
+   <addaction name="menu_edit"/>
+   <addaction name="menu_view"/>
+   <addaction name="menu_simulation"/>
+   <addaction name="menu_help"/>
+  </widget>
+  <widget class="QDockWidget" name="scenario_browser_dock">
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle">
+    <string>Scenario Browser</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QSplitter" name="splitter">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <widget class="QWidget" name="layoutWidget">
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QTreeWidget" name="treeWidget">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="autoExpandDelay">
+            <number>-1</number>
+           </property>
+           <property name="headerHidden">
+            <bool>true</bool>
+           </property>
+           <column>
+            <property name="text">
+             <string/>
+            </property>
+           </column>
+           <item>
+            <property name="text">
+             <string>Root Actor</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Actor 2</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Actor 10</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>Actor 3</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Actor 7</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>Actor 5</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Actor 6</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>Actor 8</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Actor 9</string>
+              </property>
+             </item>
+            </item>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="layoutWidget_2">
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLineEdit" name="search_text_box">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Function</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="search_button">
+             <property name="text">
+              <string>Search</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>To begin, start typing in the search box above</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="search_results_list_box">
+           <item>
+            <property name="text">
+             <string>Actor1/Actor2/part2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Actor1/Actor4/part5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Actor1/Actor4/part5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Actor1/Actor4/part5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Actor1/Actor4/part5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Actor2/Actor6/part1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Actor2/Actor6/part1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Actor2/part2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Actor2/Actor6/part2</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="log_panel_dock">
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle">
+    <string>Application Log</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QVBoxLayout" name="verticalLayout_3"/>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="help_dock">
+   <property name="windowTitle">
+    <string>Context Help</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="ContextHelp" name="help_view" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="object_properties_dock">
+   <property name="windowTitle">
+    <string>Object Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_6"/>
+  </widget>
+  <widget class="QDockWidget" name="event_queue_dock">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Event Queue</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2"/>
+  </widget>
+  <widget class="QDockWidget" name="main_simulation_control_dock">
+   <property name="windowTitle">
+    <string>Main Simulation Control</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_8"/>
+  </widget>
+  <widget class="QStatusBar" name="status_bar"/>
+  <widget class="QToolBar" name="tool_bar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="action_new"/>
+   <addaction name="action_open"/>
+   <addaction name="action_save"/>
+   <addaction name="action_save_as"/>
+   <addaction name="action_import"/>
+   <addaction name="action_export"/>
+   <addaction name="separator"/>
+   <addaction name="action_reset_sim"/>
+   <addaction name="action_clear_events"/>
+   <addaction name="action_run_sim"/>
+   <addaction name="action_play_pause_sim"/>
+   <addaction name="action_step_sim"/>
+   <addaction name="action_toggle_animation"/>
+   <addaction name="action_debug"/>
+   <addaction name="action_main_sim_settings"/>
+   <addaction name="separator"/>
+   <addaction name="action_start_batch_simulation"/>
+   <addaction name="action_batch_simulation_settings"/>
+   <addaction name="separator"/>
+   <addaction name="action_user_manual"/>
+  </widget>
+  <widget class="QDockWidget" name="batch_simulation_control_dock">
+   <property name="windowTitle">
+    <string>Batch Simulation Control</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5"/>
+  </widget>
+  <widget class="QDockWidget" name="alerts_dock">
+   <property name="windowTitle">
+    <string>Alerts</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="alerts_dock_content"/>
+  </widget>
+  <action name="action_quit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit ORIGAME</string>
+   </property>
+   <property name="statusTip">
+    <string>Quit ORIGAME</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="action_cut">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/cut.png</normaloff>:/icons/cut.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="toolTip">
+    <string>Cut the currently selected parts to app clipboard</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionPython_CLI">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Part Console Editor</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Return</string>
+   </property>
+  </action>
+  <action name="action_copy">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/copy.png</normaloff>:/icons/copy.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy the currently selected parts to app clipboard</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionClose_All">
+   <property name="text">
+    <string>Close All</string>
+   </property>
+  </action>
+  <action name="actionNext_Window">
+   <property name="text">
+    <string>Next Window</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Window">
+   <property name="text">
+    <string>Previous Window</string>
+   </property>
+  </action>
+  <action name="action_open">
+   <property name="text">
+    <string>Open...</string>
+   </property>
+   <property name="iconText">
+    <string>Open...</string>
+   </property>
+   <property name="toolTip">
+    <string>Open a scenario</string>
+   </property>
+   <property name="statusTip">
+    <string>Open a scenario</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_save">
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save the scenario</string>
+   </property>
+   <property name="statusTip">
+    <string>Save the scenario</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_save_as">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/save_as.png</normaloff>:/icons/save_as.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save the scenario to a new file name</string>
+   </property>
+   <property name="statusTip">
+    <string>Save the scenario to a new file name</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
+   </property>
+  </action>
+  <action name="actionToggle_Dockables">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toggle Dockables</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F10</string>
+   </property>
+  </action>
+  <action name="action_paste">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/paste.png</normaloff>:/icons/paste.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste parts from app clipboard into this actor</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="action_play_pause_sim">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/button_playsim.svg</normaloff>:/icons/button_playsim.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Run/Pause</string>
+   </property>
+   <property name="toolTip">
+    <string>Run/Pause the simulation</string>
+   </property>
+   <property name="statusTip">
+    <string>Run/Pause the simulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="text">
+    <string>Pause</string>
+   </property>
+  </action>
+  <action name="action_step_sim">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/button_stepsim.svg</normaloff>:/icons/button_stepsim.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Step</string>
+   </property>
+   <property name="toolTip">
+    <string>Step to the next event</string>
+   </property>
+   <property name="statusTip">
+    <string>Step to the next event</string>
+   </property>
+  </action>
+  <action name="action_reset_sim">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/button_resetsim.svg</normaloff>:/icons/button_resetsim.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Reset Sim</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset the simulation</string>
+   </property>
+   <property name="statusTip">
+    <string>Reset the simulation</string>
+   </property>
+  </action>
+  <action name="action_new">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/file_new.png</normaloff>:/icons/file_new.png</iconset>
+   </property>
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new scenario</string>
+   </property>
+   <property name="statusTip">
+    <string>Create a new scenario</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="action_export">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/export.png</normaloff>:/icons/export.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export Selection...</string>
+   </property>
+   <property name="iconText">
+    <string>Export Selection...</string>
+   </property>
+   <property name="toolTip">
+    <string>Export the selected objects to a scenario</string>
+   </property>
+   <property name="statusTip">
+    <string>Export the selected objects to a scenario</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="action_import">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/import.png</normaloff>:/icons/import.png</iconset>
+   </property>
+   <property name="text">
+    <string>Import Scenario...</string>
+   </property>
+   <property name="iconText">
+    <string>Import Scenario...</string>
+   </property>
+   <property name="toolTip">
+    <string>Import a scenario...</string>
+   </property>
+   <property name="statusTip">
+    <string>Import a scenario...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionAbout_2">
+   <property name="text">
+    <string>About</string>
+   </property>
+   <property name="toolTip">
+    <string>About ORIGAME</string>
+   </property>
+   <property name="statusTip">
+    <string>About ORIGAME</string>
+   </property>
+  </action>
+  <action name="action_user_manual">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/user_manual.png</normaloff>:/icons/user_manual.png</iconset>
+   </property>
+   <property name="text">
+    <string>User Manual</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the user manual</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the user manual</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="action_python_reference">
+   <property name="text">
+    <string>Python Reference</string>
+   </property>
+   <property name="toolTip">
+    <string>Open the Python reference</string>
+   </property>
+   <property name="statusTip">
+    <string>Open the Python reference</string>
+   </property>
+  </action>
+  <action name="action_parts_reference">
+   <property name="text">
+    <string>Parts Reference</string>
+   </property>
+   <property name="toolTip">
+    <string>Open scenario parts reference</string>
+   </property>
+   <property name="statusTip">
+    <string>Open scenario parts reference</string>
+   </property>
+  </action>
+  <action name="action_toggle_toolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Toolbar</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle visibility of Toolbar</string>
+   </property>
+   <property name="statusTip">
+    <string>Toggle visibility of Toolbar</string>
+   </property>
+  </action>
+  <action name="action_python_tutorials">
+   <property name="text">
+    <string>Python Tutorials</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Python tutorials</string>
+   </property>
+   <property name="statusTip">
+    <string>Open Python tutorials</string>
+   </property>
+  </action>
+  <action name="action_show_examples">
+   <property name="text">
+    <string>Examples</string>
+   </property>
+   <property name="toolTip">
+    <string>Open example scenarios</string>
+   </property>
+   <property name="statusTip">
+    <string>Open example scenarios</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionSearch">
+   <property name="text">
+    <string>Search Scenario...</string>
+   </property>
+  </action>
+  <action name="action_delete">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/delete.png</normaloff>:/icons/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete the currently selected parts</string>
+   </property>
+  </action>
+  <action name="action_undo">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/undo.png</normaloff>:/icons/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="toolTip">
+    <string>Undo the last change</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="action_redo">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/redo.png</normaloff>:/icons/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="toolTip">
+    <string>Redo the last change</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="action_override_minimal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/model_view_detail_level_minimal.png</normaloff>:/icons/model_view_detail_level_minimal.png</iconset>
+   </property>
+   <property name="text">
+    <string>Override Minimal</string>
+   </property>
+   <property name="toolTip">
+    <string>Show minimal detail level by overriding the real detail level</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+I</string>
+   </property>
+  </action>
+  <action name="action_override_full">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/model_view_detail_level_full.png</normaloff>:/icons/model_view_detail_level_full.png</iconset>
+   </property>
+   <property name="text">
+    <string>Override Full</string>
+   </property>
+   <property name="toolTip">
+    <string>Show full detail level by overriding the real detail level</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+F</string>
+   </property>
+  </action>
+  <action name="action_override_none">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/view_content_individual.png</normaloff>:/icons/view_content_individual.png</iconset>
+   </property>
+   <property name="text">
+    <string>Override None</string>
+   </property>
+   <property name="toolTip">
+    <string>Allow items to have their own detail level</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
+   </property>
+  </action>
+  <action name="actionRun_no_reset">
+   <property name="text">
+    <string>Run no reset</string>
+   </property>
+   <property name="toolTip">
+    <string>Run no reset</string>
+   </property>
+  </action>
+  <action name="action_debug">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/debug.png</normaloff>:/icons/debug.png</iconset>
+   </property>
+   <property name="text">
+    <string>Debug</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable or disable debug mode</string>
+   </property>
+   <property name="statusTip">
+    <string>Enable or disable debug mode</string>
+   </property>
+  </action>
+  <action name="actionResume">
+   <property name="text">
+    <string>Resume</string>
+   </property>
+  </action>
+  <action name="action_toggle_animation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/animation.png</normaloff>:/icons/animation.png</iconset>
+   </property>
+   <property name="text">
+    <string>Animation</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable or disable GUI animation during Main Sim run</string>
+   </property>
+   <property name="statusTip">
+    <string>Enable or disable GUI animation during Main Sim run</string>
+   </property>
+  </action>
+  <action name="action_clear_events">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/clear_queue.png</normaloff>:/icons/clear_queue.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear Queue</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear the Main Sim event queue</string>
+   </property>
+   <property name="statusTip">
+    <string>Clear the Main Sim event queue</string>
+   </property>
+  </action>
+  <action name="action_main_sim_settings">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/button_simsettings.svg</normaloff>:/icons/button_simsettings.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Main Simulation Settings</string>
+   </property>
+   <property name="toolTip">
+    <string>Configure the Main Sim settings</string>
+   </property>
+   <property name="statusTip">
+    <string>Configure the Main Sim settings</string>
+   </property>
+  </action>
+  <action name="action_run_sim">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/button_runmain.svg</normaloff>:/icons/button_runmain.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Run Simulation</string>
+   </property>
+   <property name="toolTip">
+    <string>Run the Main simulation</string>
+   </property>
+   <property name="statusTip">
+    <string>Run a Main simulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="action_batch_simulation_settings">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/button_batchsettings.svg</normaloff>:/icons/button_batchsettings.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Batch Simulation Settings</string>
+   </property>
+   <property name="toolTip">
+    <string>Configure the Batch simulation engine</string>
+   </property>
+   <property name="statusTip">
+    <string>Configure the Batch simulation engine</string>
+   </property>
+  </action>
+  <action name="action_start_batch_simulation">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/icons/button_runbatch.svg</normaloff>:/icons/button_runbatch.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Start Batch Simulation</string>
+   </property>
+   <property name="toolTip">
+    <string>Start a Batch simulation</string>
+   </property>
+   <property name="statusTip">
+    <string>Start a Batch simulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="action_log_settings">
+   <property name="text">
+    <string>Log Settings</string>
+   </property>
+  </action>
+  <action name="action_clear_settings">
+   <property name="text">
+    <string>Clear Settings</string>
+   </property>
+  </action>
+  <action name="actionRestore_Defaults">
+   <property name="text">
+    <string>Restore Defaults</string>
+   </property>
+  </action>
+  <action name="action_restore_default">
+   <property name="text">
+    <string>Restore Defaults</string>
+   </property>
+  </action>
+  <action name="action_save_settings">
+   <property name="text">
+    <string>Save Settings As...</string>
+   </property>
+   <property name="toolTip">
+    <string>Save application settings to external file</string>
+   </property>
+   <property name="statusTip">
+    <string>Save application settings to external file</string>
+   </property>
+  </action>
+  <action name="action_restore_default_view">
+   <property name="text">
+    <string>Restore Default View</string>
+   </property>
+   <property name="statusTip">
+    <string>Restore Default View</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ContextHelp</class>
+   <extends>QWidget</extends>
+   <header>.context_help</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <includes>
+  <include location="local">from . import gui_rc</include>
+ </includes>
+ <resources>
+  <include location="gui.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>action_toggle_toolbar</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>tool_bar</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>500</x>
+     <y>26</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tool_bar</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>action_toggle_toolbar</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>517</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

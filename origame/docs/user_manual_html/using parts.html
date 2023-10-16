@@ -1,0 +1,351 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. USING PARTS &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="next" title="5.1.1. Actor Part" href="actor_part_ref.html" />
+    <link rel="prev" title="4. Running Simulations" href="running_simulations.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-parts">
+<h1>5. USING PARTS<a class="headerlink" href="#using-parts" title="Permalink to this headline">¶</a></h1>
+<p>This section describes how to use Origame parts.</p>
+<div class="section" id="part-reference">
+<span id="part-ref"></span><h2>5.1. Part Reference<a class="headerlink" href="#part-reference" title="Permalink to this headline">¶</a></h2>
+<p>Parts are the building blocks of the simulation models in Origame. There are two categories of parts: parts with visible frames and parts where the frame is invisible.</p>
+<p>Parts with a visible frame includes the <a class="reference internal" href="actor_part_ref.html#actor-part-ref"><span class="std std-ref">Actor</span></a>, <a class="reference internal" href="button_part_ref.html#button-part-ref"><span class="std std-ref">Button</span></a>, <a class="reference internal" href="data_part_ref.html#data-part-ref"><span class="std std-ref">Data</span></a>, <a class="reference internal" href="datetime_part_ref.html#datetime-part-ref"><span class="std std-ref">Datetime</span></a>, <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function</span></a>, <a class="reference internal" href="library_part_ref.html#library-part-ref"><span class="std std-ref">Library</span></a>, <a class="reference internal" href="plot_part_ref.html#plot-part-ref"><span class="std std-ref">Plot</span></a>, <a class="reference internal" href="pulse_part_ref.html#pulse-part-ref"><span class="std std-ref">Pulse</span></a>, <a class="reference internal" href="sheet_part_ref.html#sheet-part-ref"><span class="std std-ref">Sheet</span></a>,  <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL</span></a>, <a class="reference internal" href="table_part_ref.html#table-part-ref"><span class="std std-ref">Table</span></a>, <a class="reference internal" href="time_part_ref.html#time-part-ref"><span class="std std-ref">Time</span></a>, and <a class="reference internal" href="variable_part_ref.html#variable-part-ref"><span class="std std-ref">Variable</span></a> parts. They contain a <em>content</em> component within which is set the part data, variables, scripts, tables, plots, etc. The title bar, visible for framed parts, identifies several characteristics of the part: the part&#8217;s icon, name, and a set of shortcut buttons. Title bars with solid (opaque) colors indicate parts that can be created, loaded, and run in simulation. A semi-transparent color indicates a deprecated part (see <a class="reference internal" href="using origame.html#ref-noncreatable-parts"><span class="std std-ref">Non-Creatable Parts</span></a>). The part type is signified by the icon that appears in the top left corner of the frame. The part&#8217;s name appears next to its icon. On the top right of the frame is a series of optional shortcuts that appear depending on the type of part, however, all framed parts have a common shortcut on the far right of the title bar that toggles the part between <em>full</em> and <em>minimal</em> Detail Level.</p>
+<p>The <a class="reference internal" href="info_part_ref.html#info-part-ref"><span class="std std-ref">Info</span></a>, <a class="reference internal" href="hub_part_ref.html#hub-part-ref"><span class="std std-ref">Hub</span></a>, <a class="reference internal" href="multiplier_part_ref.html#multiplier-part-ref"><span class="std std-ref">Multiplier</span></a>, and <a class="reference internal" href="node_part_ref.html#node-part-ref"><span class="std std-ref">Node</span></a> parts do not show their frame. While the Info part does have part content that&#8217;s used to display in-<a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> messages, the others do not, and are used to interconnect parts via links. None of these parts can toggle their Detail Level and do not display their name on the part (the <em>Object Properties</em> panel can be used to display part name and other information for these parts, see <a class="reference internal" href="using origame.html#ref-windows-panels-dialogs"><span class="std std-ref">Windows, Panels, and Dialogs</span></a>) or have any shortcuts.</p>
+<p>Part names need not be unique as it is purely descriptive and has no bearing on the simulation logic. Therefore, different parts can share the same name. This feature is enabled by model logic that refers to the <em>alias</em> given to a part by another part when the two parts are linked, rather than to the part names. Linked parts are represented by an arrow line connection created from one part (the source part) to another part (the target part). When this occurs, a unique alias is automatically generated and appears as the link name on the connecting link line. Alias uniqueness is automatically enforced by Origame. Thus, a model can have a single part that is linked to many other parts that each use a different alias, but may all have the same part name. This scheme allows model logic to be portable and easily integrated with other model logic because parts do not need to be protected against naming collisions.</p>
+<p>Parts are hierarchically organized into the parent part and its associated children parts. The part frame stores this hierarchical information (parent, child, etc.) along with the following attributes common to all parts: the part’s name, type, position, comments, and any connecting links. Scenarios created using the Prototype can have invisible or bold-frame parts. These properties are identified in Origame but can’t be changed.</p>
+<p>There are currently 18 part types. The rest of this section will describe each of these parts.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="actor_part_ref.html">5.1.1. Actor Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="button_part_ref.html">5.1.2. Button Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clock_part_ref.html">5.1.3. Clock Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_part_ref.html">5.1.4. Data Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datetime_part_ref.html">5.1.5. Datetime Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_part_ref.html">5.1.6. File Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_part_ref.html">5.1.7. Function Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hub_part_ref.html">5.1.8. Hub Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info_part_ref.html">5.1.9. Information Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_part_ref.html">5.1.10. Library Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiplier_part_ref.html">5.1.11. Multiplier Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="node_part_ref.html">5.1.12. Node Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_part_ref.html">5.1.13. Plot Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pulse_part_ref.html">5.1.14. Pulse Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sheet_part_ref.html">5.1.15. Sheet Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sql_part_ref.html">5.1.16. SQL Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="table_part_ref.html">5.1.17. Table Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_part_ref.html">5.1.18. Time Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variable_part_ref.html">5.1.19. Variable Part</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="programming-reference">
+<span id="part-api"></span><h2>5.2. Programming Reference<a class="headerlink" href="#programming-reference" title="Permalink to this headline">¶</a></h2>
+<p>The following <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> are globally available directly from the Function part. Some are also available to the Library, SQL, and Plot Parts.</p>
+<p><strong>self.&lt;part_api&gt;</strong></p>
+<ul class="simple">
+<li>Description: This Part&#8217;s functionality.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>link.&lt;part_alias&gt;.&lt;part_api&gt;</strong></p>
+<ul class="simple">
+<li>Description: Access the methods, attributes, and properties of all linked parts.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>new_part(&lt;part_type&gt;, [optional] &lt;name&gt;, [optional] &lt;position&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Creation of new linked part.</li>
+<li>Parameters: The [str] part type, [str] part name (default=None), and [tuple] part position (default=None); e.g. &lt;position&gt; =(x, y, z)</li>
+<li>Returns: A [BasePart] new part of type &lt;part_type&gt;.</li>
+</ul>
+<p><strong>del_part(&lt;part_frame&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Remove the linked part.</li>
+<li>Parameters: The part frame expressed as either a [PartFrame] or [str]. e.g. The PartFrame can be obtained from the link by the API link._part_alias_ where &#8220;_part_alias_&#8221; is the link name pointing to the part to remove.</li>
+<li>Returns:  None.</li>
+</ul>
+<p><strong>get_script()</strong></p>
+<ul class="simple">
+<li>Description: Get the script from the part.</li>
+<li>Parameters: None.</li>
+<li>Returns: The part&#8217;s [str] script.</li>
+</ul>
+<p><strong>set_script(&lt;script&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the part&#8217;s script.</li>
+<li>Parameters: The part [str] &lt;script&gt;.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>new_link(&lt;from_part_frame&gt;, &lt;to_part_frame&gt;, [optional] &lt;link_name&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Link a part to another.</li>
+<li>Parameters: The &#8220;from&#8221; and &#8220;to&#8221; part frames can be expressed as either a [PartFrame] or [str], a [str] link name (default=None). The PartFrame can be obtained from the link by the API link._part_alias_.</li>
+<li>Returns:  None.</li>
+</ul>
+<p><strong>del_link(&lt;link_name&gt; or &lt;from_part_frame&gt;, &lt;to_part_frame&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Unlink two parts.</li>
+<li>Parameters: The [str] link name or [PartFrame] of the source (from) part, the [PartFrame] part frame of the target part. The PartFrame can be obtained from the link by the API link._part_alias_.</li>
+<li>Returns:  None.</li>
+</ul>
+<p><strong>del_link_to(&lt;to_part_frame&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Unlink this part frame from the &lt;to_part_frame&gt;.</li>
+<li>Parameters: The [PartFrame] part frame of the target part. The PartFrame can be obtained from the link by the API link._part_alias_.</li>
+<li>Returns:  None.</li>
+</ul>
+<p><strong>delay(years=&lt;years&gt;, months=&lt;months&gt;, days=&lt;days&gt;, hours=&lt;hours&gt;, minutes=&lt;minutes&gt;, seconds=&lt;seconds&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Returns the current simulation time plus the specified time. Specify at least one date or time keyword parameter to calculate a delay using date and/or time. All unused parameters default to zero.</li>
+<li>Parameters: The [float] delay specified with at least one of: years=, months=, days=, hours=, minutes=, seconds=.</li>
+<li>Returns: The [float] time in days corresponding to the current time plus the specified time delta.</li>
+</ul>
+<p><strong>log.critical(&#8220;&lt;message&gt;&#8221;)</strong> or <strong>log.error(&#8220;&lt;message&gt;&#8221;)</strong> or <strong>log.warning(&#8220;&lt;message&gt;&#8221;)</strong> or <strong>log.info(&#8220;&lt;message&gt;&#8221;)</strong> or <strong>print(&#8220;&lt;message&gt;&#8221;)</strong></p>
+<ul class="simple">
+<li>Description: Message log entry creation. Log messages to the correct log type (e.g. &#8216;critical&#8217;, &#8216;error&#8217;, etc.).</li>
+<li>Parameters: [str] a &lt;message&gt; to log to the Log Panel and application log file.</li>
+<li>Returns:  None.</li>
+</ul>
+<p><strong>signal(&lt;link.part_alias&gt;, [optional] args=&lt;(arg1, arg2, ...)&gt;, [optional] time=&lt;time&gt;, [optional] priority=&lt;priority&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Place an event on the Event Queue with arguments, to execute at the specified &lt;time&gt;, and with the specified &lt;priority&gt;.</li>
+<li>Parameters: [Part Exec] executable part, [tuple] args (default=None), [float] time in days (default=None), [float] priority (default=0.0).</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>sim.&lt;sim_state_control&gt;</strong></p>
+<ul>
+<li><p class="first">Description: Set simulation states or access and set simulation parameters.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Parameters: &lt;sim_state_control&gt; specifies what simulation state to set or parameter to access. These include:</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt>Simulation state controls:</dt>
+<dd><ul class="first last simple">
+<li><em>pause()</em>: Pause simulation; works even if already paused.</li>
+<li><em>resume()</em>: Resume simulation; works even if already running.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Property &#8216;getters&#8217;:</dt>
+<dd><ul class="first last simple">
+<li><em>replication_id</em>: Get the replication <a class="reference internal" href="notes.html#term-id"><span class="xref std std-term">ID</span></a>, for current variant. Smallest allowed is 1.</li>
+<li><em>variant_id</em>: Get the variant <a class="reference internal" href="notes.html#term-id"><span class="xref std std-term">ID</span></a>. Smallest allowed is 1.</li>
+<li><em>replication_folder</em>: Get the folder used by this simulation replication.</li>
+<li><em>sim_time_days</em>: Get the current simulation time, in days.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Property &#8216;getters&#8217; and &#8216;setters&#8217;:</dt>
+<dd><ul class="first last simple">
+<li><em>runtime_animation</em>: Get or set the current animation setting.</li>
+<li><em>realtime_mode</em>: Get or set the real-time mode.</li>
+<li><em>realtime_scale</em>: Get or set the scale for real-time mode.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p class="first">Returns: See respective sim call listed in <em>Parameters</em>.</p>
+</li>
+</ul>
+<p><strong>get_scenario_name()</strong></p>
+<ul class="simple">
+<li>Description: Get the name of the scenario ORI file, or None if not saved.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [str] name of the scenario.</li>
+</ul>
+<p><strong>get_scenario_path()</strong></p>
+<ul class="simple">
+<li>Description: Get the path to the scenario ORI file, or None if not saved.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [str] path of the scenario (not including file name).</li>
+</ul>
+<p>Part-specific <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> is accessed using the following syntax:</p>
+<p><em>part</em>.<em>scripting_api</em>(*args, *kwargs)</p>
+<p>where <em>part</em> is the Part object upon which the <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> is being called, and <em>scripting_api</em> is the specific scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> invoked on the part.</p>
+<p>A Part can be accessed from the Function Part script as follows:</p>
+<ul class="simple">
+<li>link.<em>&lt;part_alias&gt;</em>: for parts connected by links to the Function Part, where <em>part_alias</em> is the alias of the connected part and the name shown on the connecting link.</li>
+<li>link.hub.hub.<em>&lt;any number of hubs&gt;</em>.<em>&lt;part_alias&gt;</em>: a &#8220;chained link&#8221; links one part to another through a series of hub parts. The target part can be accessed by its alias from the last hub in the chain.</li>
+<li><em>&lt;part_object&gt;</em>: for parts created inside the Function Part (e.g. by <em>new_part</em>) and stored in the object name <em>part_object</em>.</li>
+</ul>
+<p>The Part Frame contains additional <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> methods which can be accessed by referencing the &#8216;link._&#8217; followed by a linked part name:</p>
+<ul class="simple">
+<li>link.<em>&lt;_part_alias_&gt;</em>: for parts connected by links to the Function Part.</li>
+<li>link.hub.hub.<em>&lt;any number of hubs&gt;</em>.<em>&lt;_part_alias_&gt;</em>: a &#8220;chained link&#8221; links one part to another through a series of hub parts. The target part frame can be accessed by its alias from the last hub in the chain.</li>
+<li><em>&lt;part_object&gt;</em>.part_frame: for parts created inside the Function Part.</li>
+</ul>
+<p>The <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> commands available from the part frame include:</p>
+<p><strong>get_detail_level()</strong></p>
+<ul class="simple">
+<li>Description: Get the detail level. Note: the return value is not affect by the Model View&#8217;s Detail Level Override setting.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [DetailLevelEnum] true detail level.</li>
+</ul>
+<p><strong>set_detail_level(&lt;value&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the detail level.</li>
+<li>Parameters: A new [DetailLevelEnum] detail level &lt;value&gt;.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>get_pos_x()</strong></p>
+<ul class="simple">
+<li>Description: Get the x–frame position (top–left corner) in global scenario coordinates.</li>
+<li>Parameters: None.</li>
+<li>Returns: An [float] x–position value along the respective axis.</li>
+</ul>
+<p><strong>get_pos_y()</strong></p>
+<ul class="simple">
+<li>Description: Get y–frame position (top–left corner) in global scenario coordinates.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [float] y–position value along the respective axis.</li>
+</ul>
+<p><strong>set_pos_x(&lt;x&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set x–frame position (top–left corner) in global scenario coordinates.</li>
+<li>Parameters: An [float] &lt;x&gt; position value along the respective axis.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>set_pos_y(&lt;y&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set y–frame position (top–left corner) in global scenario coordinates.</li>
+<li>Parameters: A [float] &lt;y&gt; position value along the respective axis.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>get_name()</strong></p>
+<ul class="simple">
+<li>Description: Get part name.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [string] value of the part&#8217;s name.</li>
+</ul>
+<p><strong>set_name(&lt;name&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set part name.</li>
+<li>Parameters: A [string] &lt;name&gt; to set.</li>
+<li>Returns: None.</li>
+</ul>
+<p>The following sections describe the scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> available from each specific Part:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="actor_api.html">5.2.1. Actor Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="button_api.html">5.2.2. Button Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="clock_api.html">5.2.3. Clock Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_api.html">5.2.4. Data Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datetime_api.html">5.2.5. Datetime Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_api.html">5.2.6. File Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="function_api.html">5.2.7. Function Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hub_api.html">5.2.8. Hub Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="info_api.html">5.2.9. Information Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_api.html">5.2.10. Library Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiplier_api.html">5.2.11. Multiplier Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="node_api.html">5.2.12. Node Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot_api.html">5.2.13. Plot Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pulse_api.html">5.2.14. Pulse Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sheet_api.html">5.2.15. Sheet Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sql_api.html">5.2.16. SQL Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="table_api.html">5.2.17. Table Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_api.html">5.2.18. Time Part</a></li>
+<li class="toctree-l1"><a class="reference internal" href="variable_api.html">5.2.19. Variable Part</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. USING PARTS</a><ul>
+<li><a class="reference internal" href="#part-reference">5.1. Part Reference</a></li>
+<li><a class="reference internal" href="#programming-reference">5.2. Programming Reference</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="running_simulations.html" title="previous chapter">4. Running Simulations</a></li>
+      <li>Next: <a href="actor_part_ref.html" title="next chapter">5.1.1. Actor Part</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

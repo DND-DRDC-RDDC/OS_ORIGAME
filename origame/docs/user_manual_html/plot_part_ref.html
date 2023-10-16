@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.13. Plot Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.14. Pulse Part" href="pulse_part_ref.html" />
+    <link rel="prev" title="5.1.12. Node Part" href="node_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="plot-part">
+<span id="plot-part-ref"></span><h1>5.1.13. Plot Part<a class="headerlink" href="#plot-part" title="Permalink to this headline">¶</a></h1>
+<p>The plot part is used to plot simulation data. Parts that are linked to the plot part provide it with the information to be plotted on the chart. The plot part has four shortcut buttons on the top-right of its frame that include <em>Update the plot</em>, and <em>Show minimal detail</em>. Resizing the plot part frame will also resize the plot. Loading a scenario that contains plot parts will initially appear empty even if the data is available. To display the data in the part after loading the scenario the <em>Update the plot</em> short-cut button must be pressed or the context menu option selected.</p>
+<p>Once an image is displayed, the image and data can also be exported by accessing the context menu, however, these options will only become available after the plot has been updated. For each option a dialog will open.</p>
+<ul class="simple">
+<li>Image Export: the Image Export dialog requires a file path (including the file name) to save the image to, an image resolution, and an image format. The following formats are supported: Portable Network Graphics (<a class="reference internal" href="notes.html#term-png"><span class="xref std std-term">PNG</span></a>), Portable Document Format (<a class="reference internal" href="notes.html#term-pdf"><span class="xref std std-term">PDF</span></a>), PostScript format (<a class="reference internal" href="notes.html#term-ps"><span class="xref std std-term">PS</span></a>), Encapsulated Postscript Vector graphics (<a class="reference internal" href="notes.html#term-eps"><span class="xref std std-term">EPS</span></a>), and Scalable Vector Graphics (<a class="reference internal" href="notes.html#term-svg"><span class="xref std std-term">SVG</span></a>).</li>
+<li>Data Export: the data export dialog requires a file path to export the data to (in Excel <a class="reference internal" href="notes.html#term-xls"><span class="xref std std-term">XLS</span></a> format), and the name of the sheet that will appear in the file. Currently only data from line plots, scatter plot, histograms, bar charts, and pie charts can be exported. Note that the data exported from the plot may not be identical to the original data used to make the plot. For example, pie charts compute a <em>wedge</em> as a percentage of the pie out of 360 degrees from the original data. Therefore, it is the percentage of each pie wedge that appears in the exported data. If the original data is required for export, then the source part&#8217;s export feature (e.g. Sheet Part, etc.) should be used instead.</li>
+</ul>
+<p>The plot part uses a script that defines three methods that control how the data is plotted: a &#8216;configure&#8217; method that sets up the plot&#8217;s axes, a &#8216;plot&#8217; method that gets the data from connected parts and creates the plot, and optionally a &#8216;preview&#8217; method. These can be defined in the plot part or in a function part that sets the script to the plot part. Since the script implements the Python Matplotlib package, any valid Matplotlib command can be employed in the plot part script.</p>
+<p>An example of defining the script inside the plot part is shown below, where <em>sheet</em> represents the alias of a sheet part that contains the data to be plotted:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">configure</span><span class="p">():</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="n">setup_axes</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;ORIGAME Plot&#39;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">plot</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">link</span><span class="o">.</span><span class="n">sheet</span><span class="o">.</span><span class="n">num_rows</span><span class="p">:</span>
+        <span class="n">x_col_data</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">col_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">col_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">link</span><span class="o">.</span><span class="n">sheet</span><span class="o">.</span><span class="n">num_cols</span><span class="p">):</span>
+            <span class="n">y_col_data</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">sheet</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="n">col_idx</span><span class="o">=</span><span class="n">col_idx</span><span class="p">)</span>
+            <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_col_data</span><span class="p">,</span> <span class="n">y_col_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternately, the above could be defined by a function part as a multi-line string and then assigned to the plot part&#8217;s script attribute: <em>link.plot.script = plot_script</em>. Then call the Plot part&#8217;s update method to run the script and draw the plot image: <em>link.plot.update_fig()</em>.</p>
+<p>As shown above, after the script has been defined, <em>update_fig()</em> must be called to trigger the plot part to update the plot image. The plot can also be updated by clicking on the blue update button on the plot widget, or right-clicking on the part to open the context menu, and selecting &#8220;Update Plot&#8221;.</p>
+<p>Double-clicking on the plot part&#8217;s frame or right-clicking and selecting &#8220;Edit...&#8221; opens an editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-plot-part-and-editor"><span class="std std-numref">Figure 5.13</span></a>, that allows various properties of the part to be edited or viewed:</p>
+<ul class="simple">
+<li>plot script editing tools for undo, redo, cut, copy, paste, and delete,</li>
+<li>a plot script editor,</li>
+<li>an <em>Info</em> panel displaying relevant information on connected <em>Links</em>, available <em>Functions</em> and <em>Modules</em>, and <em>Help</em>,</li>
+<li>a <em>Links</em>, <em>Symbols</em>, and <em>Imports</em> panel that provides link and object import management options. See section <a class="reference internal" href="using origame.html#ref-script-based-parts"><span class="std std-ref">Script-Base Parts: Links, Symbols, and Imports</span></a> for more information on these panels,</li>
+<li>a plot preview panel that displays a preview when the <em>Update</em> button is pressed, or when the dpi is changed</li>
+<li>a drop-down menu to choose the resolution of the plot in dots per inch (dpi).</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-plot-part-and-editor"></span><img alt="_images/part_and_editor_plot.png" src="_images/part_and_editor_plot.png" />
+<p class="caption"><span class="caption-number">Fig. 5.13 </span><span class="caption-text">The Plot part and editor dialog.</span></p>
+</div>
+<p>Updating the dpi of the plot from the editor will also update the frame size of the plot part. When choosing a different dpi from the drop-down menu in the editor, the plot will automatically be updated in the preview panel without having to click the <em>Update</em> button. However, the plot in the Model View will not be updated until <em>Update the plot</em> is clicked. After updating the dpi, there is no need to click <em>OK</em> or <em>Apply</em> in the editor dialog since the new dpi will be automatically saved.</p>
+<p>For a discussion on how to use the <em>Links</em> tab, refer to the corresponding section in the <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function Part Reference</span></a>.</p>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="node_part_ref.html" title="previous chapter">5.1.12. Node Part</a></li>
+      <li>Next: <a href="pulse_part_ref.html" title="next chapter">5.1.14. Pulse Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

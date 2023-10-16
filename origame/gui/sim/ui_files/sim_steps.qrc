@@ -1,0 +1,19 @@
+<RCC>
+  <qresource prefix="reset">
+    <file>../../icons/sim_steps_reset.svg</file>
+    <file>../../icons/sim_steps_run_reset_parts.svg</file>
+  </qresource>
+  <qresource prefix="start">
+    <file>../../icons/sim_steps_run_startup_parts.svg</file>
+    <file>../../icons/sim_steps_start.svg</file>
+  </qresource>
+  <qresource prefix="end">
+    <file>../../icons/pencil.svg</file>
+    <file>../../icons/sim_steps_end.svg</file>
+    <file>../../icons/sim_steps_run_finish_funcs.svg</file>
+  </qresource>
+  <qresource prefix="pause_play">
+    <file>../../icons/sim_steps_pause.svg</file>
+    <file>../../icons/sim_steps_play.svg</file>
+  </qresource>
+</RCC>

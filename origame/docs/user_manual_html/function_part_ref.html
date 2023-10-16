@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.7. Function Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.8. Hub Part" href="hub_part_ref.html" />
+    <link rel="prev" title="5.1.6. File Part" href="file_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="function-part">
+<span id="function-part-ref"></span><h1>5.1.7. Function Part<a class="headerlink" href="#function-part" title="Permalink to this headline">¶</a></h1>
+<p>Function parts are used to define the events that occur in the simulation and are the most fundamental part used to build models. The main component, or body, of the function part is a Python script that represents the instructions to be carried out during an event. The function part can define parameters that are used to pass information to the function body, and the function may return a value. The function part can be linked to any other part type such as a data part or a clock part. To create a link to another part, right-click and choose &#8220;Create Link&#8221; and then click on the other part. If a function part is linked to another part, its body has access to that part using the alias specified by the link. In other words, aliases of the links that connect a function part to other parts constitute the namespace of the function part. Code completion reveals the contents of the namespace as the user writes the script.</p>
+<p>New function parts can be created by right-clicking on a blank part of the Model View and selecting <em>New Part &gt; Function</em> from the context menu. To run a function part, click the run button in the upper-right corner of the function part&#8217;s frame in the Model View.</p>
+<p>When one function part is linked to another function part, the former can call the latter as a function, optionally passing in parameters and receiving the return value. A function part can also schedule another function part to execute at any time greater than or equal to the current time. This is achieved by calling a <em>signal</em> function which has the following definition:</p>
+<p><em>signal(function, args=(), time=None, priority=0)</em></p>
+<p>where <em>function</em> is the alias of the target function part to be scheduled for future execution, <em>args</em> is a tuple consisting of the parameters to be passed to the target function part, <em>time</em> is when the target function part will execute, and <em>priority</em> is the priority of the signal. If <em>args</em> are not specified, an empty tuple will be used. If the <em>priority</em> parameter is not specified, it will default to 0. If the <em>time</em> parameter is not specified, then it will default to the current simulation time. In order to specify the <em>time</em> parameter, a clock part must be used. For example, if the function part is linked to a clock part with the alias &#8220;clock&#8221;, the function body can schedule another function part (shown below using the alias &#8220;foo&#8221;) to run at time 5 ticks on the clock via the <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a>:</p>
+<p><em>signal(link.foo, args=(), time=link.clock(5), priority=0)</em></p>
+<p>The combination of a function part, its parameters, a clock time, and a priority constitutes a scheduled event. The <em>signal</em> function places this event on the Event Queue, a queue of all pending events in the simulation. Because the scheduled events will not execute until a future time, the return value of the scheduled events is not returned to the function that called signal.</p>
+<p>Double-clicking on the function part&#8217;s frame or right-clicking and selecting &#8220;Edit...&#8221; opens a script editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-function-part-and-editor"><span class="std std-numref">Figure 5.7</span></a>, that allows various properties of the part to be edited or viewed:</p>
+<ul class="simple">
+<li>the part&#8217;s roles (Startup, Reset, Finish, Setup) and role execution order (not yet implemented)</li>
+<li>parameter specification,</li>
+<li>editing tools for undo, redo, cut, copy, paste, and delete,</li>
+<li>a script editor,</li>
+<li>a <em>Links</em>, <em>Symbols</em>, and <em>Imports</em> panel that provides link and object import management options. See section <a class="reference internal" href="using origame.html#ref-script-based-parts"><span class="std std-ref">Script-Base Parts: Links, Symbols, and Imports</span></a> for more information on these panels.</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-function-part-and-editor"></span><img alt="_images/part_and_editor_function.png" src="_images/part_and_editor_function.png" />
+<p class="caption"><span class="caption-number">Fig. 5.7 </span><span class="caption-text">The Function part and editor dialog.</span></p>
+</div>
+<p>If parameters are specified in the editor, the function part will open a prompt every time the function part is run to allow the user to enter the parameter values. These values must be valid Python expressions. e.g. a string must include quotes.</p>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="file_part_ref.html" title="previous chapter">5.1.6. File Part</a></li>
+      <li>Next: <a href="hub_part_ref.html" title="next chapter">5.1.8. Hub Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

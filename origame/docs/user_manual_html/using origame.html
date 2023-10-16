@@ -1,0 +1,772 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3. USING ORIGAME &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="next" title="4. Running Simulations" href="running_simulations.html" />
+    <link rel="prev" title="2. GETTING STARTED" href="getting started.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-origame">
+<h1>3. USING ORIGAME<a class="headerlink" href="#using-origame" title="Permalink to this headline">¶</a></h1>
+<p>Origame provides a framework to create discrete event models by placing basic building blocks called <em>parts</em> in a scenario and connecting them together using <em>links</em> from one part to another. The following sections describe the application&#8217;s modes of operation, and then covers basic concepts of Origame including parts, links, and other concepts including waypoints, interface ports, and simulation <em>events</em>. This section also covers the various elements of the user interface, how to open and navigate a scenario, how to build models including adding, removing, editing, and interfacing scenario parts, and concludes with running simulations in <em>Main</em> and <em>Batch</em> modes.</p>
+<div class="section" id="modes-of-operation">
+<h2>3.1. Modes of Operation<a class="headerlink" href="#modes-of-operation" title="Permalink to this headline">¶</a></h2>
+<p>Origame can be launched in two variants: <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> and Console. The <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> variant, shown in <a class="reference internal" href="#fig-main-window-default-view"><span class="std std-numref">Figure 3.1</span></a>, provides a graphical user interface allowing the user to build and run scenarios. The Console variant is designed to quickly run a scenario in the background and does not provide any graphical output as shown in <a class="reference internal" href="#fig-console-variant-batch-mode"><span class="std std-numref">Figure 3.2</span></a>. In order to build a scenario, the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> variant is required.</p>
+<div class="figure align-center" id="id1">
+<span id="fig-main-window-default-view"></span><img alt="_images/main_window_default_view.png" src="_images/main_window_default_view.png" />
+<p class="caption"><span class="caption-number">Fig. 3.1 </span><span class="caption-text">GUI variant of Origame showing the default view of the main window.</span></p>
+</div>
+<div class="figure align-center" id="id2">
+<span id="fig-console-variant-batch-mode"></span><img alt="_images/console_variant_batch_mode.png" src="_images/console_variant_batch_mode.png" />
+<p class="caption"><span class="caption-number">Fig. 3.2 </span><span class="caption-text">Console variant of Origame running in the command console.</span></p>
+</div>
+<p>The <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> variant provides two modes of running a scenario: Main and Batch. In Main, only one instance of a scenario can be run. The user may also choose to turn Animation (<a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> updates) on or off. In Batch, multiple replications of the same scenario can be run either in sequence (using one core) or in parallel (using multiple cores).</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="5%" />
+<col width="7%" />
+<col width="10%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variant</th>
+<th class="head">Mode</th>
+<th class="head">Animation</th>
+<th class="head"># Replications</th>
+<th class="head">Best for running...</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td rowspan="3"><a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a></td>
+<td rowspan="2">Main</td>
+<td>On</td>
+<td>1</td>
+<td>simple scenarios which self modify and update during the run</td>
+</tr>
+<tr class="row-odd"><td>Off</td>
+<td>1</td>
+<td>simple scenarios where the final result is displayed graphically and interim updates are not important</td>
+</tr>
+<tr class="row-even"><td colspan="2">Batch</td>
+<td>1 or more</td>
+<td>complicated scenarios, with final results written to file</td>
+</tr>
+<tr class="row-odd"><td colspan="3">Console</td>
+<td>1 or more</td>
+<td>very complicated scenarios which take a long time to run, with final results written to file</td>
+</tr>
+</tbody>
+</table>
+<p>This remainder of this section describes how to use the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> variant of Origame.</p>
+</div>
+<div class="section" id="starting-origame">
+<h2>3.2. Starting Origame<a class="headerlink" href="#starting-origame" title="Permalink to this headline">¶</a></h2>
+<p>Origame is launched by either of the following actions:</p>
+<ol class="arabic simple">
+<li>Double-clicking the Origame icon, shown in <a class="reference internal" href="#fig-origame-icon"><span class="std std-numref">Figure 3.3</span></a>,</li>
+<li>Double-clicking on an existing scenario &#8221;.ori&#8221; file.</li>
+</ol>
+<p>The desktop icon is created during installation as is the association with the &#8221;.ori&#8221; file extension. The icon can be pinned to the Windows Taskbar or Start menu by clicking and dragging the icon to those locations. Note that if another version of Origame is installed, even an earlier version, double-clicking a scenario &#8221;.ori&#8221; file will open automatically with the last version of Origame installed, not necessary the newest version.</p>
+<p>When Origame starts, a splash screen displays the name of the application, its version number, licensing information, and third-party components required by Origame to run. The splash screen will close automatically after a few seconds but it can also be closed immediately by clicking on it. The information shown in the splash screen is also shown in the About box which is launched by going to the Origame <em>Help</em> menu and selecting <em>About</em>.</p>
+<div class="figure align-center" id="id3">
+<span id="fig-origame-icon"></span><img alt="_images/origame_icon.png" src="_images/origame_icon.png" />
+<p class="caption"><span class="caption-number">Fig. 3.3 </span><span class="caption-text">Start Origame by double-clicking the application icon.</span></p>
+</div>
+</div>
+<div class="section" id="basic-concepts">
+<h2>3.3. Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="parts">
+<span id="ref-parts"></span><h3>3.3.1. Parts<a class="headerlink" href="#parts" title="Permalink to this headline">¶</a></h3>
+<p>Origame allows the user to create discrete event models by creating basic building blocks called <em>parts</em> and placing them in a <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>. A description of each part, including how it can be used and the options available in its editor, is included in section <a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Part Reference</span></a>. See <a class="reference internal" href="#ref-creating-parts"><span class="std std-ref">Creating Parts</span></a> for information on how to create parts.</p>
+<p>The following subsections delve into how the different part types can be further categorized. It begins with a discussion on part <em>frames</em>, a component of all parts that <a class="reference internal" href="#ref-framed-parts-visible"><span class="std std-ref">may</span></a> or <a class="reference internal" href="#ref-framed-parts-invisible"><span class="std std-ref">may not</span></a> be visible. The special nature of <a class="reference internal" href="#ref-actor-parts"><span class="std std-ref">Actor parts</span></a> as a fundamental building block is then discussed, followed by the introduction of <a class="reference internal" href="#ref-executable-parts"><span class="std std-ref">executable parts</span></a>, <a class="reference internal" href="#ref-ifx-parts"><span class="std std-ref">interface parts</span></a>, and finally overviews certain deprecated parts that have been made <a class="reference internal" href="#ref-noncreatable-parts"><span class="std std-ref">non-creatable</span></a>.</p>
+<div class="section" id="parts-with-visible-frames">
+<span id="ref-framed-parts-visible"></span><h4>3.3.1.1. Parts with Visible Frames<a class="headerlink" href="#parts-with-visible-frames" title="Permalink to this headline">¶</a></h4>
+<p>Parts with visible frames are displayed with a rectangular frame in which is set the part content that defines the part type as shown in <a class="reference internal" href="#fig-frames-visible-invisible"><span class="std std-numref">Figure 3.4</span></a>. The part type is signified by the icon that appears in the top left corner of the frame. The part&#8217;s name appears next to this icon. Clicking the upper right short-cut on a part frame will toggle the Detail Level of the part to <em>minimal</em> so that only its icon is displayed. Clicking the short-cut again toggles the part back to <em>full</em> Detail Level. This type of part includes <a class="reference internal" href="actor_part_ref.html#actor-part-ref"><span class="std std-ref">Actor</span></a>, <a class="reference internal" href="button_part_ref.html#button-part-ref"><span class="std std-ref">Button</span></a>, <a class="reference internal" href="data_part_ref.html#data-part-ref"><span class="std std-ref">Data</span></a>, <a class="reference internal" href="datetime_part_ref.html#datetime-part-ref"><span class="std std-ref">Datetime</span></a>, <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function</span></a>, <a class="reference internal" href="library_part_ref.html#library-part-ref"><span class="std std-ref">Library</span></a>, <a class="reference internal" href="plot_part_ref.html#plot-part-ref"><span class="std std-ref">Plot</span></a>, <a class="reference internal" href="pulse_part_ref.html#pulse-part-ref"><span class="std std-ref">Pulse</span></a>, <a class="reference internal" href="sheet_part_ref.html#sheet-part-ref"><span class="std std-ref">Sheet</span></a>,  <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL</span></a>, <a class="reference internal" href="table_part_ref.html#table-part-ref"><span class="std std-ref">Table</span></a>, <a class="reference internal" href="time_part_ref.html#time-part-ref"><span class="std std-ref">Time</span></a>, and <a class="reference internal" href="variable_part_ref.html#variable-part-ref"><span class="std std-ref">Variable</span></a> parts.</p>
+<div class="figure align-center" id="id4">
+<span id="fig-frames-visible-invisible"></span><img alt="_images/frames_visible_invisible.png" src="_images/frames_visible_invisible.png" />
+<p class="caption"><span class="caption-number">Fig. 3.4 </span><span class="caption-text">Visible framed data part (left) and invisible framed multiplier (right).</span></p>
+</div>
+</div>
+<div class="section" id="parts-with-invisible-frames">
+<span id="ref-framed-parts-invisible"></span><h4>3.3.1.2. Parts with Invisible Frames<a class="headerlink" href="#parts-with-invisible-frames" title="Permalink to this headline">¶</a></h4>
+<p>The <a class="reference internal" href="info_part_ref.html#info-part-ref"><span class="std std-ref">Info</span></a>, <a class="reference internal" href="hub_part_ref.html#hub-part-ref"><span class="std std-ref">Hub</span></a>, <a class="reference internal" href="multiplier_part_ref.html#multiplier-part-ref"><span class="std std-ref">Multiplier</span></a>, and <a class="reference internal" href="node_part_ref.html#node-part-ref"><span class="std std-ref">Node</span></a> parts do not show their frame as shown in <a class="reference internal" href="#fig-frames-visible-invisible"><span class="std std-numref">Figure 3.4</span></a>. While the Info part does have part content, the others do not and are used to route <em>Part</em> and <em>Frame</em> information between parts that are not linked directly to each other.</p>
+</div>
+<div class="section" id="actor-parts">
+<span id="ref-actor-parts"></span><h4>3.3.1.3. Actor Parts<a class="headerlink" href="#actor-parts" title="Permalink to this headline">¶</a></h4>
+<p>Actor parts are used to modularize, organize, and encapsulate related implementation details of a model into a hierarchy of parent and child actors. <a class="reference internal" href="#fig-actor-part-and-hierarchy"><span class="std std-numref">Figure 3.5</span></a> shows an actor part in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> with the model hierarchy of parent and child actors displayed in the <a class="reference internal" href="#ref-windows-panels-dialogs"><span class="std std-ref">Actor Hierarchy panel</span></a> to the left. By clicking on an actor listed in the hierarchy, or the <em>Go Into Actor</em> shortcut (down arrow button) on an actor part&#8217;s frame, the actor&#8217;s contents can be viewed. By default, the application displays the contents of the top-level <em>root</em> actor of a scenario on application start-up. The <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> always displays the contents of a single actor. Additionally, actor parts facilitate link connections across the actor boundary by providing <a class="reference internal" href="#ref-ifx-parts"><span class="std std-ref">interface ports</span></a> for parts inside the actor that have raised their <em>Interface Level</em> above the base level.</p>
+<div class="figure align-center" id="id5">
+<span id="fig-actor-part-and-hierarchy"></span><img alt="_images/actor_part_and_hierarchy.png" src="_images/actor_part_and_hierarchy.png" />
+<p class="caption"><span class="caption-number">Fig. 3.5 </span><span class="caption-text">The <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> showing the root actor, a child actor, and actor hierarchy in the <a class="reference internal" href="#ref-scenario-browser"><span class="std std-ref">Scenario Browser</span></a>.</span></p>
+</div>
+</div>
+<div class="section" id="executable-parts">
+<span id="ref-executable-parts"></span><h4>3.3.1.4. Executable Parts<a class="headerlink" href="#executable-parts" title="Permalink to this headline">¶</a></h4>
+<p>There are four types of Executable parts that include the <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function part</span></a>, <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL part</span></a>, <a class="reference internal" href="pulse_part_ref.html#pulse-part-ref"><span class="std std-ref">Pulse part</span></a>, and <a class="reference internal" href="multiplier_part_ref.html#multiplier-part-ref"><span class="std std-ref">Multiplier part</span></a>. These parts can be signaled by other executable parts to define discrete simulation events that appear on the simulation <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>. If a function part is linked to another part, its script has access to that part using the <em>alias</em> specified by the link. In other words, aliases of the links that connect a function part to other parts constitute the namespace of the function part. Section <a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Programming Reference</span></a> describes the <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> and attributes for each part type which a function may use to access a target part’s contents or properties.</p>
+<p>Multiplier parts provide a one-to-many interface for forwarding signals. For example, a multiplier that is connected to a Function or <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part, can signal any number of other parts connected to the multiplier when the Function or <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part signal the multiplier. The multiplier forwards that signal to each part connected to itself.</p>
+<p>Pulse parts that are connected to other executable parts will place those connected parts on the event queue periodically according to the pulse period that has been defined.</p>
+<p>See <a class="reference internal" href="#ref-creating-events"><span class="std std-ref">Creating, Editing and Triggering Events</span></a> for information on how to create events.</p>
+</div>
+<div class="section" id="interface-parts">
+<span id="ref-ifx-parts"></span><h4>3.3.1.5. Interface Parts<a class="headerlink" href="#interface-parts" title="Permalink to this headline">¶</a></h4>
+<p>Any part can be exposed outside of its parent actor by changing a property called <em>interface level</em>. A part exposed this way is termed an Interface Part. The default level is 0 and indicates the part is not exposed outside of its parent actor: the part may only link to its parent, to/from siblings, and to/from interface parts of sibling actors. If the level is increased to 1, the part is exposed to the surroundings of its parent actor via an interface port on its parent’s left or right side. These ports can be linked together which effectively links their associated parts together. Links between parts in different actors are called <em>elevated links</em>.</p>
+<p>The maximum interface level of a part is the &#8220;distance&#8221; from the root. Hence if the root actor contains a child actor A which contains another child actor B which contains a part C, the interface level of C can be at most 3, that of B at most 2, and that of A at most 1. Actors can also be interface parts themselves, independently of the descendant parts exposed on their boundary.</p>
+<p>When the maximum level is used on a part, that part will be visible outside the scenario when the scenario is imported into another scenario. This allows the scenario to define which parts are &#8220;public&#8221; i.e. exposed to importing scenarios that use them as a model component.</p>
+<p>A part’s boundary actor is the <em>ancestor actor</em> (up the chain of parents) beyond which the part is not visible. When the interface level of a part is 0, the boundary actor is its parent; when level is 1, boundary actor is its grand-parent; etc.</p>
+<p>See <a class="reference internal" href="#ref-linking-ifx-parts"><span class="std std-ref">Linking Interface Parts</span></a> for information on how to create interface parts and elevated links.</p>
+</div>
+<div class="section" id="non-creatable-parts">
+<span id="ref-noncreatable-parts"></span><h4>3.3.1.6. Non-Creatable Parts<a class="headerlink" href="#non-creatable-parts" title="Permalink to this headline">¶</a></h4>
+<p>Non-creatable parts are parts that have been deprecated in favour of another part or set of parts but continue to be supported by Origame in order to facilitate the use of scenarios that have been built using the deprecated part. As such, these parts can be loaded, saved, copied, and moved within their legacy scenario. However, new instances of the part cannot be created. When a scenario with a deprecated part is loaded, a warning will be printed to the Log panel.</p>
+<p>As shown in <a class="reference internal" href="#fig-non-creatable-parts"><span class="std std-numref">Figure 3.6</span></a>, non-creatable parts, such as the deprecated <a class="reference internal" href="clock_part_ref.html#clock-part-ref"><span class="std std-ref">Clock part</span></a>, appear slightly transparent compared to nominal, &#8220;creatable&#8221;, parts. The <a class="reference internal" href="clock_part_ref.html#clock-part-ref"><span class="std std-ref">Clock part</span></a> had integrated a calendar, time, and tick components. The calendar and time components are now implemented as the <a class="reference internal" href="datetime_part_ref.html#datetime-part-ref"><span class="std std-ref">Datetime part</span></a> while the the tick component is now in the <a class="reference internal" href="time_part_ref.html#time-part-ref"><span class="std std-ref">Time part</span></a>. It is highly encouraged that scenarios with Clock parts replace them with these two parts.</p>
+<div class="figure align-center" id="id6">
+<span id="fig-non-creatable-parts"></span><img alt="_images/non_creatable_parts.png" src="_images/non_creatable_parts.png" />
+<p class="caption"><span class="caption-number">Fig. 3.6 </span><span class="caption-text">The non-creatable <a class="reference internal" href="clock_part_ref.html#clock-part-ref"><span class="std std-ref">Clock part</span></a> (left) and creatable <a class="reference internal" href="time_part_ref.html#time-part-ref"><span class="std std-ref">Time part</span></a> (right).</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="links">
+<span id="ref-links"></span><h3>3.3.2. Links<a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h3>
+<p>A <em>link</em> is a directional link between two parts. Creating a link from one part to another allows the former to access and modify the latter.</p>
+<p>The link&#8217;s default name is the alias of the target part used by the source part when accessing the target part&#8217;s <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> and attributes. By default, this is the name of the target part unless that name is already in use by another target connected to the same source part, in which case an Arabic numeral will be appended to enforce uniqueness. The link name can be changed by the user as long as the name is not already used by another outgoing link from the same part. Links can also be set to appear <em>decluttered</em> by hiding their middle section, have waypoints added and removed which allow links to follow user-defined paths, and have their target part or endpoint changed as required.</p>
+<p>When a link is created, it is automatically offset from the centerline between the two parts to allow a parallel link to be created in the opposite direction without overlapping the first link. For most parts with a single link, this offset is not noticeable. However, for small parts like the Node, Hub, and multiplier, and for ports, the offset will be noticeable if only one line is connected.</p>
+<p>See <a class="reference internal" href="#ref-linking-parts"><span class="std std-ref">Linking Parts</span></a> for information on how to link parts.</p>
+</div>
+<div class="section" id="waypoints">
+<span id="ref-waypoints"></span><h3>3.3.3. Waypoints<a class="headerlink" href="#waypoints" title="Permalink to this headline">¶</a></h3>
+<p>Waypoints can be added or removed from a link and moved independently which allows a link&#8217;s straight line path to be reconfigured to any path in the 2D plain required by the model designer. For example, the link can be drawn around other parts that may lie in between the two connected parts. When a waypoint is added to a link, it bisects the link creating two segments. Further waypoints can be added which continue to bisect the segment to which it is added. While waypoints separate the link into segments, the link remains a single link so selecting any segment selects the whole link. Removing all the waypoints restores the original link to a straight line.</p>
+<p>See <a class="reference internal" href="#ref-linking-parts"><span class="std std-ref">Linking Parts</span></a> for information on how to use waypoints in models.</p>
+</div>
+<div class="section" id="events">
+<span id="ref-events"></span><h3>3.3.4. Events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h3>
+<p>The Origame simulation engine executes discrete event simulations. This means that the simulation consists of a finite number of events that occur at specific times. In a human resources context, examples of events are recruitment, promotion, starting a training activity, completing a training activity, being posted to a new position, and retirement. In general, events consist of a sequence of instructions that can modify the state of various aspects of the simulation and schedule other events to occur in the future. Once an event completes, the simulation engine selects the next pending event to process and advances the simulation clock to the time of that event.</p>
+<p>The simulation engine processes events in the following order of execution:</p>
+<ol class="arabic simple">
+<li>All <a class="reference internal" href="notes.html#term-asap"><span class="xref std std-term">ASAP</span></a> events using Last-In-First-Out (<a class="reference internal" href="notes.html#term-lifo"><span class="xref std std-term">LIFO</span></a>) execution.</li>
+<li>The next event in chronological order.</li>
+<li>If there are multiple events occurring at the same time, it selects the highest priority event(s).</li>
+<li>If there are still multiple such events, it selects the event that has been in the queue the longest in a First-In-First-Out (<a class="reference internal" href="notes.html#term-fifo"><span class="xref std std-term">FIFO</span></a>) execution.</li>
+</ol>
+<p>Once the event has been selected, it is removed from the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>, the simulation’s global time is advanced to the time of the event, and the simulation engine executes the event Function Part&#8217;s script passing it the event parameters.</p>
+<p>Parts that have corresponding events on the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a> are indicated in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> with an event <a class="reference internal" href="#ref-indicators-markers"><span class="std std-ref">indicator</span></a> displayed at the top-left side of the part&#8217;s widget. The indicator shows the number of events on the queue associated with that part. The colour of the indicator indicates if the event is the next event, concurrent with the next event, or pending.</p>
+<p>In the run state, the simulation engine will continuously process events off of the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>, and it will continuously refresh the simulation display in the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> so that any
+animated effects such as the movement of parts and updating part displays will be observed. The simulation will stay in this state even if there are no events on the queue and will wait for an event to occur. In the pause state, the simulation state is frozen and the simulation engine does not retrieve events from the event queue. In this mode, the user can carry out model building actions in the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> such as creating, manipulating and interconnecting parts. The user can manually step the simulation forward in the pause state. The step will retrieve and process the next event on the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>.</p>
+<p>Once an event has been added to the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a> it can be edited or removed from the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue panel</span></a>.</p>
+<p>See <a class="reference internal" href="#ref-creating-events"><span class="std std-ref">Creating, Editing and Triggering Events</span></a> for information on creating events.</p>
+</div>
+</div>
+<div class="section" id="user-interface">
+<span id="ref-user-interface"></span><h2>3.4. User Interface<a class="headerlink" href="#user-interface" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="starting-and-stopping-origame">
+<h3>3.4.1. Starting and Stopping Origame<a class="headerlink" href="#starting-and-stopping-origame" title="Permalink to this headline">¶</a></h3>
+<p>The application is launched by double-clicking the application icon that was created during installation. Alternatively, from the Windows Command Prompt enter:</p>
+<p><code class="docutils literal"><span class="pre">&gt;&gt;</span> <span class="pre">&quot;C:\Origame_VENV\Scripts\pythonw.exe&quot;</span> <span class="pre">&quot;C:\Origame_VENV\Scripts\origame_gui.py&quot;</span></code>,</p>
+<p>where <code class="docutils literal"><span class="pre">Origame_VENV</span></code> is the path to the Python Virtual Environment that was created during installation.</p>
+<p>The application is closed by accessing the <em>Exit</em> option under the <em>File</em> menu or by pressing the close shortcut <em>X</em> button on the upper right of the application window. If the user tries to exit Origame with <a class="reference internal" href="#ref-part-edit"><span class="std std-ref">part editors</span></a> open that have unsaved changes, a dialog will open that requires user confirmation to discard all changes before proceeding to exit, to save all changes before proceeding to exit, or to cancel the exit operation and allow the user to determine which individual editor panel changes to apply and which to discard.</p>
+</div>
+<div class="section" id="scenario-files">
+<h3>3.4.2. Scenario Files<a class="headerlink" href="#scenario-files" title="Permalink to this headline">¶</a></h3>
+<p>Model files that are created, saved and loaded into Origame are called <em>scenario</em> files. Origame can save and load scenarios in the following two formats:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="notes.html#term-ori"><span class="xref std std-term">ORI</span></a>:  <a class="reference internal" href="notes.html#term-json"><span class="xref std std-term">JSON</span></a>-formatted files with the extension <em>.ori</em> are human-editable files.</li>
+<li><a class="reference internal" href="notes.html#term-orib"><span class="xref std std-term">ORIB</span></a>: Binary-formatted files with extension <em>.orib</em>. can be loaded ten times faster than <a class="reference internal" href="notes.html#term-ori"><span class="xref std std-term">ORI</span></a> files but are not human-editable.</li>
+</ol>
+<p>Origame supports the application&#8217;s Prototype format with the extension <em>.db</em> for loading only.</p>
+<p>Origame assumes each scenario has its own folder as other files associated with the scenario may be saved along with the scenario .ori file. These other files include images the user may have selected for actor or button parts which are saved to the <em>/images</em> subfolder that Origame automatically creates when the scenario is saved for the first time.</p>
+</div>
+<div class="section" id="menus">
+<span id="ref-menus"></span><h3>3.4.3. Menus<a class="headerlink" href="#menus" title="Permalink to this headline">¶</a></h3>
+<p>An overview of the Origame menu is provided in the table below.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Menu</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>File</td>
+<td>File options for creating <em>New</em> scenarios, <em>Open</em> existing scenarios, <em>Save</em>
+scenarios under the current name, <em>Save As...</em> for new files, as well as options
+for saving application <em>Preferences</em>, <em>Importing</em> and <em>Exporting</em> scenarios.</td>
+</tr>
+<tr class="row-odd"><td>Edit</td>
+<td>Edit options for <em>Cut</em>, <em>Copy</em>, <em>Paste</em>, <em>Delete</em>, <em>Undo</em>, and <em>Redo</em>.</td>
+</tr>
+<tr class="row-even"><td>View</td>
+<td>View options to control the application&#8217;s various panels and icons. A <em>Model View</em>
+sub-menu provides controls to override part <em>Detail Level</em> that controls whether
+parts show full (expanded) or minimal detail in the Model View and zoom options for
+fitting the entire model into the view or only a selected portion. An option
+to <em>Restore Default View</em> will restore all application panels to their initial
+configuration when the application was first run. A list of checkable panel options
+will show or hide the corresponding panel.</td>
+</tr>
+<tr class="row-odd"><td>Simulation</td>
+<td>Simulation options for initializing, running, stepping, and debugging a scenario.
+<em>Main</em> and <em>Batch</em> simulation options are accessed here along with <em>Debug</em> and
+<em>Animation</em> modes. More information about these options is contained in section
+<a class="reference internal" href="running_simulations.html#ref-running-simulations"><span class="std std-ref">Running Simulations</span></a>.</td>
+</tr>
+<tr class="row-even"><td>Help</td>
+<td>Help options for accessing the <em>User Manual</em>,
+<em>Python References</em> and <em>Tutorials</em>, and information <em>About</em> the Origame
+application.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="windows-panels-and-dialogs">
+<span id="ref-windows-panels-dialogs"></span><h3>3.4.4. Windows, Panels, and Dialogs<a class="headerlink" href="#windows-panels-and-dialogs" title="Permalink to this headline">¶</a></h3>
+<p>The Origame application window, shown in <a class="reference internal" href="#fig-main-window-default-view"><span class="std std-numref">Figure 3.1</span></a>, consists of nine panels and one toolbar. The <em>View</em> menu provides options for showing or hiding each panel.</p>
+<div class="section" id="model-view">
+<span id="ref-model-view"></span><h4>3.4.4.1. Model View<a class="headerlink" href="#model-view" title="Permalink to this headline">¶</a></h4>
+<p>The Model View, shown in <a class="reference internal" href="#fig-2d-model-view"><span class="std std-numref">Figure 3.7</span></a>, is the panel used to create parts and build simulation models. It displays the contents of an actor part (the root actor at start-up) and shows the hierarchy path at the top of the panel. Refer to <a class="reference internal" href="#ref-nav"><span class="std std-ref">Navigation</span></a> for information on how to view different actors in the model. A toolbar on the left side of the Model View contains common shortcuts to Edit and View menu options such as cut, copy, paste, delete, undo, redo, and two zoom options that include <em>Zoom to Fit all Contents</em> and <em>Zoom to Selection Contents</em>. The model view can be expanded to occupy the maximum window space available, or unexpanded, by using the three expnasion buttons located on the left, right, and bottom sides of the panel. The canvas size of the Model View is infinite in theory but will be limited by system resources in practice.</p>
+<div class="figure align-center" id="id7">
+<span id="fig-2d-model-view"></span><img alt="_images/2d_model_view.png" src="_images/2d_model_view.png" />
+<p class="caption"><span class="caption-number">Fig. 3.7 </span><span class="caption-text">The Model View Panel.</span></p>
+</div>
+</div>
+<div class="section" id="scenario-browser">
+<span id="ref-scenario-browser"></span><h4>3.4.4.2. Scenario Browser<a class="headerlink" href="#scenario-browser" title="Permalink to this headline">¶</a></h4>
+<p>The Scenario Browser consists of two sub-panels that are depicted in <a class="reference internal" href="#fig-scenario-browser"><span class="std std-numref">Figure 3.8</span></a>:</p>
+<ol class="arabic simple">
+<li><strong>Actor Hierarchy</strong>: The Actor Hierarchy panel displays the parent-child relationship of all actors in the current scenario by nesting child actor parts under their parent actor. Actors are shown alphabetically and then by order of creation if they share the same name. By clicking an actor part in the hierarchy, the contents of the actor will be displayed in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>.</li>
+<li><strong>Search</strong>: The Search panel is used to find parts and part contents in the model. The <em>Search</em> button changes to a <em>Cancel</em> button while the search is is performed. To stop the search, press the <em>Cancel</em> button. The results are displayed as a path from the child actor in the root, down to the searched-for part or the part containing the searched-for content. Double-clicking a part in the search results will navigate the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> to that part. If the searched part is removed from the scenario, the corresponding search result will change to red font and navigation to the part will be disabled. If the part is moved to a new location, the search result path will update and navigation to the part enabled.</li>
+</ol>
+<div class="figure align-center" id="id8">
+<span id="fig-scenario-browser"></span><img alt="_images/scenario_browser.png" src="_images/scenario_browser.png" />
+<p class="caption"><span class="caption-number">Fig. 3.8 </span><span class="caption-text">The Scenario Browser Panel.</span></p>
+</div>
+</div>
+<div class="section" id="alerts">
+<span id="ref-alerts-panel"></span><h4>3.4.4.3. Alerts<a class="headerlink" href="#alerts" title="Permalink to this headline">¶</a></h4>
+<p>The Alerts panel, shown in <a class="reference internal" href="#fig-alerts"><span class="std std-numref">Figure 3.9</span></a>, displays any warnings and errors generated by the model. There are two types of alerts:</p>
+<ol class="arabic simple">
+<li>Automatic: alerts that are automatically generated. Every part type and scenario component can generate its own set of automatic alerts when certain operations are performance. An example is syntax errors that occur in <a class="reference internal" href="#ref-script-based-parts"><span class="std std-ref">script-based parts</span></a> when those parts are run, or are cleared by fixing the issue and re-running the affected parts.</li>
+<li>On-Demand: alerts that are generated during manually-triggered model validation. Every part type and scenario component can generate its own set of on-demand alerts during validation. Examples are missing link, unreferenced link, and datetime part synchronization warnings.</li>
+</ol>
+<p>The model can be validated by clicking the <em>Validate</em> button on the Alerts panel. Model validation traverses the entire scenario parts and components to request validation. The produced on-demand alerts get displayed in the Alerts panel, and any pre-existing on-demand alerts are discarded. Clicking on an alert in the panel will display a more detailed message in the &#8220;Details&#8221; section of the panel.</p>
+<p>With a part&#8217;s alert selected, pressing the <em>Filter</em> button will cause the panel to show only alerts associated with that part. Clicking the <em>Un-filter</em> button will remove the filter. Double-clicking the alert will cause the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> to show the corresponding part. The part itself will display the applicable alert indicator on its bottom left side (see <a class="reference internal" href="#ref-indicators-markers"><span class="std std-ref">Part Indicators and Markers</span></a>). Clicking this indicator will also filter the Alerts panel to only show alerts associated with that particular part.</p>
+<p>Actor parts display an alert indicator if any of their descendant parts (children, grand-children etc) raise an alert, as all alerts propagate up the actor hierarchy. As for other parts, clicking that indicator will filter the Alerts panel to display only alerts associated with that actor and all its descendants.</p>
+<div class="figure align-center" id="id9">
+<span id="fig-alerts"></span><img alt="_images/alerts.png" src="_images/alerts.png" />
+<p class="caption"><span class="caption-number">Fig. 3.9 </span><span class="caption-text">The Alerts panel.</span></p>
+</div>
+</div>
+<div class="section" id="event-queue">
+<span id="ref-event-queue-panel"></span><h4>3.4.4.4. Event Queue<a class="headerlink" href="#event-queue" title="Permalink to this headline">¶</a></h4>
+<p>The Event Queue, shown in <a class="reference internal" href="#fig-event-queue"><span class="std std-numref">Figure 3.10</span></a>, shows all events that are queued to execute at a specified time and with a specified priority within the time. This panel also displays the part that the event corresponds to, the part&#8217;s type, arguments, and path in the Actor Hierarchy. The panel can be used to edit and delete individual events or clear all events at once. Refer to <a class="reference internal" href="#ref-creating-events"><span class="std std-ref">Creating, Editing and Triggering Events</span></a> for more information adding and changing events.</p>
+<div class="figure align-center" id="id10">
+<span id="fig-event-queue"></span><img alt="_images/event_queue.png" src="_images/event_queue.png" />
+<p class="caption"><span class="caption-number">Fig. 3.10 </span><span class="caption-text">The Event Queue panel.</span></p>
+</div>
+</div>
+<div class="section" id="application-log">
+<span id="ref-object-properties"></span><h4>3.4.4.5. Application Log<a class="headerlink" href="#application-log" title="Permalink to this headline">¶</a></h4>
+<p>The Log panel is shown in <a class="reference internal" href="#fig-application-log"><span class="std std-numref">Figure 3.11</span></a> and displays various log messages issued by the application. To the right of the log message display is the log operations panel that contains a toggle bar to show or hide the operations panel, the filter selector, the log <em>Save...</em> button, and the <em>Hide Previous</em> message button. The details of the Log panel&#8217;s functionality are described below.</p>
+<ol class="arabic simple">
+<li>Bookmark: Selecting a line in the log panel will bookmark the line by highlighting it. The log can the be scrolled with the bookmarked line remaining highlighted.</li>
+<li>Highlight: By using the mouse to select a word or group of words, all instances of the selection in the log panel will be highlighted.</li>
+<li>Filter: Log messages are filtered according to the filter selector. Logs are issued via two <em>loggers</em>: one is called &#8220;System&#8221; and the other is called &#8220;User&#8221;. The former are issued by the application, the latter by user code. Log messages are ranked by level of importance (high to low): Critical, Error, Warning, Info, and Print. While log messages are always logged regardless of the filter settings, unchecking a box in the filter will hide all corresponding messages from the log panel, while checking a box will display them again.</li>
+<li>Hide/Unhide: With a line bookmarked, clicking the <em>Hide Previous</em> button will hide all lines occurring before it and indicate how many lines are hidden. The hidden lines can be shown again by clicking <em>Show Hidden</em>.</li>
+<li>Save: The log can be saved by pressing the <em>Save...</em> button in the panel.</li>
+</ol>
+<div class="figure align-center" id="id11">
+<span id="fig-application-log"></span><img alt="_images/application_log.png" src="_images/application_log.png" />
+<p class="caption"><span class="caption-number">Fig. 3.11 </span><span class="caption-text">The Application Log panel.</span></p>
+</div>
+</div>
+<div class="section" id="context-help">
+<h4>3.4.4.6. Context Help<a class="headerlink" href="#context-help" title="Permalink to this headline">¶</a></h4>
+<p>The Context Help panel, shown in <a class="reference internal" href="#fig-context-help"><span class="std std-numref">Figure 3.12</span></a>, displays information about the part that the mouse cursor is currently hovering over.</p>
+<div class="figure align-center" id="id12">
+<span id="fig-context-help"></span><img alt="_images/context_help.png" src="_images/context_help.png" />
+<p class="caption"><span class="caption-number">Fig. 3.12 </span><span class="caption-text">The Context Help panel.</span></p>
+</div>
+</div>
+<div class="section" id="object-properties">
+<span id="ref-main-sim-control"></span><h4>3.4.4.7. Object Properties<a class="headerlink" href="#object-properties" title="Permalink to this headline">¶</a></h4>
+<p>The Object Properties panel displays the properties of the selected object and provides an interface to edit them. Objects that will display properties when selected include <a class="reference internal" href="#ref-parts"><span class="std std-ref">parts</span></a>, <a class="reference internal" href="#ref-links"><span class="std std-ref">links</span></a>, and <a class="reference internal" href="#ref-waypoints"><span class="std std-ref">waypoints</span></a> and are shown in the figure below. Object Type and Object Name properties are common to all objects. For selected parts and links, the Object Name is the object&#8217;s name and can be edited in the panel. For selected waypoints, the name is the waypoint&#8217;s <a class="reference internal" href="notes.html#term-id"><span class="xref std std-term">ID</span></a> number that cannot be modified. The Object Type cannot be edited for any object.</p>
+<p>The properties displayed by each object type include:</p>
+<ol class="arabic simple">
+<li><em>Part</em> properties that are displayed, shown on the left of <a class="reference internal" href="#fig-object-properties"><span class="std std-numref">Figure 3.13</span></a>, include the interface level, comments, and position in X and Y coordinates. Each of these properties can be changed from the panel by editing the corresponding field value.</li>
+<li><em>Link</em> properties, shown in the middle of <a class="reference internal" href="#fig-object-properties"><span class="std std-numref">Figure 3.13</span></a>, include declutter mode, source part type, target part type, and number of waypoints. Only the declutter mode can be changed from the panel by checking or unchecking the declutter checkbox.</li>
+<li><em>Waypoint</em> properties, shown on the right of <a class="reference internal" href="#fig-object-properties"><span class="std std-numref">Figure 3.13</span></a>, include the X and Y position coordinates which can be updated by editing the values in the panel.</li>
+</ol>
+<p>For changes to take effect, press <em>Enter</em>, or click away from the input field, or press the <em>Tab</em> key to change focus to a different panel field.</p>
+<div class="figure align-center" id="id13">
+<span id="fig-object-properties"></span><img alt="_images/object_properties.png" src="_images/object_properties.png" />
+<p class="caption"><span class="caption-number">Fig. 3.13 </span><span class="caption-text">The Object Properties panel showing (left-to-right) part, link, and waypoint properties.</span></p>
+</div>
+</div>
+<div class="section" id="main-simulation-control">
+<h4>3.4.4.8. Main Simulation Control<a class="headerlink" href="#main-simulation-control" title="Permalink to this headline">¶</a></h4>
+<p>As shown in <a class="reference internal" href="#fig-simulation-control-main"><span class="std std-numref">Figure 3.14</span></a>, the Main Simulation Control tab contains both status read-outs and control options as well as some common main simulation settings. The main status displays the current simulation state, <em>Running</em> or <em>Paused</em>, the percent complete, and the current simulation and wall clock times. The simulation and wall clock stop times can be set from this panel, and Animation and Debug modes toggled. The random seed can be set in the scenario&#8217;s random number generator from this panel as well.</p>
+<p>On the lower left of the main control panel are controls to <em>Run Simulation</em>, <em>Play</em> (<em>Pause</em> when running), and <em>Step</em> the simulation. Control options to <em>Reset Sim</em>, <em>Start Sim</em>, and <em>End Sim</em> are also available. Four &#8220;run role&#8221; buttons on the lower right of the panel will run all parts with the corresponding role. The <em>Settings</em> button in the lower right of the panel opens the settings dialog where various main simulation settings can be specified.</p>
+<p>Refer to <a class="reference internal" href="running_simulations.html#ref-main-sim"><span class="std std-ref">Main Simulations</span></a> for more information on using the Main Simulation Control panel to run main simulations and set main simulation settings.</p>
+<div class="figure align-center" id="id14">
+<span id="fig-simulation-control-main"></span><img alt="_images/simulation_control_main.png" src="_images/simulation_control_main.png" />
+<p class="caption"><span class="caption-number">Fig. 3.14 </span><span class="caption-text">The Main Simulation Control and Status panel.</span></p>
+</div>
+</div>
+<div class="section" id="batch-simulation-control">
+<span id="ref-batch-sim-control"></span><h4>3.4.4.9. Batch Simulation Control<a class="headerlink" href="#batch-simulation-control" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference internal" href="#fig-simulation-control-batch"><span class="std std-numref">Figure 3.15</span></a> shows the Batch Simulation Control tab with both status and control components and some common batch simulation settings. The batch status displays the current batch simulation state, <em>Ready</em>, <em>Running</em>, or <em>Completed</em>, unless the simulation was aborted in which case the state will transition to <em>Aborted</em>. It will also display the percent complete, the average time per replication, the estimated time remaining, and the number of finished, running, and failed replications and variants. The number of variants, replications per variant, and number of computer cores to use may also be set from this panel.</p>
+<p>On the lower left of the batch control panel are controls to <em>Run Batch Simulation</em> and <em>Pause</em> (<em>Play</em> when paused) the simulation are available. Additional options to <em>Abort</em> or set up a <em>New</em> batch simulation become available depending on the batch simulation state. The <em>Settings</em> button in the lower right of the panel opens the settings dialog where various batch simulation settings can be specified.</p>
+<p>Refer to <a class="reference internal" href="running_simulations.html#ref-batch-sim"><span class="std std-ref">Batch Simulations</span></a> for more information on using the Batch Simulation Control panel to run batch simulations and set batch simulation settings.</p>
+<div class="figure align-center" id="id15">
+<span id="fig-simulation-control-batch"></span><img alt="_images/simulation_control_batch.png" src="_images/simulation_control_batch.png" />
+<p class="caption"><span class="caption-number">Fig. 3.15 </span><span class="caption-text">The Batch Simulation Control and Status panel.</span></p>
+</div>
+</div>
+<div class="section" id="application-status">
+<h4>3.4.4.10. Application Status<a class="headerlink" href="#application-status" title="Permalink to this headline">¶</a></h4>
+<p>Located in the bar across the bottom of the application window, the Application Status bar, shown in <a class="reference internal" href="#fig-application-status"><span class="std std-numref">Figure 3.16</span></a>, displays information for the main simulation that includes the simulation state, time, and number of events, as well as for the batch simulation including simulation state, and the number of completed simulations out of the total number of simulations. The status bar also displays a business indicator bar that shows the progress of scenario processes such as loading and and saving, importing and exporting, and scenario searching.</p>
+<div class="figure align-center" id="id16">
+<span id="fig-application-status"></span><img alt="_images/application_status.png" src="_images/application_status.png" />
+<p class="caption"><span class="caption-number">Fig. 3.16 </span><span class="caption-text">The Application Status bar.</span></p>
+</div>
+</div>
+<div class="section" id="toolbar">
+<span id="ref-toolbar"></span><h4>3.4.4.11. Toolbar<a class="headerlink" href="#toolbar" title="Permalink to this headline">¶</a></h4>
+<p>The toolbar is located directly under the application menu bar. As shown in <a class="reference internal" href="#fig-toolbar"><span class="std std-numref">Figure 3.17</span></a>, it contains quick links to some of the more common options including creating a new scenario, opening a scenario, saving options, simulation options, and application help.</p>
+<div class="figure align-center" id="id17">
+<span id="fig-toolbar"></span><img alt="_images/toolbar.png" src="_images/toolbar.png" />
+<p class="caption"><span class="caption-number">Fig. 3.17 </span><span class="caption-text">The toolbar.</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="navigation">
+<span id="ref-nav"></span><h3>3.4.5. Navigation<a class="headerlink" href="#navigation" title="Permalink to this headline">¶</a></h3>
+<p>Once a scenario is open, the model can be navigated in several ways. Since a scenario may include a hierarchy of Actor parts, the primary way to navigate the model should be through use of the <a class="reference internal" href="#ref-scenario-browser"><span class="std std-ref">Scenario Browser</span></a>. This panel displays all levels of the hierarchy of parent-child actors in the model. Clicking an actor part in this panel will display the child actors contents. The actor hierarchy can be searched by using the search box located under the <a class="reference internal" href="#ref-scenario-browser"><span class="std std-ref">Actor Hierarchy panel</span></a> to find parts or part contents in the model. For large models or models that contain large amounts of table data, the search process can take time to complete. The <em>Search</em> button changes to a <em>Cancel</em> button while the search is performed which can be pressed at any time to stop the search. Each line of the search results display a path from the child actor in the root, down to the searched-for part or the part containing the searched-for content. Double-clicking a part in the search results will display the contents of that part in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>.</p>
+<p>Alternatively, from the current <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>, any child actor in that view can be chosen to display its contents by clicking the <em>Go Into Actor</em> (down arrow) button in the top-right of the actor&#8217;s frame. Navigation back up to its parent is accomplished by clicking the <em>Go to Parent Actor</em> button located on the Parent Actor Proxy widget at the center of the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> and also by pressing the same button on the top-left of the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View&#8217;s</span></a> title bar, as shown in <a class="reference internal" href="#fig-navigation-actor-2d-view-title-bar"><span class="std std-numref">Figure 3.18</span></a>. This bar also provides <em>Forward</em> and <em>Backward</em> navigation buttons to shift through the actor hierarchy in order of the actors previously viewed.</p>
+<p>To navigate around the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>, the view can be panned and zoomed as needed. To pan the view, left-click and hold on an area of blank canvas while dragging the view horizontally or vertically. Scrolling the mouse wheel will pan the view vertically, while pressing and holding the <em>Shift</em> key while scrolling the wheel will pan horizontally (up for left, down for right). Pressing and holding the <em>Ctrl</em> key while scrolling the mouse wheel will zoom in (scroll up) or out (scroll down).</p>
+<div class="figure align-center" id="id18">
+<span id="fig-navigation-actor-2d-view-title-bar"></span><img alt="_images/navigation_actor_2d_view_title_bar.png" src="_images/navigation_actor_2d_view_title_bar.png" />
+<p class="caption"><span class="caption-number">Fig. 3.18 </span><span class="caption-text">The <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> title bar provides forward, backward, and &#8216;Go to Parent Actor&#8217; navigation options.</span></p>
+</div>
+</div>
+</div>
+<div class="section" id="building-models">
+<span id="part-selection"></span><h2>3.5. Building Models<a class="headerlink" href="#building-models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="creating-parts">
+<span id="ref-creating-parts"></span><h3>3.5.1. Creating Parts<a class="headerlink" href="#creating-parts" title="Permalink to this headline">¶</a></h3>
+<p>Parts are created by right-clicking on a blank section of the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> and selecting from the context menu,</p>
+<p><em>New Part</em> &gt; <em>part</em></p>
+<p>where <em>part</em> is one of 17 part types. As discussed in <a class="reference internal" href="#ref-noncreatable-parts"><span class="std std-ref">Non-Creatable Parts</span></a>, the deprecated <a class="reference internal" href="clock_part_ref.html#clock-part-ref"><span class="std std-ref">Clock part</span></a> cannot be created but can be loaded from, and copied within, legacy scenarios.</p>
+<p>Once a part has been created, right-clicking on it opens a part context menu. All parts that have a visible frame have the following context-menu options:</p>
+<ul class="simple">
+<li>Toggle Contents: toggles the part between showing the <em>full</em> and the <em>minimal</em> Detail Level.</li>
+<li>Edit...: open the part&#8217;s editor.</li>
+<li>Comment: toggle the visibility of the part&#8217;s comment bubble.</li>
+<li>Cut: cut the part.</li>
+<li>Copy: copy the part.</li>
+<li>Delete: delete the part.</li>
+<li>Help: open the User Manual Help section for the part.</li>
+</ul>
+<p>An additional <em>Create Link</em> context option is available from the following parts: <a class="reference internal" href="button_part_ref.html#button-part-ref"><span class="std std-ref">Button</span></a>, <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function</span></a>, <a class="reference internal" href="library_part_ref.html#library-part-ref"><span class="std std-ref">Library</span></a>, <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL</span></a>, <a class="reference internal" href="info_part_ref.html#info-part-ref"><span class="std std-ref">Info</span></a>, <a class="reference internal" href="hub_part_ref.html#hub-part-ref"><span class="std std-ref">Hub</span></a>, <a class="reference internal" href="multiplier_part_ref.html#multiplier-part-ref"><span class="std std-ref">Multiplier</span></a>, <a class="reference internal" href="node_part_ref.html#node-part-ref"><span class="std std-ref">Node</span></a>, <a class="reference internal" href="plot_part_ref.html#plot-part-ref"><span class="std std-ref">Plot</span></a>, and <a class="reference internal" href="pulse_part_ref.html#pulse-part-ref"><span class="std std-ref">Pulse</span></a>.</p>
+<p>The <a class="reference internal" href="actor_part_ref.html#actor-part-ref"><span class="std std-ref">Actor</span></a>, <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function</span></a>, <a class="reference internal" href="library_part_ref.html#library-part-ref"><span class="std std-ref">Library</span></a>, <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL</span></a>, <a class="reference internal" href="plot_part_ref.html#plot-part-ref"><span class="std std-ref">Plot</span></a>, <a class="reference internal" href="sheet_part_ref.html#sheet-part-ref"><span class="std std-ref">Sheet</span></a>, and <a class="reference internal" href="table_part_ref.html#table-part-ref"><span class="std std-ref">Table</span></a>, include additional context menu options that are specific to their respective part type and are described in section <a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Part Reference</span></a>.</p>
+<p>The <a class="reference internal" href="hub_part_ref.html#hub-part-ref"><span class="std std-ref">Hub</span></a>, <a class="reference internal" href="multiplier_part_ref.html#multiplier-part-ref"><span class="std std-ref">Multiplier</span></a>, and <a class="reference internal" href="node_part_ref.html#node-part-ref"><span class="std std-ref">Node</span></a> are used to route <em>Part</em> and <em>Frame</em> information between parts that are not linked directly to each other. The context menus of these parts do not contain the <em>Toggle Contents</em> or <em>Edit...</em> options.</p>
+<p>A part or group of parts can be removed by <a class="reference internal" href="#ref-part-selection"><span class="std std-ref">selecting</span></a> them and either pressing the <em>Delete</em> key or choosing the <em>Delete</em> option from the context-menu. When deleting using the <em>Delete</em> key, selected parts that are currently displayed in the view port of the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> will be removed immediately, however parts outside of the viewport will prompt the user before they are removed.</p>
+<p>A description of each part, including how it can be used and the options available in its editor, is included in the <a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Part Reference</span></a>.</p>
+</div>
+<div class="section" id="linking-parts">
+<span id="ref-linking-parts"></span><h3>3.5.2. Linking Parts<a class="headerlink" href="#linking-parts" title="Permalink to this headline">¶</a></h3>
+<p>Only the following parts can create links from themselves to other parts: <a class="reference internal" href="button_part_ref.html#button-part-ref"><span class="std std-ref">Button</span></a>, <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function</span></a>, <a class="reference internal" href="library_part_ref.html#library-part-ref"><span class="std std-ref">Library</span></a>, <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL</span></a>, <a class="reference internal" href="info_part_ref.html#info-part-ref"><span class="std std-ref">Info</span></a>, <a class="reference internal" href="hub_part_ref.html#hub-part-ref"><span class="std std-ref">Hub</span></a>, <a class="reference internal" href="multiplier_part_ref.html#multiplier-part-ref"><span class="std std-ref">Multiplier</span></a>, <a class="reference internal" href="node_part_ref.html#node-part-ref"><span class="std std-ref">Node</span></a>, <a class="reference internal" href="plot_part_ref.html#plot-part-ref"><span class="std std-ref">Plot</span></a>, and <a class="reference internal" href="pulse_part_ref.html#pulse-part-ref"><span class="std std-ref">Pulse</span></a>. However, all parts may be the target part of a link and therefore all parts can be linked together.</p>
+<p>The following set of figures (<a class="reference internal" href="#fig-link-creation-0"><span class="std std-numref">Figure 3.19</span></a> - <a class="reference internal" href="#fig-link-creation-5"><span class="std std-numref">Figure 3.24</span></a>) overview the link creation process by showing an example of linking a pulse interface port to a function part called <em>ASAP_3</em>.</p>
+<p>Step 0: Start with two un-linked parts shown in <a class="reference internal" href="#fig-link-creation-0"><span class="std std-numref">Figure 3.19</span></a>.</p>
+<div class="figure align-center" id="id19">
+<span id="fig-link-creation-0"></span><img alt="_images/link_creation_0.png" src="_images/link_creation_0.png" />
+<p class="caption"><span class="caption-number">Fig. 3.19 </span><span class="caption-text">Two un-linked parts.</span></p>
+</div>
+<p>Step 1: Link creation is started in one of two ways:</p>
+<ol class="arabic simple">
+<li>By activating the link creation shortcut on the parts upper right frame by moving the mouse near or over the part (see <a class="reference internal" href="#fig-link-creation-1"><span class="std std-numref">Figure 3.20</span></a>). The shortcut appears as a grey arrow with a plus sign.</li>
+<li>By accessing the part&#8217;s context-menu by right-clicking the source part and selecting <em>Create Link</em>.</li>
+</ol>
+<div class="figure align-center" id="id20">
+<span id="fig-link-creation-1"></span><img alt="_images/link_creation_1.png" src="_images/link_creation_1.png" />
+<p class="caption"><span class="caption-number">Fig. 3.20 </span><span class="caption-text">Activate link creation by moving the cursor to the pulse interface port.</span></p>
+</div>
+<p>Step 2: Next a <em>target</em> part can be selected. As the mouse moves across the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>, a temporary link will track the mouse cursor. Invalid targets will be indicated as shown in <a class="reference internal" href="#fig-link-creation-2"><span class="std std-numref">Figure 3.21</span></a>.</p>
+<div class="figure align-center" id="id21">
+<span id="fig-link-creation-2"></span><img alt="_images/link_creation_2.png" src="_images/link_creation_2.png" />
+<p class="caption"><span class="caption-number">Fig. 3.21 </span><span class="caption-text">Invalid targets include the part creating the link (the source part), target parts already connected to the source part, and in the case of interface ports, other ports on the same parent actor (as shown here).</span></p>
+</div>
+<p>Step 3: Waypoints can be created during link creation by simply clicking blank canvas locations as shown in <a class="reference internal" href="#fig-link-creation-3"><span class="std std-numref">Figure 3.22</span></a>. The new waypoint will be set and link creation will continue.</p>
+<div class="figure align-center" id="id22">
+<span id="fig-link-creation-3"></span><img alt="_images/link_creation_3.png" src="_images/link_creation_3.png" />
+<p class="caption"><span class="caption-number">Fig. 3.22 </span><span class="caption-text">Waypoints can be created during link creation.</span></p>
+</div>
+<p>Step 4: A link target marker will appear at the mouse cursor to indicate when the link connection is valid by hovering the mouse over a potential target as shown in <a class="reference internal" href="#fig-link-creation-4"><span class="std std-numref">Figure 3.23</span></a>.</p>
+<div class="figure align-center" id="id23">
+<span id="fig-link-creation-4"></span><img alt="_images/link_creation_4.png" src="_images/link_creation_4.png" />
+<p class="caption"><span class="caption-number">Fig. 3.23 </span><span class="caption-text">The green link target marker appears over a valid target indicating the link can be created.</span></p>
+</div>
+<p>Step 5: Complete link creation by left-clicking the part. A new link is created between the parts as shown in <a class="reference internal" href="#fig-link-creation-5"><span class="std std-numref">Figure 3.24</span></a>.</p>
+<div class="figure align-center" id="id24">
+<span id="fig-link-creation-5"></span><img alt="_images/link_creation_5.png" src="_images/link_creation_5.png" />
+<p class="caption"><span class="caption-number">Fig. 3.24 </span><span class="caption-text">New link creation complete.</span></p>
+</div>
+<p>Link creation can be cancelled at any time be pressing the <em>Esc</em> key or by right-clicking the mouse on blank canvas. All parts can have an unlimited number of outgoing and incoming links with the exception of the Node part which can have only <strong>one</strong> outgoing link.</p>
+<p>Right-clicking a link opens the link context-menu that contains the following options:</p>
+<ul class="simple">
+<li>Rename: change the link name.</li>
+<li>Delete: remove the link.</li>
+<li>Toggle Declutter: toggle link declutter on or off.</li>
+<li>Go to...: opens a submenu with options for <em>Source Part</em>, <em>Target Part</em>, <em>Source Port</em>, <em>Target Port</em>.</li>
+<li>Insert Waypoint: adds a waypoint to the link.</li>
+<li>Remove All Waypoints: removes all the waypoints of this link.</li>
+<li>Change Link Endpoint: allows the target part to be changed.</li>
+</ul>
+<p>The link name can be changed from the link&#8217;s context-menu by right-clicking the link and selecting <em>Rename</em> or by double-clicking the link. The <em>Rename Link</em> dialog will open, as shown in <a class="reference internal" href="#fig-link-renaming"><span class="std std-numref">Figure 3.25</span></a>, to facilitate link renaming. The dialog displays the current name and, if the link name is referenced anywhere in the model, shows a list of parts that reference the link name in their scripts along with the actual line in the script where it is used. The new name is entered at the bottom of the dialog. The dialog automatically checks that the link name is a valid Python name and that the name is unique (each source part&#8217;s outgoing link names must all be unique). If either of these conditions fails, the new name field will remain highlighted in red and the <em>OK</em> button will be disabled. Once a valid name is entered, the highlight is removed and the <em>OK</em> button is enabled. Pressing the <em>OK</em> button on the dialog will change the name of the link and all script references found in the model.</p>
+<div class="figure align-center" id="id25">
+<span id="fig-link-renaming"></span><img alt="_images/link_renaming.png" src="_images/link_renaming.png" />
+<p class="caption"><span class="caption-number">Fig. 3.25 </span><span class="caption-text">Rename Link Dialog.</span></p>
+</div>
+<p>A link can be deleted by either clicking the option in link&#8217;s context-menu, or by selecting it and pressing the <em>Delete</em> key, or by holding the <em>Ctrl-Shift</em> keys and clicking the link to delete.</p>
+<p>The <em>Toggle Declutter</em> option decreases model clutter by hiding the middle section of the link. Only the start and end portion of the link will appear between two connected parts. By re-selecting the option from the context-menu the full link will be displayed.</p>
+<p>The <em>Go to...</em> options allows navigation to the links source or target part. If the link is connecting a port or ports, then the source or target port options or both will also be available. After selecting the desired part or port, the Model View will pan to the correspoinding object.</p>
+<p>Waypoints can be added or removed from links by selecting the <em>Insert Waypoint</em> or <em>Remove Waypoint</em> options, respectively. Each waypoint can be independently positioned allowing links to be drawn around other parts and model elements. See section <a class="reference internal" href="#ref-waypoints"><span class="std std-ref">Waypoints</span></a> for more information. Selecting <em>Remove All Waypoints</em> removes all the waypoints on the selected link in one shot. Individual waypoints can be removed by accessing a waypoint&#8217;s context-menu option by right-clicking it, or by selecting it and pressing the <em>Delete</em> key, or by holding the <em>Ctrl-Shift</em> keys and clicking the waypoint to delete. A group of waypoints may be removed at once by clicking the <em>Delete</em> key after selecting a group of waypoints by either using the &#8220;rubber-band&#8221; selector (hold Shift while holding the left mouse button and dragging the mouse) over a group of waypoints or by individually selecting each waypoint while holding the <em>Ctrl</em> key. The &#8220;rubber-band&#8221; must contact a waypoint first rather than a part in order for waypoints to be selected. Waypoints from several different links may be removed at once in this manner. When selected, waypoints display their X and Y position properties in the <a class="reference internal" href="#ref-object-properties"><span class="std std-ref">Object Properties panel</span></a>. Changing the X and Y coordinates in the panel will update the waypoint position in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>.</p>
+<p>The target part of a link can be changed by selecting the <em>Change Link Endpoint</em> option from the links context-menu. Once activated, a new temporary link is drawn from the source part or the last waypoint (if any), and will track the mouse cursor while the target marker icon indicates whether the new target is valid or invalid as before. By clicking on the new valid part the new permanent link connection will be made. This operation can be cancelled by pressing the <em>Esc</em> key or by right-clicking the mouse on blank canvas either of which will restore the original link.</p>
+</div>
+<div class="section" id="linking-interface-parts">
+<span id="ref-linking-ifx-parts"></span><h3>3.5.3. Linking Interface Parts<a class="headerlink" href="#linking-interface-parts" title="Permalink to this headline">¶</a></h3>
+<p>As discussed previously, <a class="reference internal" href="#ref-actor-parts"><span class="std std-ref">Actor parts</span></a> are used to encapsulate related implementation details of a model into a hierarchy of actors. In many cases, however, it is necessary to be able to link two parts together that are children of two different parent actors. In order to create these types of links it is necessary to make these child parts into <a class="reference internal" href="#ref-ifx-parts"><span class="std std-ref">interface parts</span></a> by increasing the interface level of each part to the common actor part ancestor they share. After this is done, each part appears  as a port on the boundary of each ancestor actor of the hierarchy up to the interface level set (the common ancestor) where the ports of each part can be linked together thereby linking the two parts.</p>
+<p>The interface level can be set by:</p>
+<ol class="arabic simple">
+<li>Using the drop down menu of the <a class="reference internal" href="#ref-object-properties"><span class="std std-ref">Object Properties panel</span></a>: this will be the only way to set the interface level of the part if it is at the default level of 0.</li>
+<li>Right-clicking the interface port appearing on the boundary of the actor part, choosing Set Interface Level, and selecting the desired level. The Set Interface Level menu will show the interface levels and the actor name at each level, with level 0 having the part&#8217;s name. The current level will be disabled, and the context level will be highlighted.</li>
+</ol>
+<p>Once the interface level is increased, an interface marker bar appears above the part&#8217;s widget as shown on the left side of <a class="reference internal" href="#fig-ifx-parts-ports-and-up-marker"><span class="std std-numref">Figure 3.26</span></a>. The interface marker bar indicates the interface level, and the number of elevated incoming and outgoing links that are not visible locally. The parent actor of the interface part is shown on the right side of the figure. It shows that the part is now exposed to the surroundings of its parent actor via an interface port on its parent’s left side (interface ports alternate left to right). Ports appearing with an yellow <em>up marker</em> bar indicate that they are exposed on the boundary of the currently viewed actor as well. Changing the part&#8217;s interface level allows it to be linked to its grandparent, to/from siblings of its parent, and to/from interface parts of sibling actors of its parent actor.</p>
+<div class="figure align-center" id="id26">
+<span id="fig-ifx-parts-ports-and-up-marker"></span><img alt="_images/ifx_parts_ports_and_up_marker.png" src="_images/ifx_parts_ports_and_up_marker.png" />
+<p class="caption"><span class="caption-number">Fig. 3.26 </span><span class="caption-text">Left: A function part with an interface marker bar. Right: The parent actor with the function interface port. The yellow <em>up marker</em> bar on the function port indicates it&#8217;s also exposed on the boundary of this actor&#8217;s parent.</span></p>
+</div>
+<p>The context menu of an interface port supports several operations:</p>
+<ul class="simple">
+<li>Set Interface Level: use the submenu to select the interface level of the part,</li>
+<li>Go to Ifx Port: use the submenu to navigate to an interface port at a different interface level,</li>
+<li>Go to Part: navigate to and select the assoicated part in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>,</li>
+<li>Edit: opens editor for the corresponding part,</li>
+<li>Switch Side: change the side of the actor on which the port is shown,</li>
+<li>Move Up: move the port up along the side of the actor; the port above is moved down,</li>
+<li>Move Down: move the port down along the side of the actor; the port below is moved up.</li>
+</ul>
+<p>Valid links are links for which the source and target parts have a common ancestor that is within reach of their interface level. Example: consider the scenario shown in <a class="reference internal" href="#fig-example-ifx-levels"><span class="std std-numref">Figure 3.27</span></a> with parts A, B, C, D, and E. A link from root.A.B.C to root.A.D.E: the two parts have root.A as common ancestor, which is reachable by C and E if each has interface level 1 (C is exposed as a port on B and E is exposed as a port on D, both of which have A as parent). If this is not the case, such link is invalid. To make such a link valid, it is sufficient to increase the interface level of C or E or both to 1.</p>
+<div class="figure align-center" id="id27">
+<span id="fig-example-ifx-levels"></span><img alt="_images/example_ifx_levels.png" src="_images/example_ifx_levels.png" />
+<p class="caption"><span class="caption-number">Fig. 3.27 </span><span class="caption-text">Part C and E can be linked if each parts&#8217; interface level is increased to 1.</span></p>
+</div>
+<p>If a part is moved (e.g. during a cut and paste) but the resulting links are still valid, then they are automatically adjusted to maintain the connections between the two parts. However, if the part is cut and paste such that invalid links result (because of insufficient interface level on either end of the link), Origame provides a link management dialog to automatically adjust the links as the user requires. A <em>Move Part</em> dialog will open that prompts the user to decide whether to</p>
+<ol class="arabic simple">
+<li>Break the links since they are now invalid. The part will be pasted in the new location without any links.</li>
+<li>Adjust the interface levels of the link sources and targets to keep the links valid. The part is pasted with a new interface level and all links intact.</li>
+<li>Cancel the operation.</li>
+</ol>
+<p>Copying a part will create a part with the default interface level (0).</p>
+</div>
+<div class="section" id="part-selection-and-position">
+<span id="ref-part-selection"></span><h3>3.5.4. Part Selection and Position<a class="headerlink" href="#part-selection-and-position" title="Permalink to this headline">¶</a></h3>
+<p>Parts and waypoints can be selected individually or as a group in a multiple-selection. Links can only be single-selected. However, a group of selected parts that are linked will be copied, cut, and pasted with the links between the parts in the selection intact.</p>
+<p>Single part selection occurs when a single part is clicked with the mouse (left or right mouse button). Multiple parts can be selected by left-clicking each one in turn while holding down the <em>Ctrl</em> key or by invoking a &#8220;rubber band&#8221; selection box by holding the <em>Shift</em> key and left mouse button while dragging the mouse cursor diagonally across a group of parts. A green highlight around each part will indicate it is selected. Parts can be moved around the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> by clicking and dragging the part to a new location. The position coordinates of an individually selected part are displayed in the <a class="reference internal" href="#ref-object-properties"><span class="std std-ref">Object Properties panel</span></a>. Note that these coordinates correspond with the top-left corner of the part.</p>
+<p>Groups of waypoints can also be selected and moved by using either <em>Ctrl</em>-click or the &#8220;rubber band&#8221; selection methods described above. However, note that groups of parts and waypoints cannot be selected together. When using either rubber band or the <em>Ctrl</em> key to select groups of items, the first item selected determines if this will be a group selection of parts or waypoints. If a part is selected first, the group selection will only allow additional parts to be selected for example. Similarly, selecting a waypoint first will permit only other waypoints to be included in the selection. To switch between selecting parts or selecting waypoints all items in the current selection must be deselected, for example, by clicking a blank point in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>.</p>
+</div>
+<div class="section" id="part-resizing">
+<h3>3.5.5. Part Resizing<a class="headerlink" href="#part-resizing" title="Permalink to this headline">¶</a></h3>
+<p>The selection highlight of framed parts also provides resizing functionality by displaying three dark green resize &#8220;grip&#8221; on the right edge, bottom edge, and lower right corner that are used to resize the part in three possible directions that include horizontal, vertical, and diagonal directions, respectively with respect to the part&#8217;s source at the top-left corner of the part; see <a class="reference internal" href="#fig-resizing"><span class="std std-numref">Figure 3.28</span></a>. Moving the mouse over a resize grip will cause the cursor to display an arrow icon indicating the allowed direction of resizing. By clicking (and holding) one of these grips, the part can be resized by dragging the border to a new position.</p>
+<div class="figure align-center" id="id28">
+<span id="fig-resizing"></span><img alt="_images/resizing.png" src="_images/resizing.png" />
+<p class="caption"><span class="caption-number">Fig. 3.28 </span><span class="caption-text">Selected part showing horizontal, vertical, and diagonal resize grips.</span></p>
+</div>
+</div>
+<div class="section" id="part-indicators-and-markers">
+<span id="ref-indicators-markers"></span><h3>3.5.6. Part Indicators and Markers<a class="headerlink" href="#part-indicators-and-markers" title="Permalink to this headline">¶</a></h3>
+<p>Several indicators and markers, shown in <a class="reference internal" href="#fig-indicators-1"><span class="std std-numref">Figure 3.30</span></a> and <a class="reference internal" href="#fig-indicators-2"><span class="std std-numref">Figure 3.31</span></a>, are used on the parts to display special part roles and flags either during part configuration or while running a simulation. These include:</p>
+<ul class="simple">
+<li>Setup marker: appears as an orange gauge on the top-left of the part (see <a class="reference internal" href="#fig-indicators-1"><span class="std std-numref">Figure 3.30</span></a>) and flags the part as a Setup part. Parts with this role are only run when the user clicks the &#8220;Run Setup Parts...&#8221; button in the <a class="reference internal" href="#ref-main-sim-control"><span class="std std-ref">Main Simulation Control panel</span></a>. Clicking the button opens the dialog shown in <a class="reference internal" href="#fig-run-startup"><span class="std std-numref">Figure 3.29</span></a>). The user may enter values manually, load them via the <em>Load...</em> button or save argments to load later via the <em>Save...</em> button. Files are saved with the extension &#8216;.pca&#8217; (Part Call Arguments).</li>
+</ul>
+<div class="figure align-center" id="id29">
+<span id="fig-run-startup"></span><img alt="_images/run_setup_parts.png" src="_images/run_setup_parts.png" />
+<p class="caption"><span class="caption-number">Fig. 3.29 </span><span class="caption-text">The <em>Run Setup Parts</em> dialog allows the user to set values for each call argument to the <em>setup</em> function part.</span></p>
+</div>
+<ul>
+<li><p class="first">Startup marker: appears as a green hand pointing to the right on the top-left of the part (see <a class="reference internal" href="#fig-indicators-1"><span class="std std-numref">Figure 3.30</span></a>) and flags the part as a Startup part which runs the part immediately once the simulation has been started. Clicking the &#8220;Run Startup Parts...&#8221; button in the <a class="reference internal" href="#ref-main-sim-control"><span class="std std-ref">Main Simulation Control panel</span></a> will also run parts with this role.</p>
+</li>
+<li><p class="first">Reset marker: appears as a blue arrow pointing at a zero on the top-left of the part (see <a class="reference internal" href="#fig-indicators-1"><span class="std std-numref">Figure 3.30</span></a>) and flags the part as a Reset part which runs the part when the simulation is reset. Clicking the &#8220;Run Reset Parts&#8221; button in the <a class="reference internal" href="#ref-main-sim-control"><span class="std std-ref">Main Simulation Control panel</span></a> will also run parts with this role.</p>
+</li>
+<li><p class="first">Finish marker: appears as a checkered flag on the top-left of the part (see <a class="reference internal" href="#fig-indicators-1"><span class="std std-numref">Figure 3.30</span></a>) and flags the part as a Finish part which runs the part when the simulation finishes. Clicking the &#8220;Run Finish Parts&#8221; button in the <a class="reference internal" href="#ref-main-sim-control"><span class="std std-ref">Main Simulation Control panel</span></a> will also run parts with this role.</p>
+</li>
+<li><p class="first">Breakpoint marker: appears as a red stop sign icon on the top-left of the part (see <a class="reference internal" href="#fig-indicators-1"><span class="std std-numref">Figure 3.30</span></a>) if a breakpoint has been set in the part&#8217;s script (executable parts only).</p>
+</li>
+<li><p class="first">Comment indicator: appears as a blue comment bubble on the top-left of the part (see <a class="reference internal" href="#fig-indicators-1"><span class="std std-numref">Figure 3.30</span></a>) if a comment has been set in the <a class="reference internal" href="#ref-object-properties"><span class="std std-ref">Object Properties panel</span></a>. Clicking the icon displays the comment above the part in a comment box.</p>
+</li>
+<li><p class="first">Warning indicator: appears as an orange triangle and exclamation point on the bottom-left of the part (see <a class="reference internal" href="#fig-indicators-1"><span class="std std-numref">Figure 3.30</span></a>) when a warning occurs running an executable part. If a part has errors and warnings, only the error indicator will be shown.</p>
+</li>
+<li><p class="first">Error indicator: appears as an red triangle and exclamation point on the bottom-left of the part when an error occurs running an executable part. If a part has errors and warnings, only the error indicator will be shown.</p>
+</li>
+<li><p class="first">Event indicator: appears as a tag on the left side of the part (see <a class="reference internal" href="#fig-indicators-2"><span class="std std-numref">Figure 3.31</span></a>) indicating the part has an associated event waiting on the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>. The number on the indicator signifies the number of events associated with the part. The indicator also appears on all parent actors of the part. Double-clicking on an event indicator will filter the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a> to show only the events associated with that part. To remove the filter from the queue press <em>Clear Filter</em> to display all the remaining events in the simulation. The indicator is color coded as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Green signifies that the part&#8217;s event is the next event on the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>. There can only be one part with this indicator.</li>
+<li>Amber signifies that the part&#8217;s event is scheduled to execute concurrently with the next event, but which will execute after the next event according to the sorting of the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>.</li>
+<li>Black signifies that the part&#8217;s events are waiting to execute at a time later than the next event.</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="figure align-center" id="id30">
+<span id="fig-indicators-1"></span><img alt="_images/indicators_1.png" src="_images/indicators_1.png" />
+<p class="caption"><span class="caption-number">Fig. 3.30 </span><span class="caption-text">Function part displaying (left-to-right) start-up, reset, breakpoint, and comment markers and indicators on top and warning indicator on bottom (an error indicator is a red version of the warning indicator).</span></p>
+</div>
+<div class="figure align-center" id="id31">
+<span id="fig-indicators-2"></span><img alt="_images/indicators_2.png" src="_images/indicators_2.png" />
+<p class="caption"><span class="caption-number">Fig. 3.31 </span><span class="caption-text">Function parts displaying green, amber, and black event indicators each with one event in the queue.</span></p>
+</div>
+</div>
+<div class="section" id="part-editing-and-undo-redo-commands">
+<span id="ref-part-edit"></span><h3>3.5.7. Part Editing, and Undo, Redo Commands<a class="headerlink" href="#part-editing-and-undo-redo-commands" title="Permalink to this headline">¶</a></h3>
+<p>Right-clicking a single part will select it as well as open the context menu displaying common and part-specific options including cut, copy, and delete. Right-clicking anywhere in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> with multiple parts selected opens a context menu with the same editing options that will be applied to all selected parts.</p>
+<p>Editing options to cut, copy, paste, and delete parts are available from the following locations:</p>
+<ol class="arabic simple">
+<li>Application Edit menu,</li>
+<li>Part context menus,</li>
+<li><a class="reference internal" href="#ref-scenario-browser"><span class="std std-ref">Scenario Browser panel</span></a> context menu,</li>
+<li><a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> shortcut buttons located on the left of the panel,</li>
+<li>Keyboard shortcut keys.</li>
+</ol>
+<p>Undo and redo options are also available from some of these locations. The options to cut, copy, and delete are only available when one or more parts are selected, otherwise, they are disabled and greyed out. Paste becomes available once a part has been added to the clipboard by a copy or paste command. Undo becomes available once the scenario being displayed is changed. Redo becomes available once undo has been invoked.</p>
+<p>Selected parts can be removed from the scenario by pressing the <em>Delete</em> key, or by pressing &#8216;Ctrl + X&#8217; (cut), or selecting one of the delete or cut options discussed above. When deleting using the <em>Delete</em> key, selected parts that are currently displayed in the view port of the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> will be removed immediately, except for parts outside of the viewport which will prompt the user before they are removed.. Additionally, the <a class="reference internal" href="#ref-scenario-browser"><span class="std std-ref">Scenario Browser panel</span></a> can be used to add, delete, and rename actor parts by right-clicking an actor in the panel and selecting the corresponding option from the context menu. With an actor selected, pressing the <em>Delete</em> key or invoking the context menu and selecting <em>Delete</em> will remove the actor from the scenario. When an actor part is selected in the <a class="reference internal" href="#ref-scenario-browser"><span class="std std-ref">Scenario Browser panel</span></a> by either a right or left-click, the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> automatically displays the contents of the selected actor. Upon removal, the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> will revert to the parent actor&#8217;s contents.</p>
+<p>Removed parts can be restored by invoking the Undo command through either the shortcut buttons on the left of the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>, the application&#8217;s Edit menu, or the shortcut keys &#8216;Ctrl + Z&#8217;. If the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> has been panned to a different location or the scenario navigated to view a different actor after the part was removed, the first &#8216;undo&#8217; will navigate back to the location where the part was deleted. Undo must be invoked a second time to restore the part. Conversely, invoking Redo through any of the previously mentioned locations, or pressing the shortcut keys &#8216;Ctrl + Y&#8217;, will remove the part again.</p>
+<p>Pasted copies of a part or selection of parts (whether copied or cut) occur at the current mouse position if it&#8217;s located on the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a>. The paste aligns the center of the part or selection of parts with the mouse position. This allows the user to select the specific paste location in the scenario. If a subsequent paste occurs at the same mouse location (i.e. the mouse has not moved between two consecutive pastes), an offset is applied so that the pasted parts do not completely overlap and hide the original copies. If the mouse has been moved off the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> when a paste occurs, the parts will be pasted at the center of the visible view and an offset applied for each subsequent paste. For context-menu paste operations, the parts are pasted where the mouse right-clicked the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> to invoke the context menu.</p>
+<p>Parts that are cut or copied may be pasted into a new or opened scenario. If parts have been placed on the application&#8217;s clipboard, then initiating a <em>New</em> or <em>Open</em> scenario action will cause a prompt to display the first ten items on the clipboard (and indicate how many additional parts are also on the clipboard) and ask the user if the contents should be made available in the next scenario. If <em>Yes</em> is selected, the cut or copied parts may be pasted once the next scenario has been loaded. Selecting <em>No</em> will result in a fresh clipboard with no parts in it. <em>Cancel</em> can be selected to stop the <em>New</em> or <em>Open</em> scenario action.</p>
+<p>All parts except the hub, multiplier, and node have a part editor that can be used to edit part properties and set part functionality. The part editor can be opened by either double-clicking the part or right-clicking and selecting <em>Edit...</em> from the context menu. The common components of all part editors are shown in <a class="reference internal" href="#fig-part-editor-common"><span class="std std-numref">Figure 3.32</span></a> and include:</p>
+<ul class="simple">
+<li>Title bar: the icon, part name, and part type,</li>
+<li>Top section: a read-only path to the part in the model, an editable field for the part name, and a &#8220;Go to Part&#8221; button that will navigate the Model View to the location of the associated part,</li>
+<li>Middle section: an area that displays the specific editable content of the part (see links below to individual part sections),</li>
+<li>Bottom section: a part <em>Help</em> button, an <em>OK</em> button that applies changes and closes the dialog, and <em>Cancel</em> button that discards any changes and closes the dialog (equivalent to the <em>X</em> button in the top-right of the dialog), and an <em>Apply</em> button that applies the changes made so far and leaves the dialog open to make further changes.</li>
+</ul>
+<div class="figure align-center" id="id32">
+<span id="fig-part-editor-common"></span><img alt="_images/part_editor_common.png" src="_images/part_editor_common.png" />
+<p class="caption"><span class="caption-number">Fig. 3.32 </span><span class="caption-text">The common components of all part editors. The &#8220;Content&#8221; label shown in the middle section indicates where the part-specific editable content would be displayed.</span></p>
+</div>
+<p>For information on the middle section of each individual part editor, see the part reference section for the part: <a class="reference internal" href="actor_part_ref.html#actor-part-ref"><span class="std std-ref">Actor</span></a>, <a class="reference internal" href="button_part_ref.html#button-part-ref"><span class="std std-ref">Button</span></a>, <a class="reference internal" href="clock_part_ref.html#clock-part-ref"><span class="std std-ref">Clock</span></a>, <a class="reference internal" href="data_part_ref.html#data-part-ref"><span class="std std-ref">Data</span></a>, <a class="reference internal" href="datetime_part_ref.html#datetime-part-ref"><span class="std std-ref">Datetime</span></a>, <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function</span></a>, <a class="reference internal" href="info_part_ref.html#info-part-ref"><span class="std std-ref">Info</span></a>, <a class="reference internal" href="library_part_ref.html#library-part-ref"><span class="std std-ref">Library</span></a>, <a class="reference internal" href="plot_part_ref.html#plot-part-ref"><span class="std std-ref">Plot</span></a>, <a class="reference internal" href="pulse_part_ref.html#pulse-part-ref"><span class="std std-ref">Pulse</span></a>, <a class="reference internal" href="sheet_part_ref.html#sheet-part-ref"><span class="std std-ref">Sheet</span></a>,  <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL</span></a>, <a class="reference internal" href="table_part_ref.html#table-part-ref"><span class="std std-ref">Table</span></a>, <a class="reference internal" href="time_part_ref.html#time-part-ref"><span class="std std-ref">Time</span></a>, and <a class="reference internal" href="variable_part_ref.html#variable-part-ref"><span class="std std-ref">Variable</span></a>.</p>
+<p>If the user tries to exit Origame with part editors open with unsaved changes, a dialog will open that requires user confirmation to discard all changes before proceeding to exit (by pressing <em>Don't Save</em>), to save all changes before proceeding to exit (by pressing <em>Save</em>), or to stop the exit operation and allow the user to determine which individual editor panel changes to apply and which to discard (by pressing <em>Cancel</em>).</p>
+<p>Note that changes made to part content in the editor panel are processed as a single bulk change after each <em>OK</em> or <em>Apply</em> button press. Therefore, Undo and Redo operations work on each set of bulk changes. For example, if the three changes were made and <em>Apply</em> was clicked after each change, then each Undo and Redo command will work on each change individually. However, if <em>Apply</em> was pressed after all changes were made, Undo and Redo work on all changes at once.</p>
+</div>
+<div class="section" id="script-base-parts-links-symbols-and-imports">
+<span id="ref-script-based-parts"></span><h3>3.5.8. Script-Base Parts: Links, Symbols, and Imports<a class="headerlink" href="#script-base-parts-links-symbols-and-imports" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function</span></a>, <a class="reference internal" href="library_part_ref.html#library-part-ref"><span class="std std-ref">Library</span></a>, <a class="reference internal" href="plot_part_ref.html#plot-part-ref"><span class="std std-ref">Plot</span></a>, and <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL</span></a> parts are all script-based i.e. an embedded script can be opened in the part editor and modified so that when run, the part will generate new events, call other parts, define new functions and methods, plot simulation data, and query tables. The editor panels of these parts are discussed in their respective sections. This section covers common elements of these scripted-part editors: the Link, Symbol, and Import tabs.</p>
+<p>Double-clicking on the any of these parts&#8217; frames or right-clicking and selecting &#8220;Edit...&#8221; opens a script editor dialog (see <a class="reference internal" href="#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays tabs for <em>Links</em>, <em>Symbols</em>, and with the exception of the SQL part, <em>Imports</em> panels. To the left of these panels is a toggle bar to show or hide the panels. These panels are shown in <a class="reference internal" href="#fig-links-symbols-imports"><span class="std std-numref">Figure 3.33</span></a>.</p>
+<div class="figure align-center" id="id33">
+<span id="fig-links-symbols-imports"></span><img alt="_images/links_symbols_imports.png" src="_images/links_symbols_imports.png" />
+<p class="caption"><span class="caption-number">Fig. 3.33 </span><span class="caption-text">The Links, Symbols, and Imports tabs of the script-based part editor panel.</span></p>
+</div>
+<p>The <em>Links</em> tab in the script editor provides various link management options that are activated after selecting a link in the list. These options include:</p>
+<ul class="simple">
+<li><em>Highlight</em>: will highlight any usages of the link in the script in green.</li>
+<li><em>Unhighlight</em>: removes the highlighted usages in the script.</li>
+<li><em>Go to Target</em>: pans the Model View to center on the target part to which the link is connected.</li>
+<li><em>Highlight Missing</em>: highlights script references to links that are not in the list (and therefore not in the model) in red.</li>
+<li><em>Rename</em>: renames the link in the model and script (when <em>Ok</em> or <em>Apply</em> are pressed). Link <em>chains</em>, i.e. those links that are connected via multiple hub parts to their target part, cannot be renamed from the script editor.</li>
+<li><em>Check Unused</em>: indicates all links in the list that are not used by the script by displaying them in a faded font.</li>
+</ul>
+<p>The <em>Symbols</em> tab displays useful symbols and Python modules available to insert into the script. Clicking a symbol will display its documentation at the bottom of the editor while double-clicking it will insert it into the script body at the cursor location. The symbols displayed in the list depend on the type of part being edited.</p>
+<ul class="simple">
+<li>Function and Library parts: display the broadest range to facilitate model building and data processing and include <em>Path</em>, <em>batch</em>, <em>new_part</em>, <em>new_link</em>, <em>signal</em>, and more.</li>
+<li>Plot parts: contain plot-specific methods such as <em>figure</em>, <em>math</em>, <em>matplotlib</em>, <em>setup_axes</em>, and others.</li>
+<li>SQL parts: display two sets of lists, one for constructing SQL commands and another for Python code. The former list is displayed by default and includes <em>CREATE</em>, <em>DELETE</em>, <em>DROP</em>, <em>SELECT</em>, <em>WHERE</em> and others. To access Python-based symbols, place the cursor between a double set of curly braces, &#8220;{{}}&#8221;, and the symbols list will change to show symbols specific to the Python editing context.</li>
+</ul>
+<p>The <em>Imports</em> tab displays a table of symbols and objects that have been imported into the script and fasciliates importing new symbols and objects. The object is the Python entity that is imported into memory when the script is compiled, while the symbol is the alias used to reference the object in the script. When importing a new object, four cases are possible:</p>
+<ol class="arabic simple">
+<li>Module import: corresponds to an &#8220;import module&#8221; statement in a Python script (e.g. &#8220;import math&#8221;),</li>
+<li>Module import as new symbol name: corresponds to an &#8220;import module as module_alias&#8221; statement in a Python script (e.g. &#8220;import math as math&#8221;),</li>
+<li>Symbol import from module: corresponds to a &#8220;from module import symbol&#8221; statement in a Python script (e.g. &#8220;from math import cos&#8221;),</li>
+<li>Symbol import from module, as new symbol name: corresponds to a &#8220;from module import symbol as symbol_alias&#8221; statement in a Python script (e.g. &#8220;from math import my_cos&#8221;).</li>
+</ol>
+<p>To import a new object,</p>
+<ul>
+<li><p class="first">Press the <em>Add...</em> button to launch the <em>Import an Object</em> dialog shown in <a class="reference internal" href="#fig-import-symbols"><span class="std std-numref">Figure 3.34</span></a>.</p>
+</li>
+<li><p class="first">Select the module to import in the &#8220;Source Module&#8221; field.</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>For case 1, press the dialog <em>OK</em> can be pressed to import the module as its current name.</li>
+<li>Otherwise, for case 2, enter a new symbol name to represent the module in the &#8220;As Symbol name&#8221; field. Press <em>OK</em>.</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p class="first">Select an attribute to import from the module by checking &#8220;Attribute Name&#8221; and then selecting the attribute name from the drop down list. This list is automatically populated once a valid object name is entered.</p>
+<blockquote>
+<div><ol class="arabic simple" start="3">
+<li>For case 3, the attribute name will be imported as its current name by clicking the dialog&#8217;s <em>OK</em> button.</li>
+<li>Otherwise, for case 4, enter a new symbol name to represent the original symbol in the &#8220;As Symbol name&#8221; field. Press <em>OK</em>.</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p class="first">The imported symbol can now be referenced in the script.</p>
+</li>
+</ul>
+<p>An import can be removed by selecting it in the table and clicking the <em>Delete</em> button. Clicking a symbol will display its documentation at the bottom of the tab, while double-clicking it will insert it into the script body at the cursor location.</p>
+<div class="figure align-center" id="id34">
+<span id="fig-import-symbols"></span><img alt="_images/import_symbols.png" src="_images/import_symbols.png" />
+<p class="caption"><span class="caption-number">Fig. 3.34 </span><span class="caption-text">The Import an Object dialog allows objects to be imported and their symbol specified.</span></p>
+</div>
+</div>
+<div class="section" id="creating-editing-and-triggering-events">
+<span id="ref-creating-events"></span><h3>3.5.9. Creating, Editing and Triggering Events<a class="headerlink" href="#creating-editing-and-triggering-events" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>, shown in <a class="reference internal" href="#fig-event-queue"><span class="std std-numref">Figure 3.10</span></a>, displays all events that are queued to execute at a specified time and with a specified priority within that time. Time can be any time in the future. The priority ranks from 0.0 (lowest) to <a class="reference internal" href="notes.html#term-asap"><span class="xref std std-term">ASAP</span></a> (highest). This panel also displays the part that the event corresponds to, the part&#8217;s type, arguments, and path in the Actor Hierarchy. Once there are events listed in the panel, the options to <em>Edit</em>, <em>Delete</em>, and <em>Clear</em> become available in the top-left of the panel. An event can  be edited by double-clicking it in the Queue, or selecting it and pressing the Edit button. A dialog will open that will allow the events time, priority, and arguments to be changed. <em>Delete</em> an event by selecting it and clicking the &#8220;X&#8221;  button. <em>Clear</em> all events by pressing the garbage bin button.</p>
+<p><a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function parts</span></a> can be used to place events on the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a> programmatically (see <a class="reference internal" href="#fig-event-queue"><span class="std std-numref">Figure 3.10</span></a>) by using the global <em>Signal</em> function in the function part script. An event is created on the queue by specifying any function <em>parameters</em> required to execute the function part&#8217;s script, and scheduled according to its <em>date-time</em> and <em>priority</em> parameters. The data-time specifies a future calendar date (year-month-day, hour:minute:second) while the priority indicates the importance of the event relative to other events occurring at the same time. The priority is specified using real numbers with 0.0 being the lowest priority and all higher values indicating a higher priority (up to a maximum of 1,000,000.0). Specifying an event priority of <a class="reference internal" href="notes.html#term-asap"><span class="xref std std-term">ASAP</span></a> will cause the event to be processed immediately and no date-time parameter is required.</p>
+<p>If a function part is linked to another part, its script has access to that part using the <em>alias</em> specified by the link. In other words, aliases of the links that connect a function part to other parts constitute the namespace of the function part. Section <a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Programming Reference</span></a> describes the <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> and attributes for each part type which a function may use to access a target part’s contents or properties. To run a Function part, click the run button in the upper-right corner of the part&#8217;s frame in the <a class="reference internal" href="#ref-model-view"><span class="std std-ref">Model View</span></a> or select the <em>Run</em> option from its context menu. The context menu of the Function part has the following options:</p>
+<ul class="simple">
+<li><em>Roles...</em>: set the role of this part to any combination of <em>Startup</em>, <em>Reset</em>, <em>Finish</em>, and <em>Setup</em> roles.</li>
+<li><em>Add Event...</em>: opens a dialog that is used to add a new event to the Event Queue by setting function arguments (used to set function parameters), event time, and event priority.</li>
+<li><em>Run Debug</em>: runs the part in debug mode which causes the process to stop at breakpoints inserted at the script line numbers.</li>
+<li><em>Run</em>: runs the part.</li>
+</ul>
+<p>Along with the <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function part</span></a>, the other executable parts include the <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL part</span></a>, <a class="reference internal" href="pulse_part_ref.html#pulse-part-ref"><span class="std std-ref">Pulse part</span></a>, and <a class="reference internal" href="multiplier_part_ref.html#multiplier-part-ref"><span class="std std-ref">Multiplier part</span></a>. These parts can be signaled by other executable parts to define discrete simulation events that appear on the simulation <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a>. <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function</span></a> and <a class="reference internal" href="sql_part_ref.html#sql-part-ref"><span class="std std-ref">SQL</span></a> parts contain an editable Python script that is used to signal parts or define discrete events. They can also define parameters that are used to pass information to the script. The script may be written to return a value.</p>
+<p>Multiplier parts provide a one-to-many interface for forwarding signals. For example, a multiplier that is connected to a Function or <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part, can signal any number of other parts connected to the multiplier when the Function or <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part signal the multiplier. The multiplier forwards that signal to each part connected to itself.</p>
+<p>Pulse parts that are connected to other executable parts will place those connected parts on the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a> periodically according to the pulse period that has been defined. The sequence works as follows: when the simulation is running, the pulse will place itself on the <a class="reference internal" href="#ref-event-queue-panel"><span class="std std-ref">Event Queue</span></a> at regular intervals corresponding to its pulse period. When the simulation time matches the pulse time, it will be popped from the queue and signal its connected part or parts to create a new event at <a class="reference internal" href="notes.html#term-asap"><span class="xref std std-term">ASAP</span></a> priority. The new <a class="reference internal" href="notes.html#term-asap"><span class="xref std std-term">ASAP</span></a> event or events are added to the queue along with the next pulse event corresponding to the next pulse time.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">3. USING ORIGAME</a><ul>
+<li><a class="reference internal" href="#modes-of-operation">3.1. Modes of Operation</a></li>
+<li><a class="reference internal" href="#starting-origame">3.2. Starting Origame</a></li>
+<li><a class="reference internal" href="#basic-concepts">3.3. Basic Concepts</a><ul>
+<li><a class="reference internal" href="#parts">3.3.1. Parts</a><ul>
+<li><a class="reference internal" href="#parts-with-visible-frames">3.3.1.1. Parts with Visible Frames</a></li>
+<li><a class="reference internal" href="#parts-with-invisible-frames">3.3.1.2. Parts with Invisible Frames</a></li>
+<li><a class="reference internal" href="#actor-parts">3.3.1.3. Actor Parts</a></li>
+<li><a class="reference internal" href="#executable-parts">3.3.1.4. Executable Parts</a></li>
+<li><a class="reference internal" href="#interface-parts">3.3.1.5. Interface Parts</a></li>
+<li><a class="reference internal" href="#non-creatable-parts">3.3.1.6. Non-Creatable Parts</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#links">3.3.2. Links</a></li>
+<li><a class="reference internal" href="#waypoints">3.3.3. Waypoints</a></li>
+<li><a class="reference internal" href="#events">3.3.4. Events</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#user-interface">3.4. User Interface</a><ul>
+<li><a class="reference internal" href="#starting-and-stopping-origame">3.4.1. Starting and Stopping Origame</a></li>
+<li><a class="reference internal" href="#scenario-files">3.4.2. Scenario Files</a></li>
+<li><a class="reference internal" href="#menus">3.4.3. Menus</a></li>
+<li><a class="reference internal" href="#windows-panels-and-dialogs">3.4.4. Windows, Panels, and Dialogs</a><ul>
+<li><a class="reference internal" href="#model-view">3.4.4.1. Model View</a></li>
+<li><a class="reference internal" href="#scenario-browser">3.4.4.2. Scenario Browser</a></li>
+<li><a class="reference internal" href="#alerts">3.4.4.3. Alerts</a></li>
+<li><a class="reference internal" href="#event-queue">3.4.4.4. Event Queue</a></li>
+<li><a class="reference internal" href="#application-log">3.4.4.5. Application Log</a></li>
+<li><a class="reference internal" href="#context-help">3.4.4.6. Context Help</a></li>
+<li><a class="reference internal" href="#object-properties">3.4.4.7. Object Properties</a></li>
+<li><a class="reference internal" href="#main-simulation-control">3.4.4.8. Main Simulation Control</a></li>
+<li><a class="reference internal" href="#batch-simulation-control">3.4.4.9. Batch Simulation Control</a></li>
+<li><a class="reference internal" href="#application-status">3.4.4.10. Application Status</a></li>
+<li><a class="reference internal" href="#toolbar">3.4.4.11. Toolbar</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#navigation">3.4.5. Navigation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#building-models">3.5. Building Models</a><ul>
+<li><a class="reference internal" href="#creating-parts">3.5.1. Creating Parts</a></li>
+<li><a class="reference internal" href="#linking-parts">3.5.2. Linking Parts</a></li>
+<li><a class="reference internal" href="#linking-interface-parts">3.5.3. Linking Interface Parts</a></li>
+<li><a class="reference internal" href="#part-selection-and-position">3.5.4. Part Selection and Position</a></li>
+<li><a class="reference internal" href="#part-resizing">3.5.5. Part Resizing</a></li>
+<li><a class="reference internal" href="#part-indicators-and-markers">3.5.6. Part Indicators and Markers</a></li>
+<li><a class="reference internal" href="#part-editing-and-undo-redo-commands">3.5.7. Part Editing, and Undo, Redo Commands</a></li>
+<li><a class="reference internal" href="#script-base-parts-links-symbols-and-imports">3.5.8. Script-Base Parts: Links, Symbols, and Imports</a></li>
+<li><a class="reference internal" href="#creating-editing-and-triggering-events">3.5.9. Creating, Editing and Triggering Events</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="getting started.html" title="previous chapter">2. GETTING STARTED</a></li>
+      <li>Next: <a href="running_simulations.html" title="next chapter">4. Running Simulations</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

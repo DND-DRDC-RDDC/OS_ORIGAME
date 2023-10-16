@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.17. Table Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.2.18. Time Part" href="time_api.html" />
+    <link rel="prev" title="5.2.16. SQL Part" href="sql_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="table-part">
+<h1>5.2.17. Table Part<a class="headerlink" href="#table-part" title="Permalink to this headline">¶</a></h1>
+<p>Each Table Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> by using link.<em>&lt;part_alias&gt;</em>.<em>&lt;scripting_api&gt;</em>, where <em>&lt;part_alias&gt;</em> is the link name, and <em>&lt;scripting_api&gt;</em> are the methods listed below:</p>
+<p><strong>database_table_name</strong></p>
+<ul class="simple">
+<li>Property: Get the name of the table in this instance of the SQL database of this table part. e.g. name = table.database_table_name.</li>
+</ul>
+<p><strong>get_database_table_name()</strong></p>
+<ul class="simple">
+<li>Description: Get the name of the table of this instance in the SQLite database.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [str] name of the database table.</li>
+</ul>
+<p><strong>indices</strong></p>
+<ul class="simple">
+<li>Property: Get or set the name of the table in this instance of the SQL database of this table part. e.g. name = table.database_table_name.</li>
+</ul>
+<p><strong>get_indices()</strong></p>
+<ul class="simple">
+<li>Description: Get the indexes and the associated columns.</li>
+<li>Parameters: None.</li>
+<li>Returns: A Dict[str, List[str]] dictionary containing key value pairs where the key is the index name and value is a list of columns.</li>
+</ul>
+<p><strong>set_indices(&lt;col_indices&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the indices on this table. Drops any previous indices.</li>
+<li>Parameters: A Dict[str, List[str]] &lt;col_indices&gt; to set.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>data</strong></p>
+<ul class="simple">
+<li>Property: Get or set the data of the table part. e.g. data = table.data or table.data = data.</li>
+</ul>
+<p><strong>get_all_data(&lt;flag_omit_rec_id&gt;, &lt;flag_apply_filter&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Get all of the data (records) in this Table Part.</li>
+<li>Parameters: A [bool] &lt;flag_omit_rec_id&gt; to specify if record ID&#8217;s should not be included in the returned data, a [bool] &lt;flag_apply_filter&gt; to specify whether the current filter should be applied on the data.</li>
+<li>Returns: A List[Tuple[Either[str, int, float]]] of data, where each data record is a tuple containing values of type string, integer, and/or float.</li>
+</ul>
+<p><strong>set_all_data(&lt;data&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set all of the data (records) in this Table Part. Replaces all current data from this instance of the table part with the new &lt;data&gt;.</li>
+<li>Parameters: A List[Tuple[Either[str, int, float]]] of &lt;data&gt; to set into the part.  The list contains all records, where each record is a tuple containing values of type string, integer, and/or float.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>delete_data(&lt;where&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Delete records given the optional &lt;where&gt; clause. If the &lt;where&gt; clause is not supplied, then this method will delete all data in the table.  Otherwise, only the data matching the specified &#8220;where&#8221; criteria will be deleted.</li>
+<li>Parameters: An optional SQL [str] &lt;where&gt; clause to restrict the number of records removed.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>column_types</strong></p>
+<ul class="simple">
+<li>Property: Get the data types of columns in this Table Part. e.g. types = table.column_types.</li>
+</ul>
+<p><strong>get_column_types()</strong></p>
+<ul class="simple">
+<li>Description: Get the data types of columns in this Table Part.</li>
+<li>Parameters: None.</li>
+<li>Returns: A List[str] containing the data types in this Table Part.</li>
+</ul>
+<p><strong>column_names</strong></p>
+<ul class="simple">
+<li>Property: Get the names of the columns in this Table Part. e.g. names = table.column_names.</li>
+</ul>
+<p><strong>get_column_names()</strong></p>
+<ul class="simple">
+<li>Description: Get the names of the columns in this Table Part.</li>
+<li>Parameters: None.</li>
+<li>Returns: A List[str] of column names.</li>
+</ul>
+<p><strong>get_column_names_and_types()</strong></p>
+<ul class="simple">
+<li>Description: Get the columns and types in a list. i.e. [&#8220;Col1 varchar(200)&#8221;, &#8220;Col2 real(100)&#8221;, &#8220;Col3&#8221;].</li>
+<li>Parameters: None.</li>
+<li>Returns: A List[str] of column names and types.</li>
+</ul>
+<p><strong>set_column_names_and_types(&lt;names_and_types&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Get the names of the columns in this Table Part.</li>
+<li>Parameters: A List[str] &lt;names_and_types&gt; of column names and types.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>arrange_columns(&lt;column_names&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Re-arrange the columns in this Table Part. If a column does not appear in &lt;column_names&gt; but is part of the current table schema, then the column and data is not fetched from this table.</li>
+<li>Parameters: A [str] of comma delimited &lt;column_names&gt;.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>add_column(&lt;name&gt;,[optional] &lt;type&gt;,[optional] &lt;size&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Add one or more columns.</li>
+<li>Parameters: [str] the &lt;name&gt; of the column, [str] the &lt;type&gt; of column (default=None), [int] the &lt;size&gt; of the column (default=None).</li>
+<li>Returns: none.</li>
+</ul>
+<p><strong>drop_column(&lt;name&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Remove a column.</li>
+<li>Parameters: [str] the &lt;name&gt; of the column.</li>
+<li>Returns: none.</li>
+</ul>
+<p><strong>rename_column(&lt;current_name&gt;,&lt;new_name&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Change a field name.</li>
+<li>Parameters: [str] the &lt;current_name&gt;, [str] the &lt;new_name&gt;.</li>
+<li>Returns: none.</li>
+</ul>
+<p><strong>set_column(&lt;fields&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Add columns to this Table Part. The fields must be valid specifications accepted by the SQLite &#8220;CREATE TABLE&#8221; statement.</li>
+<li>Parameters: A [str] of &lt;fields&gt; expressed as a comma delimited list of column names and types. e.g. &#8220;ID INTEGER, Name TEXT, Age REAL...&#8221;.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>filter_string</strong></p>
+<ul class="simple">
+<li>Property: Get and set the filter string for filter requests. e.g. filter = table.filter_string or table.filter_string = filter.</li>
+</ul>
+<p><strong>filter(&lt;table_filter&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the filter string to be applied when fetching table data in other calls such as get_all_data().</li>
+<li>Parameters: A [str] &lt;table_filter&gt; which must be a valid SQL filter string.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>get_filter_string()</strong></p>
+<ul class="simple">
+<li>Description: Get the filter string for filter requests.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [str] &lt;filter&gt; that represents the filter that will be applied in other calls such as get_all_data().</li>
+</ul>
+<p><strong>set_filter_string(&lt;filter&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the filter string for filter requests.</li>
+<li>Parameters: [A [str] &lt;filter&gt; that represents the filter that will be applied in other calls such as get_all_data().</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>update(&lt;field_value_pairs&gt;,[optional] &lt;where&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Change a field value. Note that it is up to the user to ensure that the where clause is correctly constructed.</li>
+<li>Parameters: A new[str] &lt;field_value_pairs&gt; of the form &#8220;field1=value1, field2=value2...&#8221;, a [str] &lt;where&gt; clause to restrict the number of records retrieved (default=None).</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>select([optional] &lt;fields&gt;,[optional] &lt;where&gt;,[optional] &lt;limit&gt;, [optional] &lt;select_raw&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Select rows that match specified criteria.</li>
+<li>Parameters: A [str] &lt;fields&gt; specifying a list of fields to select (default=&#8217;*&#8217; all fields), a [str] &lt;where&gt; clause to restrict records retrieved (default=None), a [int] maximum &lt;limit&gt; on the number of records returned (default=None), a [bool] flag to choose a return value of either a list of tuples (set True) or a SqlDataSet (default=False).</li>
+<li>Returns: A List[Tuple(Any)] if &lt;select_raw&gt; is True, else an [SqlDataSet] SQL data set. See <a class="reference internal" href="sql_api.html#sql-part-api"><span class="std std-ref">SQL Part</span></a>.</li>
+</ul>
+<p><strong>insert(&lt;record&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Append a new record.</li>
+<li>Parameters: A new Tuple[Either[str, int, float]] &lt;record&gt; where each record is a tuple containing values of type string, integer, and/or float.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>count(&lt;where&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Count rows that match specified criteria.</li>
+<li>Parameters: A [str] &lt;where&gt; clause to restrict data retrieved.</li>
+<li>Returns: The [int] number of records matching the &lt;where&gt; clause.</li>
+</ul>
+<p><strong>import_from_access(&lt;file_path&gt;,&lt;from_table_name&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Import from <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Access.</li>
+<li>Parameters: The complete [str] &lt;file_path&gt; to the Access database, the [str] &lt;from_table_name&gt; to import the data from.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>export_to_access(&lt;file_path&gt;,&lt;to_table_name&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Export to <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Access.</li>
+<li>Parameters: The complete [str] &lt;file_path&gt; of the Access database, the [str] &lt;to_table_name&gt; to export the data to.</li>
+<li>Returns: None.</li>
+<li><em>Note 1: The full table is exported even if a filter is applied</em>.</li>
+<li><em>Note 2: The Access file to export to must exist as a new one will not be created</em>.</li>
+</ul>
+<p><strong>create_index(&lt;column_names&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Create a Table index.</li>
+<li>Parameters: A comma-delimited [str] of &lt;column_names&gt; to index. e.g. &#8220;Col1, Col2, ...&#8221;</li>
+<li>Returns: none.</li>
+</ul>
+<p><strong>drop_index(&lt;column_names&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Drop a Table index.</li>
+<li>Parameters: A comma-delimited [str] of &lt;column_names&gt; in the index to drop.</li>
+<li>Returns: None.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="sql_api.html" title="previous chapter">5.2.16. SQL Part</a></li>
+      <li>Next: <a href="time_api.html" title="next chapter">5.2.18. Time Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

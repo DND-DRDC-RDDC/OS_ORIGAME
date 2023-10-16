@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.4. Data Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.5. Datetime Part" href="datetime_part_ref.html" />
+    <link rel="prev" title="5.1.3. Clock Part" href="clock_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="data-part">
+<span id="data-part-ref"></span><h1>5.1.4. Data Part<a class="headerlink" href="#data-part" title="Permalink to this headline">¶</a></h1>
+<p>The data part is used to store variables. It consists of a simple container class where the variable name is stored as a &#8216;key&#8217; that can be used to access the variable &#8216;value&#8217;. The variable names, or keys, must be unique and valid Python names. The values can be any valid Python type such as strings, integers, floats, lists, tuples, and dictionaries. New data parts can be created by right-clicking on a blank part of the Model View and selecting <em>New Part &gt; Data</em> from the context menu.</p>
+<p>Data elements are member variables that are added to or removed from the container class. When a function part is linked to a data part it can access the container class using the link alias. A function part can add new member variables to the data part by assigning them. For example, if a function part is linked to a data part with alias &#8220;data&#8221;, a new variable name &#8220;size&#8221; can be created and assigned a value: <em>link.data.size = 20</em>. Then it can be deleted from the data part using the Python &#8220;del&#8221; function: <em>del link.data.size</em>. Alternatively, the same result can be accomplished in a parametrized function part with the arguments &#8216;key&#8217; and &#8216;value&#8217;, and the script, <em>link.data[key] = value</em>. Running the function and providing the two parameters as <em>size</em> and <em>20</em> will add the key &#8220;size&#8221; with a value of 20.</p>
+<p>Double-clicking the data part or right-clicking and selecting &#8220;Edit...&#8221; opens the editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-data-part-and-editor"><span class="std std-numref">Figure 5.4</span></a>, where the current keys and their corresponding values can be viewed and changed by clicking into the <em>Key</em> or <em>Value</em> field and editing the values directly. The Keys can be sorted into alphabetical, reverse-alphabetical, and as-created order by clicking the Key header name successively to toggle through each sorting option. The final sort-order selected will be propagated to the part shown in the Model View, along with all other changes, once the <em>Apply</em> or <em>OK</em> button is pressed. The dialog provides the following data editing options:</p>
+<ul class="simple">
+<li>insert before the selected row,</li>
+<li>insert after the selected row,</li>
+<li>select all,</li>
+<li>cut selection,</li>
+<li>copy selection,</li>
+<li>paste selection,</li>
+<li>delete selection,</li>
+<li>move selection up,</li>
+<li>move selection down.</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-data-part-and-editor"></span><img alt="_images/part_and_editor_data.png" src="_images/part_and_editor_data.png" />
+<p class="caption"><span class="caption-number">Fig. 5.4 </span><span class="caption-text">The Data part and editor dialog.</span></p>
+</div>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="clock_part_ref.html" title="previous chapter">5.1.3. Clock Part</a></li>
+      <li>Next: <a href="datetime_part_ref.html" title="next chapter">5.1.5. Datetime Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ScenSearchPanel</class>
+ <widget class="QWidget" name="ScenSearchPanel">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>311</width>
+    <height>356</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLineEdit" name="text_pattern">
+       <property name="toolTip">
+        <string>Enter search pattern (regexp)</string>
+       </property>
+       <property name="statusTip">
+        <string>Enter search pattern (regexp)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="button_search">
+       <property name="toolTip">
+        <string>Search the objects in the current scenario</string>
+       </property>
+       <property name="statusTip">
+        <string>Search the objects in the current scenario</string>
+       </property>
+       <property name="text">
+        <string>Search</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="button_cancel">
+       <property name="toolTip">
+        <string>Cancel the current search</string>
+       </property>
+       <property name="statusTip">
+        <string>Cancel the current search</string>
+       </property>
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QListWidget" name="list_search_results"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

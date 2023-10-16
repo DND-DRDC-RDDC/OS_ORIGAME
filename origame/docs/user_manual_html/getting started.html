@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. GETTING STARTED &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="next" title="3. USING ORIGAME" href="using origame.html" />
+    <link rel="prev" title="1. INTRODUCTION" href="introduction.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>2. GETTING STARTED<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2>2.1. Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="hardware-requirements">
+<h3>2.1.1. Hardware Requirements<a class="headerlink" href="#hardware-requirements" title="Permalink to this headline">¶</a></h3>
+<p>Origame has been designed to run on a modern <a class="reference internal" href="notes.html#term-pc"><span class="xref std std-term">PC</span></a> or laptop with the following minimum specifications:</p>
+<ul class="simple">
+<li>Windows 7 (64bit)</li>
+<li>2.5 GHz dual-core <a class="reference internal" href="notes.html#term-cpu"><span class="xref std std-term">CPU</span></a></li>
+<li>4 <a class="reference internal" href="notes.html#term-gb"><span class="xref std std-term">GB</span></a> of <a class="reference internal" href="notes.html#term-ram"><span class="xref std std-term">RAM</span></a></li>
+<li>Dedicated video card with 1 GB of video memory</li>
+<li>500 <a class="reference internal" href="notes.html#term-gb"><span class="xref std std-term">GB</span></a> of storage</li>
+</ul>
+<p>In addition, a minimum display resolution of 1152 x 864 pixels is recommended.</p>
+</div>
+<div class="section" id="software-requirements">
+<h3>2.1.2. Software Requirements<a class="headerlink" href="#software-requirements" title="Permalink to this headline">¶</a></h3>
+<p>In addition to the software necessary to run the Origame application, it is recommended that the following software be installed on the target platform:</p>
+<p><strong>Microsoft Office</strong></p>
+<ul class="simple">
+<li>Origame cannot be installed on computers with 32–bit versions of <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office also installed. However, 64–bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office is supported but not required for installation.</li>
+<li>Log files are generated in tab separated value format. The application log file generated during a <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> session can be viewed in the application. Batch runs will generate multiple log files which are most easily read and manipulated in Excel.</li>
+<li>Origame Sheet Parts can be imported from and exported to <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Excel and Plot Parts can be exported to <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Excel.</li>
+</ul>
+<p><strong>Microsoft Access</strong></p>
+<ul class="simple">
+<li>Origame can read from and write to <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Access databases.</li>
+</ul>
+<p><strong>Notepad++</strong></p>
+<ul class="simple">
+<li>Origame scenario files (.ori file extension) are generated in <a class="reference internal" href="notes.html#term-json"><span class="xref std std-term">JSON</span></a> format. There is no need to open them in any other application, but they may be easily read using Notepad++ by more experienced users, if desired.</li>
+</ul>
+<p><strong>Internet Explorer</strong></p>
+<ul class="simple">
+<li>Online help links have been optimised using Internet Explorer, but Google Chrome can also be used.</li>
+</ul>
+</div>
+<div class="section" id="licensing">
+<h3>2.1.3. Licensing<a class="headerlink" href="#licensing" title="Permalink to this headline">¶</a></h3>
+<p>Origame is the property of the Government of Canada, and managed by the Military Personnel Research and Analysis (<a class="reference internal" href="notes.html#term-mpra"><span class="xref std std-term">MPRA</span></a>) group at Defence Research and Development Canada (<a class="reference internal" href="notes.html#term-drdc"><span class="xref std std-term">DRDC</span></a>). It may only be accessed and used by personel of the Government of Canada, of authorized contractors, and of licensed organizations. For the latter, the terms and conditions of access and use are detailed in the <strong>LICENSE.txt</strong> file located in the <em>Application</em> folder of the installation package and in the Origame package folder once installed (<em>c:\Python35\Lib\site-packages\origame</em>). It can also be accessed by running the Origame <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> and navigating to the <em>Help</em> menu, <em>About...</em>, and clicking either of the links therein.</p>
+</div>
+<div class="section" id="installation-steps">
+<h3>2.1.4. Installation Steps<a class="headerlink" href="#installation-steps" title="Permalink to this headline">¶</a></h3>
+<p>The installation is launched by running the batch file <strong>install_origame.bat</strong> located in the top-level of the directory path of the installation package. By default, the installer will install Python 3.5.2 to the directory <code class="docutils literal"><span class="pre">C:\Python35</span></code>. However, this default directory can be changed by providing an optional argument, <em>&#8211;python-path</em>, along with a valid Window&#8217;s path argument, as the <strong>first</strong> arguments to the installer. If Python is already installed in either the default directory or the one provided by the optional &#8211;python-path argument, the installer will skip the Python installation step and proceed to install Origame inside a Python virtual environment (<a class="reference internal" href="notes.html#term-venv"><span class="xref std std-term">venv</span></a>).</p>
+<p>By default, the <a class="reference internal" href="notes.html#term-venv"><span class="xref std std-term">venv</span></a> is installed in the directory <code class="docutils literal"><span class="pre">C:\Origame</span> <span class="pre">RELEASE</span> <span class="pre">VERSION</span></code>. However, this location can be changed by using the argument <em>&#8211;venv-path</em> along with a valid Window&#8217;s path argument. The installer can be used to install multiple self-contained copies of Origame each having their own shortcut automatically created on the desktop by specifying a different <a class="reference internal" href="notes.html#term-venv"><span class="xref std std-term">venv</span></a> path each time it is run. Each <a class="reference internal" href="notes.html#term-venv"><span class="xref std std-term">venv</span></a> has been configured to have access to the base Python installation&#8217;s site-packages folder as well as its own. This allows Origame to import from packages installed on the user&#8217;s base system as well as those installed on the <a class="reference internal" href="notes.html#term-venv"><span class="xref std std-term">venv</span></a> for use with Origame. Some of the Origame application package dependencies include Qt 5.7, QScintilla 2.9.3, SIP 4.18.1, and Matplotlib 1.5.0.</p>
+<p>The installation instructions for Origame are enumerated below.</p>
+<ol class="arabic">
+<li><p class="first">Select the <a class="reference internal" href="notes.html#term-pc"><span class="xref std std-term">PC</span></a> for installation that conforms to one of the three following configurations:</p>
+<blockquote>
+<div><ol class="upperalpha simple">
+<li>[Recommended] Windows with 64-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office installed: As Origame database features work only with 64-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Access, Origame may be installed on Windows systems where 64-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office is installed.</li>
+<li>[Recommended] Windows with no <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office installed: Alternatively, on Windows systems where no version of <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office is installed, it is recommended to install Origame using the optional argument <em>with-access</em> to install the included 64-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Access database driver that enables database features.</li>
+<li>[Not Recommended] Windows with 32-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office installed: Installation on a system with 32-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office is possible but the optional 64-bit Access database driver should <strong>not</strong> be installed (the default mode is not to install it) as doing so will interfere with or corrupt 32-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Office. Under this configuration, the Origame database import and export features will not work.</li>
+</ol>
+</div></blockquote>
+</li>
+<li><p class="first">From the Windows Start menu, type &#8220;cmd&#8221; in the Search field (alternatively search for &#8220;Command Prompt&#8221;). Right–click the search result in the list and select <strong>Run as administrator</strong>.</p>
+</li>
+<li><p class="first">Change the directory to the top level of the installer package (where the <strong>install_origame.bat</strong> resides).</p>
+</li>
+<li><p class="first">Type the command <code class="docutils literal"><span class="pre">install_origame.bat</span></code> along with any of the optional arguments (listed below) and hit <strong>Enter</strong>.</p>
+</li>
+<li><p class="first">The installer shows the installation progress on the screen. It does not prompt the user for input.</p>
+</li>
+<li><p class="first">Installation is complete once the message &#8220;Origame (RELEASE VERSION) successfully installed&#8221; is printed to the command prompt window.</p>
+</li>
+<li><p class="first">Double-click the desktop shortcut to start the application or on an existing scenario &#8221;.ori&#8221; file.</p>
+</li>
+</ol>
+<p>Each of the optional arguments available to use with the installer are enumerated below.</p>
+<ol class="arabic">
+<li><p class="first"><code class="docutils literal"><span class="pre">--python-path</span> <span class="pre">python_path</span></code>: By default, the installer will install Python 3.5.2 to the <em>python_path</em> <code class="docutils literal"><span class="pre">C:\Python35</span></code> if it is not already installed there. Use this argument to specify a different <em>python_path</em> to install to or to indicate to the installer where Python is already installed if it&#8217;s not in the default location (see notes below).</p>
+<blockquote>
+<div><ul class="simple">
+<li>Note 1: This argument, if used, must be the first argument.</li>
+<li>Note 2: Only Python 3.5 is supported with installation of Origame.</li>
+<li>Note 3: Only one instance of Python 3.5 can be installed on Windows. If the installer is used with this argument on a Windows system where Python is already installed, and the argument specifies a directory other than the one where Python 3.5 is currently installed, then the installer will stop after trying to &#8220;modify&#8221; the current installation and inform the user to check that Python is not currently installed.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">--venv</span> <span class="pre">venv_path</span></code>: By default, the <a class="reference internal" href="notes.html#term-venv"><span class="xref std std-term">venv</span></a> is installed in the <em>venv_path</em> <code class="docutils literal"><span class="pre">C:\Origame</span> <span class="pre">RELEASE</span> <span class="pre">VERSION</span></code>. Use this argument specify a different <em>venv_path</em>.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">--with-access</span></code>: By default, the 64-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Access database driver is not installed. Use this argument to install it (this argument should only be used on Windows systems where 64-bit or 32-bit <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Access are <strong>not</strong> installed (see installation step 1).</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">--no-vc-redist</span></code>: This argument indicates that the Visual C redistribution should not be installed/reinstalled on the computer system.</p>
+</li>
+<li><p class="first"><code class="docutils literal"><span class="pre">--no-file-type-assoc</span></code>: By default, .ori and .orib file types will are automatically associated with Origame. This flag will prevent that assocation during installation.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="assistance-and-problem-reporting">
+<h2>2.2. Assistance and Problem Reporting<a class="headerlink" href="#assistance-and-problem-reporting" title="Permalink to this headline">¶</a></h2>
+<p>The Origame application has Help information built in, as described in section <a class="reference internal" href="using origame.html#ref-user-interface"><span class="std std-ref">User Interface</span></a>. If further assistance is required or to report problems, please contact:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="13%" />
+<col width="40%" />
+<col width="21%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Issue</th>
+<th class="head">Name</th>
+<th class="head">Email address</th>
+<th class="head">Telephone</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>General questions /
+technical questions /
+report problems</td>
+<td>Stephen
+Okazawa</td>
+<td><a class="reference external" href="mailto:stephen&#46;okazawa&#37;&#52;&#48;forces&#46;gc&#46;ca">stephen<span>&#46;</span>okazawa<span>&#64;</span>forces<span>&#46;</span>gc<span>&#46;</span>ca</a></td>
+<td>613–992–0261</td>
+</tr>
+<tr class="row-odd"><td>General questions</td>
+<td>Luminita
+Stemate</td>
+<td><a class="reference external" href="mailto:luminita&#46;stemate&#37;&#52;&#48;forces&#46;gc&#46;ca">luminita<span>&#46;</span>stemate<span>&#64;</span>forces<span>&#46;</span>gc<span>&#46;</span>ca</a></td>
+<td>613–996–0751</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. GETTING STARTED</a><ul>
+<li><a class="reference internal" href="#installation">2.1. Installation</a><ul>
+<li><a class="reference internal" href="#hardware-requirements">2.1.1. Hardware Requirements</a></li>
+<li><a class="reference internal" href="#software-requirements">2.1.2. Software Requirements</a></li>
+<li><a class="reference internal" href="#licensing">2.1.3. Licensing</a></li>
+<li><a class="reference internal" href="#installation-steps">2.1.4. Installation Steps</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#assistance-and-problem-reporting">2.2. Assistance and Problem Reporting</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="introduction.html" title="previous chapter">1. INTRODUCTION</a></li>
+      <li>Next: <a href="using origame.html" title="next chapter">3. USING ORIGAME</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

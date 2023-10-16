@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.16. SQL Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.17. Table Part" href="table_part_ref.html" />
+    <link rel="prev" title="5.1.15. Sheet Part" href="sheet_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sql-part">
+<span id="sql-part-ref"></span><h1>5.1.16. SQL Part<a class="headerlink" href="#sql-part" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part contains a structured query language (<a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a>) script. Code completion reveals the contents of the namespace as the user writes the script. The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> command acts on table parts that the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part is linked to using the link aliases. The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part also has parameters that can be used in the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> command. For example, consider a <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part script that has a parameter &#8220;passed_country&#8221; and is linked to a table part with alias &#8220;table&#8221; and field (column name) &#8220;Country&#8221;, then the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part could execute the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> <em>Select</em> command as follows:</p>
+<p><em>Select * from {{link.table}} where Country = {{passed_country}}</em>.</p>
+<p>The code referenced inside the double curly braces is interpreted as Python code which is useful for:</p>
+<ol class="arabic simple">
+<li>Calling other linked parts (by using the usual link.&lt;link_name&gt;), and</li>
+<li>Referencing script parameters.</li>
+</ol>
+<p>The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part can be run directly by pressing the run button in the upper-right corner of the part&#8217;s frame. If there are parameters defined for the part, a dialog will open and prompt the user for the parameter values. The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part can also be run automatically by linking it to a function part that can call the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part&#8217;s alias to execute the script. Additionally, the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> can be linked to data or function parts which allows the part to use the alias to reference stored data or call function methods within the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> statement.</p>
+<p>An <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part can also be linked to other <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> parts to create nested queries. In this case, the nested <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part can be referenced as if it were a table. The syntax allows for parameters to be passed into the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part. As an example, a <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part with alias &#8220;sql_one&#8221; is linked to a second <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part with alias &#8220;sql_two&#8221;, which in turn is linked to a table part with alias &#8220;table&#8221;. The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> statement in &#8220;sql_one&#8221; makes a query for people that are less than a specified age by querying the second <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part:</p>
+<p><em>select * from {{link.sql_two(&#8220;Simpson&#8221;)}} where Age &lt; {{p_max_age}}</em>.</p>
+<p>The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> statement in &#8220;sql_two&#8221; makes a query for a given surname by querying the table part:</p>
+<p><em>select * from {{link.table}} where Surname = {{p_surname}}</em>.</p>
+<p>The parameters <em>p_max_age</em> and <em>p_surname</em> must be passed to the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> parts when they are called by either another <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part or a function part that is calling it. In this example, the <em>sql_two(&#8220;Simpson&#8221;)</em> portion of the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> command will resolve to the result of the previous query passing the surname &#8220;Simpson&#8221; as a parameter. The net result of the second
+query is to return all records with the surname &#8220;Simpson&#8221; and whose age is less than or equal to <em>p_max_age</em>.</p>
+<p>If a function part is linked to an <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part, it can execute the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> command by calling the alias of the link as a function with parameters. Calling an <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part as a function from a function part will return the query result <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> data set.</p>
+<p>Double-clicking on the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part&#8217;s frame or right-clicking and selecting &#8220;Edit...&#8221; opens an editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-sql-part-and-editor"><span class="std std-numref">Figure 5.16</span></a>, that allows various properties of the part to be edited or viewed:</p>
+<ul class="simple">
+<li>parameter specification,</li>
+<li>script editing tools for undo, redo, cut, copy, paste, and delete,</li>
+<li>a script editor,</li>
+<li>a <em>Links</em> and <em>Symbols</em> panel that provides link and object import management options. See section <a class="reference internal" href="using origame.html#ref-script-based-parts"><span class="std std-ref">Script-Base Parts: Links, Symbols, and Imports</span></a> for more information on these panels. Note that for symbols, if the cursor is inserted in between double curly braces (signifying Python code) then the symbols list will change to Python symbols and modules,</li>
+<li>a SQL preview panel that displays a preview (up to 100 rows) of the data returned when the <em>Refresh</em> button is pressed.</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-sql-part-and-editor"></span><img alt="_images/part_and_editor_sql.png" src="_images/part_and_editor_sql.png" />
+<p class="caption"><span class="caption-number">Fig. 5.16 </span><span class="caption-text">The SQL part and editor dialog.</span></p>
+</div>
+<p>If parameters are specified in the editor, the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part will open a prompt every time the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part is run to allow the user to enter the parameter values. These values must be valid Python expressions. e.g. a string must include quotes.</p>
+<p>For a discussion on how to use the <em>Links</em> tab, refer to the corresponding section in the <a class="reference internal" href="function_part_ref.html#function-part-ref"><span class="std std-ref">Function Part Reference</span></a>.</p>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="sheet_part_ref.html" title="previous chapter">5.1.15. Sheet Part</a></li>
+      <li>Next: <a href="table_part_ref.html" title="next chapter">5.1.17. Table Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.4. Data Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.2.5. Datetime Part" href="datetime_api.html" />
+    <link rel="prev" title="5.2.3. Clock Part" href="clock_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="data-part">
+<h1>5.2.4. Data Part<a class="headerlink" href="#data-part" title="Permalink to this headline">¶</a></h1>
+<p>Each Data Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> by using link.<em>&lt;part_alias&gt;</em>.<em>&lt;scripting_api&gt;</em>, where <em>&lt;part_alias&gt;</em> is the link name, and <em>&lt;scripting_api&gt;</em> are the methods listed below:</p>
+<p><strong>keys()</strong></p>
+<ul class="simple">
+<li>Description: Get all keys.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [list] list of keys in the data part.</li>
+</ul>
+<p><strong>values()</strong></p>
+<ul class="simple">
+<li>Description: Get all values.</li>
+<li>Parameters: None.</li>
+<li>Returns: A [list] of values in the data part.</li>
+</ul>
+<p><strong>items()</strong></p>
+<ul class="simple">
+<li>Description: Get all the items of this part in OrderedDict format.</li>
+<li>Parameters: None.</li>
+<li>Returns: An [OrderedDict] of items in the data part.</li>
+</ul>
+<p><strong>display_order</strong></p>
+<ul class="simple">
+<li>Property: Get or set the DisplayOrderEnum used by this data part. e.g. order = data.display_order or data.display_order = order.</li>
+</ul>
+<p><strong>get_display_order()</strong></p>
+<ul class="simple">
+<li>Description: Get display order of keys.</li>
+<li>Parameters: None.</li>
+<li>Returns: [DisplayOrderEnum] the display order with values: of_creation (0), alphabetical (1), reverse_alphabetical (2).</li>
+</ul>
+<p><strong>set_display_order(&lt;order&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set display order of keys.</li>
+<li>Parameters: The [DisplayOrderEnum] display &lt;order&gt; with values: of_creation (0), alphabetical (1), reverse_alphabetical (2).</li>
+<li>Returns: None.</li>
+</ul>
+<p>The following <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> uses direct assignment to, or direct reference to, the linked part using link.&lt;part_alias&gt; notation:</p>
+<p><strong>link.&lt;part_alias&gt;[&#8216;&lt;key&gt;&#8217;]=&lt;value&gt;</strong></p>
+<ul class="simple">
+<li>Description: Create a new key and set its value or set a new value to an existing key. Assigned directly to the part, shown here via link connection.</li>
+<li>Parameters: The [dict key] &lt;key&gt; and [object] &lt;value&gt; to set to the key.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>link.&lt;part_alias&gt;.&lt;key&gt;=&lt;value&gt;</strong></p>
+<ul class="simple">
+<li>Description: Set a new value to an existing key. Assigned directly to the part, shown here via link connection.</li>
+<li>Parameters: The [dict key] &lt;key&gt; and [object] &lt;value&gt; to set to the key.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>link.&lt;part_alias&gt;[&#8216;&lt;key&gt;&#8217;]</strong> or  <strong>link.&lt;part_alias&gt;.&lt;key&gt;</strong></p>
+<ul class="simple">
+<li>Description: Get value of a key. Retrieved directly from the part, shown here via link connection.</li>
+<li>Parameters: [dict key] the key &lt;key&gt;.</li>
+<li>Returns: The [object] &lt;value&gt; of the key.</li>
+</ul>
+<p><strong>del link.&lt;part_alias&gt;.&lt;key&gt;</strong></p>
+<ul class="simple">
+<li>Description: Delete a key. Removed directly from the part, shown here via link connection.</li>
+<li>Parameters: The [dict key] &lt;key&gt;.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>if key in link.&lt;part_alias&gt;</strong></p>
+<ul class="simple">
+<li>Description: Test if the part has a key.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>for key in link.&lt;part_alias&gt;</strong></p>
+<ul class="simple">
+<li>Description: Loop over a part&#8217;s keys.</li>
+<li>Parameters: None.</li>
+<li>Returns: None.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="clock_api.html" title="previous chapter">5.2.3. Clock Part</a></li>
+      <li>Next: <a href="datetime_api.html" title="next chapter">5.2.5. Datetime Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

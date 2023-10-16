@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.1. Actor Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.2.2. Button Part" href="button_api.html" />
+    <link rel="prev" title="5.1.19. Variable Part" href="variable_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="actor-part">
+<h1>5.2.1. Actor Part<a class="headerlink" href="#actor-part" title="Permalink to this headline">¶</a></h1>
+<p>Each Actor Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> by using link.<em>&lt;part_alias&gt;</em>.<em>&lt;scripting_api&gt;</em>, where <em>&lt;part_alias&gt;</em> is the link name, and <em>&lt;scripting_api&gt;</em> are the methods listed below:</p>
+<p><strong>image_id</strong></p>
+<ul class="simple">
+<li>Property: Get the ID of the image associated with this Actor part. e.g. id = actor.image_id.</li>
+</ul>
+<p><strong>get_image_id()</strong></p>
+<ul class="simple">
+<li>Description: Get the ID of the image associated with this Actor part.</li>
+<li>Parameters: None.</li>
+<li>Returns: This [int] instance&#8217;s image ID.</li>
+</ul>
+<p><strong>image_path</strong></p>
+<ul class="simple">
+<li>Property: Get or set the image path used by this actor. e.g. path = actor.image_path or actor.image_path = path.</li>
+</ul>
+<p><strong>get_image_path()</strong></p>
+<ul class="simple">
+<li>Description: Get the image path corresponding to the image ID stored by this part or None to indicate default image.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [str] path to the associated image file or None.</li>
+</ul>
+<p><strong>set_image_path(&lt;path&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Sets the image associated with the Actor part.</li>
+<li>Parameters: The [str] image file path of the image.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>rotation_2d</strong></p>
+<ul class="simple">
+<li>Property: Get or set the 2D rotation angle. e.g. rot = actor.rotation_2d or actor.rotation_2d = rot.</li>
+</ul>
+<p><strong>get_rotation_2d()</strong></p>
+<ul class="simple">
+<li>Description: Get the 2D rotation angle of the part. Positive is clockwise.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [float] rotation angle.</li>
+</ul>
+<p><strong>set_rotation_2d(&lt;angle&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the 2D rotation angle of the part. Positive is clockwise.</li>
+<li>Parameters: The [float] rotation angle.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>num_children</strong></p>
+<ul class="simple">
+<li>Property: Get the number of child parts of this actor. e.g. num = actor.num_children.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="variable_part_ref.html" title="previous chapter">5.1.19. Variable Part</a></li>
+      <li>Next: <a href="button_api.html" title="next chapter">5.2.2. Button Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

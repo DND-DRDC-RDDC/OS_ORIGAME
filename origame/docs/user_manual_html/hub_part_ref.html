@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.8. Hub Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.9. Information Part" href="info_part_ref.html" />
+    <link rel="prev" title="5.1.7. Function Part" href="function_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="hub-part">
+<span id="hub-part-ref"></span><h1>5.1.8. Hub Part<a class="headerlink" href="#hub-part" title="Permalink to this headline">¶</a></h1>
+<p>The hub part, shown in <a class="reference internal" href="#fig-hub"><span class="std std-numref">Figure 5.8</span></a>, is represented in the <a class="reference internal" href="notes.html#term-gui"><span class="xref std std-term">GUI</span></a> as a ring, provides a single access point to a group of parts it has linked connections to. A reference to each part that the hub part is linked to is stored as a member variable in the hub where the name of each member variable is the alias name displayed on the connecting link. This enables function parts that are connected to the hub to access any of the parts to which the hub is connected via dot notation. For example, if the hub part linked to a data part with alias &#8220;data&#8221; and a table part with alias &#8220;table&#8221;, then a function part that is linked to the hub with alias &#8220;hub&#8221; can access &#8220;data&#8221; and &#8220;table&#8221; using dot notation as follows: &#8220;link.hub.data&#8221; and &#8220;link.hub.table&#8221;.</p>
+<p>The part frame of the hub is not visible and thus it&#8217;s name is not displayed.</p>
+<p>There is no editor for the hub part. The only attributes that can be edited are its name and position which are edited using the <em>Object Properties</em> panel.</p>
+<div class="figure align-center" id="id1">
+<span id="fig-hub"></span><img alt="_images/part_hub.png" src="_images/part_hub.png" />
+<p class="caption"><span class="caption-number">Fig. 5.8 </span><span class="caption-text">The Hub part.</span></p>
+</div>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="function_part_ref.html" title="previous chapter">5.1.7. Function Part</a></li>
+      <li>Next: <a href="info_part_ref.html" title="next chapter">5.1.9. Information Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

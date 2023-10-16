@@ -1,0 +1,60 @@
+************************
+ORIGAME SOFTWARE LICENSE
+************************
+
+
+Ownership and Administration
+============================
+
+The ORIGAME software and all accompanying documentation and material (hereinafter
+called "the Software") are subject to copyright, with all rights reserved to Her
+Majesty the Queen in Right of Canada.
+
+The Software is administered by Defence Research & Development Canada (DRDC), located at
+60 Moodie Drive, Ottawa, Ontario, K1A 0K2.
+
+
+Approved Users
+==============
+
+The Software may only be used by the following individuals (hereinafter called "Approved Users"):
+
+1. Employees of the Government of Canada.
+
+2. Contractors that are currently engaged in a contract with the Government of
+   Canada and that have a requirement to use the Software in the execution of their work
+   for the Government of Canada.
+
+Individuals other than Approved Users may not use the Software and must destroy any copies of the
+Software in their possession unless they have obtained prior written permission from DRDC to use
+the Software.
+
+
+Approved Use
+============
+
+Users of the Software must adhere to the following restrictions regarding their use
+of the Software (herinafter called "Approved Use"):
+
+1. The Software must only be used to support the execution of work
+   for the Government of Canada.
+
+2. The Software must not be modified without prior written permission from DRDC.
+
+3. The Software must not be provided to others unless the recipients are
+   Approved Users and their use of the Software adheres with the Approved Use.
+
+4. Contractors must further adhere to the terms of their contract with the
+   Government of Canada with respect to their use of the Software.
+
+
+Contact
+=======
+
+    Stephen Okazawa
+    Defence Scientist, DRDC
+    101 Colonel By Drive, Ottawa, Ontario, K1A 0K2
+    Tel.: (613) 901-9772
+    E-mail: stephen.okazawa@forces.gc.ca
+
+

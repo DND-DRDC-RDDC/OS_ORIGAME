@@ -1,0 +1,43 @@
+/* This is a Qt style sheet (qss), which uses css syntax to create
+   selectors to change the look of widgets on an application-wide 
+   (or widget-local) basis.  
+*/
+
+/* Make Splitter handles between dockables visible in Main Window: */
+QMainWindow::separator {
+    background: rgb(213, 213, 213);
+    width: 6px; /* when vertical */
+    height: 6px; /* when horizontal */
+}
+
+/* Make QSplitter handles visible: */
+QSplitter::handle:vertical {
+    background: rgb(213, 213, 213);
+    height: 6px;
+}
+QSplitter::handle:horizontal {
+    background: rgb(213, 213, 213);
+    width: 6px;
+}
+
+/* Make input widgets appear greyed out if they are read-only. */
+QLineEdit:read-only {
+    color: grey;
+}
+QAbstractSpinBox[readOnly="true"]{
+	color: grey;
+}
+
+/* Rounded border around status bar items */
+QStatusBar::item {
+    border: 1px solid grey;
+    border-radius: 4px;
+}
+
+QStatusBar {
+    background: rgb(200, 200, 200);
+}
+
+/*QProgressBar {
+    margin: 5px;
+}*/

@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.16. SQL Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.2.17. Table Part" href="table_api.html" />
+    <link rel="prev" title="5.2.15. Sheet Part" href="sheet_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sql-part">
+<span id="sql-part-api"></span><h1>5.2.16. SQL Part<a class="headerlink" href="#sql-part" title="Permalink to this headline">¶</a></h1>
+<p>A <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part can be run by calling it from within the function part to which it is linked. It returns a <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> data set object which contains the result of the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> query.</p>
+<p><strong>link.&lt;sql_alias&gt;(&lt;parameters&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Execute the query.</li>
+<li>Parameters: The [object] list of &lt;parameters&gt; required by the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> part.</li>
+<li>Returns: A [object] <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> data set.</li>
+</ul>
+<p>The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> data set&#8217;s structure is a grid consisting of a list of lists. Two methods can be directly invoked on the Sql data set object:</p>
+<ol class="arabic simple">
+<li><em>get_table_name</em> which returns the name of the dynamically created table as a string,</li>
+<li><em>get_data</em> which returns a list of lists representing the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> query result.</li>
+</ol>
+<p>The <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> data set object can also be treated like other Python objects such as testing if something is <strong>in</strong> the object,  testing equality or inequality, getting or setting a subset of data in the object via an index (the index take the following forms: [int], [str], [int, int], [int, slice], [slice, int], or [slice, slice]), iterating over items in the object, converting the data inside the object to a string using Python&#8217;s <em>repr</em> method, and testing the length of the object using Python&#8217;s <em>len</em> method (len will return the number of rows unless there is only one row, in which case it will return the number of of columns).</p>
+<p>Each <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> by using link.<em>&lt;part_alias&gt;</em>.<em>&lt;scripting_api&gt;</em>, where <em>&lt;part_alias&gt;</em> is the link name, and <em>&lt;scripting_api&gt;</em> are the methods listed below:</p>
+<p><strong>sql_script</strong></p>
+<ul class="simple">
+<li>Property: Get or set the &lt;script&gt; used by this SQL part. e.g. script = sql.sql_script or sql.sql_script = script.</li>
+</ul>
+<p><strong>get_sql_script()</strong></p>
+<ul class="simple">
+<li>Description: Get the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> script.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [str] script that defines the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> statements.</li>
+</ul>
+<p><strong>set_sql_script(&lt;script&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Set the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> script.</li>
+<li>Parameters: Parameters: The [str] &lt;script&gt; that defines the <a class="reference internal" href="notes.html#term-sql"><span class="xref std std-term">SQL</span></a> statements.</li>
+<li>Returns: None.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="sheet_api.html" title="previous chapter">5.2.15. Sheet Part</a></li>
+      <li>Next: <a href="table_api.html" title="next chapter">5.2.17. Table Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

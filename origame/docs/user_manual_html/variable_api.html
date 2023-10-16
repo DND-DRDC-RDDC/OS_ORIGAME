@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.19. Variable Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="6. USING THE ORIGAME CONSOLE VARIANT" href="using the origame console variant.html" />
+    <link rel="prev" title="5.2.18. Time Part" href="time_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="variable-part">
+<h1>5.2.19. Variable Part<a class="headerlink" href="#variable-part" title="Permalink to this headline">¶</a></h1>
+<p>Each Variable Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a>:</p>
+<p><strong>link.&lt;var_alias&gt;</strong></p>
+<ul class="simple">
+<li>Description: Get the Python expression.</li>
+<li>Parameters: none.</li>
+<li>Returns: [str] the string returned by assignment.</li>
+</ul>
+<p><strong>link.&lt;var_alias&gt;= &lt;value&gt;</strong></p>
+<ul class="simple">
+<li>Description: Set the Python expression.</li>
+<li>Parameters: [object] a &lt;value&gt; to set to the variable part. The value set is the objects string representation (using &#8220;repr&#8221;).</li>
+<li>Returns: none.</li>
+</ul>
+<p><strong>obj</strong></p>
+<ul class="simple">
+<li>Property: Get or set the object, which is usually set by the script. e.g. the_obj = variable.obj or variable.obj = the_obj.</li>
+</ul>
+<p><strong>get_obj()</strong></p>
+<ul class="simple">
+<li>Description: Get the object, which is usually set by the script.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [object] to get. The value set is the objects string representation (using &#8220;repr&#8221;).</li>
+</ul>
+<p><strong>set_obj()</strong></p>
+<ul class="simple">
+<li>Description: Set the object, which is usually set by the script.</li>
+<li>Parameters: The [object] to set in the variable part. The value set is the objects string representation (using &#8220;repr&#8221;).</li>
+<li>Returns: None.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="time_api.html" title="previous chapter">5.2.18. Time Part</a></li>
+      <li>Next: <a href="using the origame console variant.html" title="next chapter">6. USING THE ORIGAME CONSOLE VARIANT</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

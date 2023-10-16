@@ -1,0 +1,31 @@
+{
+    "auto_seed": false,
+    "batch_runs_path": null,
+    "num_cores_wanted": 0,
+    "num_replics_per_variant": 4,
+    "num_variants": 1,
+    "replic_steps": null,
+    "save_scen_on_exit": false,
+    "seed_table": [
+        [
+            1,
+            1,
+            6202361
+        ],
+        [
+            1,
+            2,
+            6668942
+        ],
+        [
+            1,
+            3,
+            2118745
+        ],
+        [
+            1,
+            4,
+            2824743
+        ]
+    ]
+}

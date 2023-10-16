@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.1.15. Sheet Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.1.16. SQL Part" href="sql_part_ref.html" />
+    <link rel="prev" title="5.1.14. Pulse Part" href="pulse_part_ref.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sheet-part">
+<span id="sheet-part-ref"></span><h1>5.1.15. Sheet Part<a class="headerlink" href="#sheet-part" title="Permalink to this headline">¶</a></h1>
+<p>The sheet part is used to display and manipulate two-dimensional grids of cells similar to a spreadsheet. Cells within the sheet can be indexed by wiring to the sheet from a function part and using 0-based array indexing. For example, a function part that is linked to a sheet part with alias &#8220;sheet&#8221; can assign a new value to the cell at row 0 and column 2 with the following statement:</p>
+<p><em>link.sheet[0,2] = float(value)</em>,</p>
+<p>where <em>value</em> is a parameter of the function part. Python slice notation can be used to select ranges within the sheet. For example,</p>
+<p><em>link.sheet[:2,:2] = link.sheet[:2,8:10]</em>,</p>
+<p>will copy the 2x2 range from one area of the sheet to another. By default, sheet cells can also be indexed using <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Excel-style column-letter, row-number ranges. For example, the first-row, third-column would be indexed using <em>link.sheet[&#8216;C1&#8217;]</em>. Excel-style ranges, e.g. <em>link.sheet[&#8216;A1:C8&#8217;]</em> are also supported. Sheet columns can also be given optional custom names which may be used in place of the column letter. The &#8220;set_col_name()&#8221; function can be used set a column name. For example, if a sheet is given a custom column named &#8220;rank&#8221;, the fifth element within with this column can be indexed using <em>link.sheet[&#8216;rank5&#8217;]</em>. Array-based indexing is enabled with the <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> command <em>link.sheet.set_index_style(&#8216;array&#8217;)</em>. This can be restored to Excel style with the call <em>link.sheet.set_index_style(&#8216;excel&#8217;)</em>.</p>
+<p>Double-clicking the sheet part or right-clicking and selecting &#8220;Edit...&#8221; opens the editor dialog (see <a class="reference internal" href="using origame.html#ref-part-edit"><span class="std std-ref">Part Editing, and Undo, Redo Commands</span></a>) that displays the content shown in <a class="reference internal" href="#fig-sheet-part-and-editor"><span class="std std-numref">Figure 5.15</span></a>, where the data in the sheet part can be manually edited. By clicking into the sheet cells the values can be changed directly. The dialog provides the following data editing options:</p>
+<ul class="simple">
+<li>Edit tab: tools to insert before or after (row if row selected, or column if column selected), select all, cut, copy, paste, and delete,</li>
+<li>Excel tab: tools for importing and exporting,</li>
+<li>Size tab: tools for changing sheet dimensions.</li>
+</ul>
+<div class="figure align-center" id="id1">
+<span id="fig-sheet-part-and-editor"></span><img alt="_images/part_and_editor_sheet.png" src="_images/part_and_editor_sheet.png" />
+<p class="caption"><span class="caption-number">Fig. 5.15 </span><span class="caption-text">The Sheet part and editor dialog.</span></p>
+</div>
+<p>Edit tab options become available or are disabled depending on how the sheet&#8217;s cells, rows, or columns are selected. If nothing is selected in the sheet, all Edit tab options, except <em>Select All</em> are disabled. The following list overviews which Edit options become available depending on what is selected in the sheet:</p>
+<ul class="simple">
+<li><em>Insert Before</em> or <em>Insert After</em>: are active only if an entire row or entire column is selected. Rows and/or columns can be selected by either clicking the row number or column header, respectively, or left-clicking and dragging the mouse along the row or column to select.</li>
+<li><em>Cut</em>, <em>Copy</em>, <em>Paste</em>, <em>Delete</em>: are active if at least one cell has been selected and will also work on full or partial row or column selections. These options work on the contents of the cells. However, the exception is the <em>Delete</em> button, which will remove the selected row(s) or column(s), if a full row or set of rows, or a full column or set of columns, is selected. Otherwise, only the cell contents will be deleted (deleted cells have zeros inserted).</li>
+<li><em>Select All</em>: always active.</li>
+</ul>
+<p>The Excel tab provides options for importing from, and exporting to, <a class="reference internal" href="notes.html#term-ms"><span class="xref std std-term">MS</span></a> Excel spreadsheets. These options are also available from the part&#8217;s context menu.</p>
+<blockquote>
+<div><ul class="simple">
+<li>To import, use the dialog to select an Excel spreadsheet, and click the <em>List Sheets</em> button to list its sheets. Select a sheet to import from the drop down menu. Additionally, an optional range can be input using standard Excel notation, i.e. A1:C3 specifies column contents from A to C and row contents from 1 to 3. If you click OK, the editor&#8217;s current sheet data will be completely discarded, and the sheet populated with data from the chosen Excel spreadsheet. Both Excel <a class="reference internal" href="notes.html#term-xls"><span class="xref std std-term">XLS</span></a> and <a class="reference internal" href="notes.html#term-xlsx"><span class="xref std std-term">XLSX</span></a> formats are supported for import.</li>
+<li>To export, use the dialog to select a new or existing Excel spreadsheet to export to. If the spreadsheet exists, a list of its existing sheets will be displayed that allow a specific sheet to be the target of the export. A new sheet can also be selected from the list and will appear by default at the top of the list of sheets with the moniker &#8220;New&#8221;. The exported contents will be inserted into the Excel sheet at cell A1 by default. The export range specifies where in the Excel sheet the sheet part&#8217;s data should be inserted and can therefore be used to avoid overwriting data in existing sheets. By default, the entire contents of the sheet part will be exported, however, the range can also be used to clip the sheet part&#8217;s data since only the part data that fits within the dimensions specified by the export range will be exported (the sheet data that is exported always starts at the top left and moves right and down to the end of the range). Only Excel <a class="reference internal" href="notes.html#term-xls"><span class="xref std std-term">XLS</span></a> format is supported for export.</li>
+</ul>
+</div></blockquote>
+<p>The Size tab provides two spin boxes to increase or decrease the sheet dimensions by using either the up or down scroll buttons on the right of the box or by typing the new value directly. The sheet dimensions will change when either <em>Enter</em> or <em>Return</em> are pressed or the mouse clicks elsewhere in the editor. <strong>Note that if the row or column size is reduced, the contents of those cells are lost unless the editor panel is closed or cancelled and changes discarded. The values of removed rows or columns cannot be retrieved by increasing the size dimension after it has been decreased</strong>.</p>
+<p>Clicking on Part Help opens this page.</p>
+<p><a class="reference internal" href="using parts.html#part-ref"><span class="std std-ref">Using Parts</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="pulse_part_ref.html" title="previous chapter">5.1.14. Pulse Part</a></li>
+      <li>Next: <a href="sql_part_ref.html" title="next chapter">5.1.16. SQL Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

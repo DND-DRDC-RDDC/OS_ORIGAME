@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5.2.14. Pulse Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8.0 beta (2023-03-02)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="up" title="5. USING PARTS" href="using parts.html" />
+    <link rel="next" title="5.2.15. Sheet Part" href="sheet_api.html" />
+    <link rel="prev" title="5.2.13. Plot Part" href="plot_api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pulse-part">
+<span id="pulse-part-api"></span><h1>5.2.14. Pulse Part<a class="headerlink" href="#pulse-part" title="Permalink to this headline">¶</a></h1>
+<p>Each Pulse Part exposes the following functionality to scripting <a class="reference internal" href="notes.html#term-api"><span class="xref std std-term">API</span></a> by using link.<em>&lt;part_alias&gt;</em>.<em>&lt;scripting_api&gt;</em>, where <em>&lt;part_alias&gt;</em> is the link name, and <em>&lt;scripting_api&gt;</em> are the methods listed below:</p>
+<p><strong>pulse_period_days</strong></p>
+<ul class="simple">
+<li>Property: Get or set the pulse &lt;period&gt; of the pulse part. e.g. period = pulse.pulse_period_days or pulse.pulse_period_days = period.</li>
+</ul>
+<p><strong>get_pulse_period_days()</strong></p>
+<ul class="simple">
+<li>Description: Get the pulse period.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [float] pulse period in units of days.</li>
+</ul>
+<p><strong>set_pulse_period_days(&lt;period&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Sets the pulse period.</li>
+<li>Parameters: The [float] pulse period in units of days.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>state</strong></p>
+<ul class="simple">
+<li>Property: Get or set the pulse &lt;state&gt; of the pulse part. e.g. state = pulse.state or pulse.state = state.</li>
+</ul>
+<p><strong>get_state()</strong></p>
+<ul class="simple">
+<li>Description: Get the part&#8217;s state.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [PulsePartState] state of the part specified as the enumeration PulsePartState which can be either &#8216;active&#8217; or &#8216;inactive&#8217;.</li>
+</ul>
+<p><strong>set_state(&lt;state&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Sets the pulse period.</li>
+<li>Parameters: The [PulsePartState] state of the part specified as the enumeration PulsePartState which can be either &#8216;active&#8217; or &#8216;inactive&#8217;.</li>
+<li>Returns: None.</li>
+</ul>
+<p><strong>priority</strong></p>
+<ul class="simple">
+<li>Property: Get or set the pulse &lt;priority&gt; of the pulse part. e.g. priority = pulse.priority or pulse.priority = priority.</li>
+</ul>
+<p><strong>get_priority()</strong></p>
+<ul class="simple">
+<li>Description: Get the pulse priority.</li>
+<li>Parameters: None.</li>
+<li>Returns: The [float] pulse priority which is specified as a floating point value ranging from 0.0 to a maximum of one million.</li>
+</ul>
+<p><strong>set_priority(&lt;priority&gt;)</strong></p>
+<ul class="simple">
+<li>Description: Sets the pulse priority.</li>
+<li>Parameters: The [float] pulse priority which is specified as a floating point value ranging from 0.0 to a maximum of one million.</li>
+<li>Returns: None.</li>
+</ul>
+<p><a class="reference internal" href="using parts.html#part-api"><span class="std std-ref">Part API</span></a></p>
+<p><a class="reference internal" href="index.html#toc"><span class="std std-ref">Table of Contents</span></a></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="using parts.html">5. USING PARTS</a><ul>
+      <li>Previous: <a href="plot_api.html" title="previous chapter">5.2.13. Plot Part</a></li>
+      <li>Next: <a href="sheet_api.html" title="next chapter">5.2.15. Sheet Part</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
