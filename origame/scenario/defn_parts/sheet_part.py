@@ -29,6 +29,7 @@ from datetime import datetime
 
 # [2. third-party]
 from xlrd import open_workbook, xldate, XLRDError, XL_CELL_DATE
+from openpyxl import load_workbook
 from xlwt import Workbook
 from xlutils.copy import copy as xl_copy
 from copy import deepcopy
@@ -359,18 +360,15 @@ def read_from_excel(xls_file: str, xls_sheet: str, xls_range: str, accept_empty_
     # retrieve the data and store in a 2d list
     try:
         log.info("Reading from Excel file: {}, sheet: {}, range: {}", xls_file, xls_sheet, xls_range)
-        wb = open_workbook(xls_file)
-        sh = wb.sheet_by_name(xls_sheet)
+        wb = load_workbook(xls_file, data_only=True)
+        sh = wb[xls_sheet]
 
         # convert range to rows and cols
         # if range is None, get all items in the sheet
         if xls_range == '':
-            col1 = 0
-            row1 = 0
-            col2 = sh.ncols - 1
-            row2 = sh.nrows - 1
+            cr = sh.rows
         else:
-            row1, col1, row2, col2 = translate_excel_range(xls_range)
+            cr = sh[xls_range]
 
     except FileNotFoundError:
         log.error("read_from_excel() error. File not found: {}", xls_file)
@@ -386,30 +384,17 @@ def read_from_excel(xls_file: str, xls_sheet: str, xls_range: str, accept_empty_
         raise ExcelReadError("read_from_excel() error. Invalid sheet range. File: {}, Sheet: {}, Range: {}. "
                              "More info: {}".format(xls_file, xls_sheet, xls_range, e))
 
-    # validate that the sheet contains data in the requested range before commencing.
-    if row1 > sh.nrows or row2 > sh.nrows or col1 > sh.ncols or col2 > sh.ncols:
-        log.error("read_from_excel() error. Specified cell range is beyond the limits of the Excel "
-                  "sheet data. File: {}, Sheet: {}, Range: {}", xls_file, xls_sheet, xls_range)
-        raise ExcelReadError("read_from_excel() error. Specified cell range is beyond "
-                             "the limits of the Excel sheet data. File: {}, "
-                             "Sheet: {}, Range: {}".format(xls_file, xls_sheet, xls_range))
-
     # setup the grid and store the excel data
-    num_rows = row2 - row1 + 1
-    num_cols = col2 - col1 + 1
-
-    data = [([SheetPart.DEFAULT_CELL_VAL] * num_cols) for _ in range(num_rows)]
+    data = []
 
     # read the excel data into local array
-    for row in range(num_rows):
-        for col in range(num_cols):
+    for row in cr:
+        data.append([])
+        for col in row:
             try:
-                if sh.cell_value(row1 + row, col1 + col) != '' or accept_empty_cells:
-                    value = sh.cell_value(row1 + row, col1 + col)
-                    if sh.cell_type(row1 + row, col1 + col) == XL_CELL_DATE:
-                        data[row][col] = xldate.xldate_as_datetime(value, wb.datemode).strftime(DATE_FORMAT)
-                    else:
-                        data[row][col] = value
+                value = col.value
+                if value != '' or accept_empty_cells:
+                    data[-1].append(value)
 
             except IndexError:
                 data[row][col] = ''
