@@ -438,7 +438,7 @@ class Replication:
         # assert Path(replic_folder).parent.parent == Path(scen_path).parent
         self.__scenario_mgr.config_logging(batch_config)
         self.__scenario_mgr.set_future_anim_mode_constness(False)
-        scen = self.__scenario_mgr.load(batch_config.scen_path)
+        scen, _ = self.__scenario_mgr.load(batch_config.scen_path)
         assert scen.scenario_def.root_actor.anim_mode is False
         # WARNING: due to setup_variant() re-importing modules, we cannot provide the file_type here, it will not
         # compare equal. Instead we let batch_data module infer it.
