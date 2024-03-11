@@ -162,9 +162,9 @@ class Ui_SimulationEventQueueItemDialog(object):
         self.formLayout.setLayout(5, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2)
 
         self.retranslateUi(SimulationEventQueueItemDialog)
-        self.ok_cancel_button_box.accepted.connect(SimulationEventQueueItemDialog.accept)
-        self.ok_cancel_button_box.rejected.connect(SimulationEventQueueItemDialog.reject)
-        self.asap_check_box.toggled['bool'].connect(self.priority_double_spin_box.setDisabled)
+        self.ok_cancel_button_box.accepted.connect(SimulationEventQueueItemDialog.accept) # type: ignore
+        self.ok_cancel_button_box.rejected.connect(SimulationEventQueueItemDialog.reject) # type: ignore
+        self.asap_check_box.toggled['bool'].connect(self.priority_double_spin_box.setDisabled) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(SimulationEventQueueItemDialog)
         SimulationEventQueueItemDialog.setTabOrder(self.path_line_edit, self.name_line_edit)
         SimulationEventQueueItemDialog.setTabOrder(self.name_line_edit, self.param_line_edit)
@@ -185,7 +185,7 @@ class Ui_SimulationEventQueueItemDialog(object):
         self.label_4.setText(_translate("SimulationEventQueueItemDialog", "Arguments:"))
         self.label.setText(_translate("SimulationEventQueueItemDialog", "Time:"))
         self.label_2.setText(_translate("SimulationEventQueueItemDialog", "Priority:"))
-        self.label_6.setText(_translate("SimulationEventQueueItemDialog", "dddd"))
+        self.label_6.setText(_translate("SimulationEventQueueItemDialog", "ddddddddd"))
         self.label_7.setText(_translate("SimulationEventQueueItemDialog", "hh"))
         self.label_8.setText(_translate("SimulationEventQueueItemDialog", "mm"))
         self.label_9.setText(_translate("SimulationEventQueueItemDialog", "ss"))

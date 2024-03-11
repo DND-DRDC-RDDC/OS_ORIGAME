@@ -76,7 +76,7 @@ def convert_qcolor_to_hex(q_color: QColor) -> str:
 def convert_float_days_to_string(days_as_float: float) -> str:
     """
     :param days_as_float:  A floating point number in days.
-    :return: A string representation in days in the format dddd hh:mm:ss.
+    :return: A string representation in days in the format ddddddddd hh:mm:ss.
     """
     if days_as_float is None:
         return ""
@@ -85,7 +85,7 @@ def convert_float_days_to_string(days_as_float: float) -> str:
     hours, minutes = divmod(time_delta.seconds / MINUTES_PER_HOUR, SECONDS_PER_MINUTE)
     seconds = (minutes - math.floor(minutes)) * SECONDS_PER_MINUTE
 
-    time_str = '{:04} {:02}:{:02}:{:02}'.format(time_delta.days, int(hours), math.floor(minutes), round(seconds))
+    time_str = '{:09} {:02}:{:02}:{:02}'.format(time_delta.days, int(hours), math.floor(minutes), round(seconds))
 
     return time_str
 
@@ -108,7 +108,7 @@ def convert_days_to_time_components(days_as_float: float) -> Tuple[int, int, int
 def convert_seconds_to_string(seconds: int) -> str:
     """
     :param seconds:  An integer number in seconds.
-    :return: A string representation in days in the format dddd hh:mm:ss.
+    :return: A string representation in days in the format ddddddddd hh:mm:ss.
     """
     if seconds is None:
         return ""
@@ -117,7 +117,7 @@ def convert_seconds_to_string(seconds: int) -> str:
     hours, remainder = divmod(seconds, SECONDS_PER_HOUR)
     minutes, seconds = divmod(remainder, SECONDS_PER_MINUTE)
 
-    time_str = '{:04} {:02}:{:02}:{:02}'.format(days, hours % HOURS_PER_DAY, minutes % MINUTES_PER_HOUR,
+    time_str = '{:09} {:02}:{:02}:{:02}'.format(days, hours % HOURS_PER_DAY, minutes % MINUTES_PER_HOUR,
                                                 seconds % SECONDS_PER_MINUTE)
 
     return time_str
@@ -126,7 +126,7 @@ def convert_seconds_to_string(seconds: int) -> str:
 def get_time_components_as_float(time: str) -> float:
     """
     This method is used to get individual time components given a string in the
-    format 'dddd hh:mm:ss'.  Here are some examples of inputs and outputs:
+    format 'ddddddddd hh:mm:ss'.  Here are some examples of inputs and outputs:
 
      Input                          Output
 
@@ -136,12 +136,12 @@ def get_time_components_as_float(time: str) -> float:
     11 05:02     -> days=11.0, hours=5.0, minutes=2.0, seconds=0.0
     11 05:02:09  -> days=11.0, hours=5.0, minutes=2.0, seconds=9.0
 
-    :param time: The time to get the components for.  Supported formats include dddd hh:mm:ss,
-        dddd, dddd hh, and dddd hh:mm
+    :param time: The time to get the components for.  Supported formats include ddddddddd hh:mm:ss,
+        ddddddddd, ddddddddd hh, and ddddddddd hh:mm
     :return: Individual time components as days, hours, minutes and seconds.
     """
 
-    pattern = re.compile(r'^(\d{0,4})\s?(\d{0,2}):?(\d{0,2}):?(\d{0,2})')
+    pattern = re.compile(r'^(\d{0,9})\s?(\d{0,2}):?(\d{0,2}):?(\d{0,2})')
     matcher = pattern.match(time)
 
     days = 0.0
@@ -163,7 +163,7 @@ def get_time_components_as_float(time: str) -> float:
 
 def convert_string_into_seconds(time: str) -> int:
     """
-    Convert a string in the format 'dddd hh:mm:ss' to an int in seconds.
+    Convert a string in the format 'ddddddddd hh:mm:ss' to an int in seconds.
     :param time: The string to convert.
     :return: Total number of strings represented in the 'time' variable.
     """
@@ -178,7 +178,7 @@ def convert_string_into_seconds(time: str) -> int:
 
 def convert_string_to_float(time: str) -> float:
     """
-    :param time:  A string time represented as dddd hh:mm:ss.
+    :param time:  A string time represented as ddddddddd hh:mm:ss.
     :return: A floating point integer of the string in days.
     """
     if not time:
