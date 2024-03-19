@@ -1165,10 +1165,10 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
         current_level = ifx_levels_labels[current_actor.name]
         max_level = max(ifx_levels_labels.values())
 
-        if current_level > self.__ifx_level and self.__ifx_level != max_level - 1:
+        if current_level > self.__ifx_level and self.__ifx_level != (max_level - 1):
             context_menu.addAction(self.__add_to_parent_interface_action)
 
-        if self.__ifx_level > current_level and current_level != max_level - 1:
+        if self.__ifx_level > current_level and current_level != (max_level - 1):
             context_menu.addAction(self.__remove_from_parent_interface_action)
 
     @override(QGraphicsItem)
