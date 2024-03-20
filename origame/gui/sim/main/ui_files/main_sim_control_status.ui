@@ -186,7 +186,7 @@
                 <item>
                  <widget class="QLabel" name="max_sim_time_label">
                   <property name="text">
-                   <string>0000 00:00:00</string>
+                   <string>000000000 00:00:00</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -218,7 +218,7 @@
                 <item>
                  <widget class="QLabel" name="max_wall_clock_time_label">
                   <property name="text">
-                   <string>0000 00:00:00</string>
+                   <string>000000000 00:00:00</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -346,7 +346,7 @@
                 <item>
                  <widget class="QLabel" name="sim_time_label">
                   <property name="text">
-                   <string>0000 00:00:00</string>
+                   <string>000000000 00:00:00</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -378,7 +378,7 @@
                 <item>
                  <widget class="QLabel" name="wall_clock_time_label">
                   <property name="text">
-                   <string>0000 00:00:00</string>
+                   <string>000000000 00:00:00</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

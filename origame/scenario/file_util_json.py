@@ -28,7 +28,7 @@ import datetime
 
 # [3. local]
 from ..core import override
-from ..core.typing import Tuple
+from ..core.typing import Tuple, List
 from .file_util_base import ScenarioReaderWriter
 from .ori import OriScenData, SaveError, SaveErrorLocationEnum
 
@@ -79,7 +79,7 @@ class ScenFileUtilJsonOri(ScenarioReaderWriter):
     """
 
     @override(ScenarioReaderWriter)
-    def _load_from_file(self, pathname: Path) -> Tuple[OriScenData, list[str]]:
+    def _load_from_file(self, pathname: Path) -> Tuple[OriScenData, List[str]]:
         """
         :raises: ValueError. This error is raised by the JSON interpreter if a parsing error occurs while the file
             is being loaded.

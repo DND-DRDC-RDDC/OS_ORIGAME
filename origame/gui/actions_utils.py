@@ -246,7 +246,7 @@ def get_labels_ifx_ports(part: BasePart, actor: ActorPart) -> Tuple[IfxLevelLabe
 
     return ifx_labels, view_ifx_level
 
-def get_batch_folders(scenario_path: path) -> list[str]:
+def get_batch_folders(scenario_path: path) -> List[str]:
     """
     Returns the list of batch folders in the given location.
     :param scenario_path: Location of the current open scenario

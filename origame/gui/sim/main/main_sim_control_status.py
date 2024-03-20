@@ -114,7 +114,7 @@ class EditTimeDialog(SimDialog):
             """
             if time is not None:
                 if self.__time_dialog_type == self.TimeDialogTypeEnum.edit_max_wall_clock_time_dialog:
-                    # If time is seconds, conver to days
+                    # If time is seconds, convert to days
                     time /= SECONDS_PER_DAY  # [sec] -> [days]
 
                 days, hours, minutes, seconds = convert_days_to_time_components(time)
@@ -544,7 +544,7 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
 
     def __on_reset_sim_time_clicked(self):
         """Requests the Sim Controller to zero the elapsed simulation time."""
-        msg = "The elapsed simulation time will be set to 0000 00:00:00.  Are you sure you wish to proceed?"
+        msg = "The elapsed simulation time will be set to 000000000 00:00:00.  Are you sure you wish to proceed?"
         if exec_modal_dialog("Zero Simulation Time", msg, icon=QMessageBox.Question) == QMessageBox.Yes:
             AsyncRequest.call(self.__sim_controller.reset_sim_time)
 
@@ -560,7 +560,7 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
 
     def __on_reset_wall_clock_time_clicked(self):
         """Requests the Sim Controller to zero the elapsed wall clock time."""
-        msg = "The elapsed wall clock time will be set to 0000 00:00:00.  Are you sure you wish to proceed?"
+        msg = "The elapsed wall clock time will be set to 000000000 00:00:00.  Are you sure you wish to proceed?"
         if exec_modal_dialog("Zero Wall Clock Time", msg, icon=QMessageBox.Question) == QMessageBox.Yes:
             AsyncRequest.call(self.__sim_controller.reset_wall_clock_time)
 
