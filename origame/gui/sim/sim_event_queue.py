@@ -79,7 +79,7 @@ class RowItem(QObject):
     Each row item contains seven cells that display a piece of the event information. Each cell is a QTableWidgetItem
     that display the following event information:
         - Event ID: [int] a unique number used to identify the event (not displayed but used to look-up the event)
-        - Event time: [str] a time stamp formatted as days and then hours: minutes: seconds. e.g. 'dddd hh:mm:ss'
+        - Event time: [str] a time stamp formatted as days and then hours: minutes: seconds. e.g. 'ddddddddd hh:mm:ss'
         - Event priority: [str] the event priority from 0 (low) to 1,000,000 (high) or ASAP (1 million +1)
         - Part name: [str] the executable part responsible for generating this event
         - Part type: [str] the type of executable part including 'function', 'SQL', and 'multiplier' parts
