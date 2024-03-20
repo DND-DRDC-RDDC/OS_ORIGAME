@@ -133,7 +133,7 @@ class ScenarioReaderWriter:
 
         log.info('Scenario file saved: {}', path)
 
-    def find_save_error_objs(self, data: any) -> list[str]:
+    def find_save_error_objs(self, data: any) -> List[str]:
         '''Returns the list of SaveError objects to be saved in the file or loaded from the file'''
         non_serialized_obj = []
     

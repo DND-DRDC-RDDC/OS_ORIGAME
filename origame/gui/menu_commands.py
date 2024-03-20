@@ -409,7 +409,7 @@ class ScenarioManagerBridge(QObject):
             get_progress_bar().stop_progress()
             exec_modal_dialog("Load Error", err_info.msg, QMessageBox.Critical)
 
-        def on_load_completed(scenario: Scenario, non_serialized_obj: list[str]):
+        def on_load_completed(scenario: Scenario, non_serialized_obj: List[str]):
             get_progress_bar().stop_progress()
             scene_undo_stack().clear()
 
@@ -586,7 +586,7 @@ class ScenarioManagerBridge(QObject):
             # Save operation still incomplete, check back in a 100 millisecs
             QTimer.singleShot(100, lambda: self.__check_save_success(on_save_complete))
 
-    def __save_successful(self, non_serialized_obj: list[str]):
+    def __save_successful(self, non_serialized_obj: List[str]):
         """
         This function is an response callback for the asynchronous save call made to the backend. It sets a flag that
         function __check_save_success() depends on for monitoring save status.

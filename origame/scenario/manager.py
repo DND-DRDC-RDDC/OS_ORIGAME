@@ -371,7 +371,7 @@ class ScenarioManager:
         log.info("New scenario creation completed")
         return self.__scenario
 
-    def load(self, path: PathType) -> Tuple[Scenario, list[str]]:
+    def load(self, path: PathType) -> Tuple[Scenario, List[str]]:
         """
         This function loads the scenario file from the specified path and returns the loaded data in the form of a
         Scenario object.
@@ -414,7 +414,7 @@ class ScenarioManager:
 
         return self.__scenario, non_serialized_obj
 
-    def save(self, path: PathType = None) -> list[str]:
+    def save(self, path: PathType = None) -> List[str]:
         """
         This function saves the current scenario to the specified path. The function serves double-duty for 'save' and
         'save as' operations. If a file already exists at the specified path it will be overwritten without warning.
@@ -529,7 +529,7 @@ class ScenarioManager:
 
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
-    def __load_ori(self, path: Path) -> Tuple[OriScenData, Path, list[str]]:
+    def __load_ori(self, path: Path) -> Tuple[OriScenData, Path, List[str]]:
         """
         This function loads the scenario file corresponding to the specified path and returns the scenario in Python
         dictionary format.
@@ -575,7 +575,7 @@ class ScenarioManager:
 
         return ori_scenario, path, non_serialized_obj
 
-    def __save_ori(self, path: Path, scenario: Scenario) -> list[str]:
+    def __save_ori(self, path: Path, scenario: Scenario) -> List[str]:
         """
         Save a scenario instance to file system.
         :param path: path to .ORI file in which to save scenario

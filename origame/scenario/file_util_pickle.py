@@ -65,7 +65,7 @@ class ScenFileUtilPickle(ScenarioReaderWriter):
     """
 
     @override(ScenarioReaderWriter)
-    def _load_from_file(self, pathname: Path) -> Tuple[OriScenData, list[str]]:
+    def _load_from_file(self, pathname: Path) -> Tuple[OriScenData, List[str]]:
         with pathname.open("rb") as file_obj:
             ori = pickle.load(file_obj)
 
