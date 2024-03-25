@@ -209,19 +209,19 @@ def get_labels_ifx_levels(part: BasePart) -> List[Tuple[int, str]]:
 
     return ifx_labels
 
-def get_ifx_levels_labels(part: BasePart) -> Dict[int, str]:
+def get_labels_actor_parts(part: BasePart) -> Dict[ActorPart, int]:
     """
-    Returns a dictionary of labels showing the ifx level as key and corresponding actor part name as value for each part
-    in the hierarchy from part to root. They are returned in reverse order since the root is always shown first.
+    Returns a dictionary of labels showing the actor part as key and the corresponding ifx level as the value for each
+    part in the hierarchy from part to root. They are returned in reverse order since the root is always shown first.
     Format:
-        {root: 3, child1: 2, child11: 1, child111: 0}
+        {<ActorPart A>: 3, <ActorPart B>: 2, <ActorPart C>: 1, <ActorPart D>: 0}
     """
     ifx_labels = {}
     parts_path = part.get_parts_path(with_root=True)
     max_levels = len(parts_path) - 1
     for index, parent_actor in enumerate(parts_path):
         ifx_level = max_levels - index
-        ifx_labels[parent_actor.name] = ifx_level
+        ifx_labels[parent_actor] = ifx_level
 
     return ifx_labels
 

@@ -39,7 +39,7 @@ from ..gui_utils import PROXIMITY_MARGIN_LEFT, PROXIMITY_MARGIN_RIGHT, PROXIMITY
 from ..gui_utils import exec_modal_dialog, LINK_CREATION_ACTION_ITEM_WIDTH, LINK_CREATION_ACTION_ITEM_HEIGHT
 from ..conversions import map_from_scenario, SCALE_FACTOR
 from ..safe_slot import safe_slot, ext_safe_slot
-from ..actions_utils import create_action, verify_ifx_level_change_ok, get_ifx_levels_labels
+from ..actions_utils import create_action, verify_ifx_level_change_ok, get_labels_actor_parts
 from ..undo_manager import RemovePartCommand, ChangeIfxLevelCommand, scene_undo_stack
 from ..part_editors.common_part_help import PartHelp
 from ..part_editors import get_part_editor_class
@@ -351,10 +351,10 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
 
         context_menu.addSeparator()
 
-        ifx_levels_labels = get_ifx_levels_labels(self.__part)
+        ifx_levels_labels = get_labels_actor_parts(self.__part)
 
         current_actor = scene_undo_stack().get_actor_2d_panel().get_current_scene().content_actor
-        current_level = ifx_levels_labels[current_actor.name]
+        current_level = ifx_levels_labels[current_actor]
         max_level = max(ifx_levels_labels.values())
 
         if current_level > self.__ifx_level and self.__ifx_level != (max_level - 1):
@@ -593,10 +593,10 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
             scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, self.__ifx_level + 1))
 
     def on_remove_from_parent_interface(self):
-        ifx_levels_labels = get_ifx_levels_labels(self.__part)
+        ifx_levels_labels = get_labels_actor_parts(self.__part)
 
         current_actor = scene_undo_stack().get_actor_2d_panel().get_current_scene().content_actor
-        current_level = ifx_levels_labels[current_actor.name]
+        current_level = ifx_levels_labels[current_actor]
 
         if verify_ifx_level_change_ok(self.__part, current_level):
             scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, current_level))

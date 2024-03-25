@@ -35,7 +35,7 @@ from ...core.typing import AnnotationDeclarations
 from ...scenario.defn_parts import PartFrame, PartLink, BasePart, DetailLevelEnum
 from ..part_editors import get_part_editor_class
 from ..undo_manager import SwitchIfxPortSideCommand, ChangeIfxLevelCommand, VerticalMoveIfxCommand, scene_undo_stack
-from ..actions_utils import verify_ifx_level_change_ok, get_labels_ifx_levels, get_labels_ifx_ports, get_ifx_levels_labels
+from ..actions_utils import verify_ifx_level_change_ok, get_labels_ifx_levels, get_labels_ifx_ports, get_labels_actor_parts
 from ..gui_utils import ITEM_SPACE, get_icon_path, part_image, OBJECT_NAME
 from ..gui_utils import IFX_TEXT_COLOR, PART_ITEM_BORDER_WIDTH, HIGHLIGHTED_BORDER_COLOR, IFX_BAR_TEXT_SIZE
 from ..gui_utils import IFX_BACKGROUND_COLOR, IFX_TEXT_SIZE
@@ -1159,10 +1159,10 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
 
         self._populate_create_missing_link_menu(context_menu, end_callback=populate_more_menu_items)
 
-        ifx_levels_labels = get_ifx_levels_labels(self.__part)
+        ifx_levels_labels = get_labels_actor_parts(self.__part)
 
         current_actor = scene_undo_stack().get_actor_2d_panel().get_current_scene().content_actor
-        current_level = ifx_levels_labels[current_actor.name]
+        current_level = ifx_levels_labels[current_actor]
         max_level = max(ifx_levels_labels.values())
 
         if current_level > self.__ifx_level and self.__ifx_level != (max_level - 1):
@@ -1369,10 +1369,10 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
             scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, self.__ifx_level + 1))
 
     def __on_remove_from_parent_interface(self):
-        ifx_levels_labels = get_ifx_levels_labels(self.__part)
+        ifx_levels_labels = get_labels_actor_parts(self.__part)
 
         current_actor = scene_undo_stack().get_actor_2d_panel().get_current_scene().content_actor
-        current_level = ifx_levels_labels[current_actor.name]
+        current_level = ifx_levels_labels[current_actor]
 
         if verify_ifx_level_change_ok(self.__part, current_level):
             scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, current_level))
