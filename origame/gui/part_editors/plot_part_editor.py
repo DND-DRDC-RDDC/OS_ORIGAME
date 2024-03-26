@@ -315,7 +315,16 @@ class PlotPartEditorPanel(PythonScriptEditor):
         self.plot_preview_panel.draw_unrefreshed_plot("Update pending...")
         self.plot_preview_panel.script = self.ui.code_editor.text()
         self.plot_preview_panel.update()
-        self.__part.dpi = int(self.plot_dpi_widget.ui.resolution_combobox.currentText())
+
+        __new_dpi = self.plot_dpi_widget.ui.resolution_combobox.currentText()
+        try:
+            self.__part.dpi = int(__new_dpi)
+        # If the plot's dpi is None, the following error will be thrown:
+        # ValueError: invalid literal for int() with base 10: 'None'
+        except ValueError: 
+            __new_dpi = 100
+            self.__part.dpi = __new_dpi
+            self.plot_dpi_widget.ui.resolution_combobox.setCurrentText(str(__new_dpi))
 
     __slot_on_update_button_clicked = safe_slot(__on_update_button_clicked)
 

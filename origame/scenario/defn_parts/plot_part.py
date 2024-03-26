@@ -450,6 +450,9 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         try once more. Any exception raised in the script will get trapped and
         put in the part's last_exec_error_info property. No exceptions should escape from this method.
         """
+        if not self.dpi:
+            self.dpi = 100
+
         self.__figure.set_dpi(self.dpi)
 
         if self.__try_reset_fig:
