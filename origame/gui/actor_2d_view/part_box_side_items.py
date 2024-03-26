@@ -1168,7 +1168,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
         if current_level > self.__ifx_level and self.__ifx_level != (max_level - 1):
             context_menu.addAction(self.__add_to_parent_interface_action)
 
-        if self.__ifx_level > current_level and current_level != (max_level - 1):
+        if self.__ifx_level > (current_level - 1):
             context_menu.addAction(self.__remove_from_parent_interface_action)
 
     @override(QGraphicsItem)
@@ -1375,7 +1375,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
         current_level = ifx_levels_labels[current_actor]
 
         if verify_ifx_level_change_ok(self.__part, current_level):
-            scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, current_level))
+            scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, current_level - 1))
 
     __slot_ifx_level_changed = safe_slot(__ifx_level_changed)
     __slot_on_edit_ifx_port = safe_slot(__on_edit_ifx_port)

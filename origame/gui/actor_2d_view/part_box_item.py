@@ -360,7 +360,7 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         if current_level > self.__ifx_level and self.__ifx_level != (max_level - 1):
             context_menu.addAction(self.__add_to_parent_interface_action)
 
-        if self.__ifx_level > current_level and current_level != (max_level - 1):
+        if self.__ifx_level > (current_level - 1):
             context_menu.addAction(self.__remove_from_parent_interface_action)
 
         context_menu.addSeparator()
@@ -599,7 +599,7 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         current_level = ifx_levels_labels[current_actor]
 
         if verify_ifx_level_change_ok(self.__part, current_level):
-            scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, current_level))
+            scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, current_level - 1))
 
     def on_detail_level_changed(self, detail_level: DetailLevelEnum, current_override: DetailLevelOverrideEnum):
         """
