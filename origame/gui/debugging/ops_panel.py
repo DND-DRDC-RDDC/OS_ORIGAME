@@ -18,7 +18,7 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel
+from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel, QHeaderView
 from PyQt5.QtGui import QMouseEvent
 from PyQt5.Qt import Qt
 
@@ -84,14 +84,19 @@ class DebugOpsPanel(QWidget):
         self.ui.evaluate_button.clicked.connect(self._slot_on_eval_pyexpr)
         self.ui.breakpoint_on_off_button.clicked.connect(self._slot_on_breakpoint_on_off_button_clicked)
         self.__local_debug_vars = dict()
-        self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
-        self.ui.local_variables_table.setFont(get_scenario_font(mono=True))
-        self.ui.local_variables_table.verticalHeader().setVisible(False)
-        self.ui.local_variables_table.cellDoubleClicked.connect(self._slot_on_local_var_clicked)
+
         self.python_expression = PythonExpression(self.ui.groupBox)
         self.python_expression.setObjectName("python_expression")
         self.ui.horizontalLayout_4.insertWidget(0, self.python_expression)
         self.python_expression.returnPressed.connect(self._slot_on_eval_pyexpr)
+
+        self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
+        self.ui.local_variables_table.setFont(get_scenario_font(mono=True))
+        self.ui.local_variables_table.verticalHeader().setVisible(False)
+        styleSheet = "::section { border: 1px solid grey; border-left: none; border-right: none; border-top: none; }"
+        self.ui.local_variables_table.horizontalHeader().setStyleSheet(styleSheet)
+        self.ui.local_variables_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.ui.local_variables_table.cellDoubleClicked.connect(self._slot_on_local_var_clicked)
 
     def set_local_variables(self, variables: Dict[str, str]):
         """
@@ -109,10 +114,11 @@ class DebugOpsPanel(QWidget):
         var_name_col = 0
         var_value_col = 1
         for row, var in enumerate(variables.items()):
-            # var is a list of two elements:
-            # the first element (i.e. var[var_name_col]) is the name of the local variable, and
-            # the second element (i.e. var[var_value_col]) is the value of the corresponding local variable
-            if var[var_name_col] != '__builtins__':
+            # "var" is a list of two elements:
+            #       the first element (i.e. var[var_name_col]) is the name of the local variable, and
+            #       the second element (i.e. var[var_value_col]) is the value of the corresponding local variable
+            # Don't add built-in variables and "_parts_proxy" to the table of local variables
+            if var[var_name_col] != '__builtins__' and not isinstance(var[var_value_col], LinkedPartsScriptingProxy):
                 self.ui.local_variables_table.insertRow(row)
 
                 _var_name = QLabel(var[var_name_col])
