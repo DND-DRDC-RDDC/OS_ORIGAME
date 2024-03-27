@@ -18,12 +18,16 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QListWidgetItem
+from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel
+from PyQt5.QtGui import QMouseEvent
+from PyQt5.Qt import Qt
 
 # [3. local]
+from ...core import override
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
 from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ...scenario.part_execs import PyDebugger
+from ...scenario.part_execs import LinkedPartsScriptingProxy, LINKS_SCRIPT_OBJ_NAME
 from ..gui_utils import get_scenario_font
 from ..safe_slot import safe_slot
 from ..async_methods import AsyncRequest, AsyncErrorInfo
@@ -46,16 +50,28 @@ __all__ = [
 
 log = logging.getLogger('system')
 
+LOCAL_VARIABLES_TABLE_HEADER_NAMES = ['Name', 'Value']
 
 # -- Function definitions -----------------------------------------------------------------------
 
 
 # -- Class Definitions --------------------------------------------------------------------------
+class PythonExpression(QLineEdit):
+    def __init__(self, parent):
+        """
+        :param part:  The Function part that the python expression box is being added to.
+        """
+        super().__init__(parent)
+
+    @override(QLineEdit)
+    def mousePressEvent(self, mouse_press_event: QMouseEvent):
+        super().mousePressEvent(mouse_press_event)
+        self.selectAll()
 
 class DebugOpsPanel(QWidget):
     def __init__(self, parent):
         """
-        :param part:  The Function part that is being debugged.
+        :param parent:  The Function part that is being debugged.
         """
         super().__init__(parent)
         self.setObjectName('DebugOpsPanel')
@@ -66,29 +82,51 @@ class DebugOpsPanel(QWidget):
         self.ui.step_into_button.clicked.connect(self._slot_on_step_into_button_clicked)
         self.ui.stop_button.clicked.connect(self._slot_on_stop_button_clicked)
         self.ui.evaluate_button.clicked.connect(self._slot_on_eval_pyexpr)
-        self.ui.python_expression.returnPressed.connect(self._slot_on_eval_pyexpr)
         self.ui.breakpoint_on_off_button.clicked.connect(self._slot_on_breakpoint_on_off_button_clicked)
-        self.ui.local_variables_list.itemActivated.connect(self._slot_on_local_var_clicked)
-        self.ui.local_variables_list.setFont(get_scenario_font(mono=True))
-        self.__local_debug_vars = list()
+        self.__local_debug_vars = dict()
+        self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
+        self.ui.local_variables_table.setFont(get_scenario_font(mono=True))
+        self.ui.local_variables_table.verticalHeader().setVisible(False)
+        self.ui.local_variables_table.cellDoubleClicked.connect(self._slot_on_local_var_clicked)
+        self.python_expression = PythonExpression(self.ui.groupBox)
+        self.python_expression.setObjectName("python_expression")
+        self.ui.horizontalLayout_4.insertWidget(0, self.python_expression)
+        self.python_expression.returnPressed.connect(self._slot_on_eval_pyexpr)
 
-    def set_local_variables(self, variables: List[str]):
+    def set_local_variables(self, variables: Dict[str, str]):
         """
-        Accessory method to fill local variables list widget.
+        Accessory method to fill local variables table widget.
         """
-        self.ui.local_variables_list.clear()
-        # self.ui.python_expression.clear()
+        self.ui.local_variables_table.clear()
+        self.ui.local_variables_table.setRowCount(0)
+        self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
         self.ui.expression_result_list.clear()
 
+        __part = PyDebugger.get_singleton().current_debug_info.py_part
+        _parts_proxy = LinkedPartsScriptingProxy(__part)
+
         num_total_items = 0
-        for var_name in variables:
-            # if not var_name.startswith('__'):
-            if var_name != '__builtins__':
-                self.ui.local_variables_list.addItem(var_name)
+        var_name_col = 0
+        var_value_col = 1
+        for row, var in enumerate(variables.items()):
+            # var is a list of two elements:
+            # the first element (i.e. var[var_name_col]) is the name of the local variable, and
+            # the second element (i.e. var[var_value_col]) is the value of the corresponding local variable
+            if var[var_name_col] != '__builtins__':
+                self.ui.local_variables_table.insertRow(row)
+
+                _var_name = QLabel(var[var_name_col])
+                _var_name.setAlignment(Qt.AlignHCenter)
+                self.ui.local_variables_table.setCellWidget(row, var_name_col, _var_name)
+                # The value of the variable might be a number so convert it to a String
+                _var_value = QLabel(str(var[var_value_col]))
+                _var_value.setAlignment(Qt.AlignHCenter)
+                self.ui.local_variables_table.setCellWidget(row, var_value_col, _var_value)
+
                 num_total_items += 1
 
-        self.ui.local_variables_list.sortItems()
         self.__local_debug_vars = variables
+        self.__local_debug_vars[LINKS_SCRIPT_OBJ_NAME] = _parts_proxy
 
     def enable_widgets(self, enable: bool):
         """
@@ -100,8 +138,8 @@ class DebugOpsPanel(QWidget):
         self.ui.step_into_button.setEnabled(enable)
         self.ui.evaluate_button.setEnabled(enable)
         self.ui.stop_button.setEnabled(enable)
-        self.ui.python_expression.setEnabled(enable)
-        self.ui.local_variables_list.setEnabled(enable)
+        self.python_expression.setEnabled(enable)
+        self.ui.local_variables_table.setEnabled(enable)
         self.ui.expression_result_list.setEnabled(enable)
 
     def _on_continue_button_clicked(self):
@@ -150,7 +188,7 @@ class DebugOpsPanel(QWidget):
                 msg = error_info.msg
             self._fill_expression_result([msg])
 
-        AsyncRequest.call(evaluate, self.ui.python_expression.text(), response_cb=on_result, error_cb=on_error)
+        AsyncRequest.call(evaluate, self.python_expression.text(), response_cb=on_result, error_cb=on_error)
 
     def _on_breakpoint_on_off_button_clicked(self):
         """
@@ -158,8 +196,12 @@ class DebugOpsPanel(QWidget):
         """
         pass
 
-    def _on_local_var_clicked(self, item: QListWidgetItem):
-        self.ui.python_expression.insert(item.text())
+    def _on_local_var_clicked(self, row: int, col: int):
+        # Always get the name of the variable (i.e. column 0) of the clicked row
+        # regardless if the user clicked on the variable name or value of that row.
+        _var = self.ui.local_variables_table.cellWidget(row, 0).text()
+        self.python_expression.insert(_var)
+        self.python_expression.setFocus(Qt.OtherFocusReason)
 
     def _fill_expression_result(self, expression_results: Any):
         """

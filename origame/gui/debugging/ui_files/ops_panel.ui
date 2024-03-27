@@ -185,7 +185,19 @@
          </widget>
         </item>
         <item>
-         <widget class="QListWidget" name="local_variables_list"/>
+         <widget class="QTableWidget" name="local_variables_table">
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <property name="columnCount">
+           <number>2</number>
+          </property>
+          <column/>
+          <column/>
+         </widget>
         </item>
        </layout>
       </item>
@@ -198,9 +210,6 @@
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QLineEdit" name="python_expression"/>
-        </item>
         <item>
          <widget class="QPushButton" name="evaluate_button">
           <property name="minimumSize">
