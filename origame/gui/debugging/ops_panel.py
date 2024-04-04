@@ -82,6 +82,7 @@ class DebugOpsPanel(QWidget):
         self.ui.step_into_button.clicked.connect(self._slot_on_step_into_button_clicked)
         self.ui.stop_button.clicked.connect(self._slot_on_stop_button_clicked)
         self.ui.evaluate_button.clicked.connect(self._slot_on_eval_pyexpr)
+        self.ui.clear_button.clicked.connect(self._slot_on_clear_pyexpr)
         self.ui.breakpoint_on_off_button.clicked.connect(self._slot_on_breakpoint_on_off_button_clicked)
         self.__local_debug_vars = dict()
 
@@ -196,6 +197,13 @@ class DebugOpsPanel(QWidget):
 
         AsyncRequest.call(evaluate, self.python_expression.text(), response_cb=on_result, error_cb=on_error)
 
+    def _on_clear_pyexpr(self):
+        """
+        Called when the Clear button is clicked
+        """
+        self.ui.expression_result_list.clear()
+        self.python_expression.setText("")
+
     def _on_breakpoint_on_off_button_clicked(self):
         """
         Called when the Breakpoint On/Off button is clicked.
@@ -222,5 +230,6 @@ class DebugOpsPanel(QWidget):
     _slot_on_step_into_button_clicked = safe_slot(_on_step_into_button_clicked)
     _slot_on_stop_button_clicked = safe_slot(_on_stop_button_clicked)
     _slot_on_eval_pyexpr = safe_slot(_on_eval_pyexpr)
+    _slot_on_clear_pyexpr = safe_slot(_on_clear_pyexpr)
     _slot_on_breakpoint_on_off_button_clicked = safe_slot(_on_breakpoint_on_off_button_clicked)
     _slot_on_local_var_clicked = safe_slot(_on_local_var_clicked)

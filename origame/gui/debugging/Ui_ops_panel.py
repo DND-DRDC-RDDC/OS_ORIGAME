@@ -123,6 +123,11 @@ class Ui_DebugWidget(object):
         self.evaluate_button.setMaximumSize(QtCore.QSize(50, 16777215))
         self.evaluate_button.setObjectName("evaluate_button")
         self.horizontalLayout_4.addWidget(self.evaluate_button)
+        self.clear_button = QtWidgets.QPushButton(self.groupBox)
+        self.clear_button.setMinimumSize(QtCore.QSize(75, 0))
+        self.clear_button.setMaximumSize(QtCore.QSize(50, 16777215))
+        self.clear_button.setObjectName("clear_button")
+        self.horizontalLayout_4.addWidget(self.clear_button)
         self.verticalLayout_4.addLayout(self.horizontalLayout_4)
         self.label_3 = QtWidgets.QLabel(self.groupBox)
         self.label_3.setObjectName("label_3")
@@ -147,5 +152,6 @@ class Ui_DebugWidget(object):
         self.label.setText(_translate("DebugWidget", "Local Variables:"))
         self.label_2.setText(_translate("DebugWidget", "Python Expression:"))
         self.evaluate_button.setText(_translate("DebugWidget", "Evaluate"))
+        self.clear_button.setText(_translate("DebugWidget", "Clear"))
         self.label_3.setText(_translate("DebugWidget", "Expression Result:"))
 
