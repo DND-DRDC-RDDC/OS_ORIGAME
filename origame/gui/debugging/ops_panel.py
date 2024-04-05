@@ -103,7 +103,7 @@ class DebugOpsPanel(QWidget):
         self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
         self.ui.expression_result_list.clear()
 
-        __part = PyDebugger.get_singleton().current_debug_info.py_part
+        __part = PyDebugger.get_singleton().current_debug_info.py_part # the part being debugged
         _parts_proxy = LinkedPartsScriptingProxy(__part)
 
         num_total_items = 0
