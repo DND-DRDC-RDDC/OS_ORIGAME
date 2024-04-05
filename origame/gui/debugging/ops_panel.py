@@ -27,6 +27,7 @@ from ...core import override
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
 from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ...scenario.part_execs import PyDebugger, LinkedPartsScriptingProxy, LINKS_SCRIPT_OBJ_NAME
+from ...scenario.defn_parts import BasePart
 from ..gui_utils import get_scenario_font
 from ..safe_slot import safe_slot
 from ..async_methods import AsyncRequest, AsyncErrorInfo
@@ -103,7 +104,7 @@ class DebugOpsPanel(QWidget):
         self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
         self.ui.expression_result_list.clear()
 
-        __part = PyDebugger.get_singleton().current_debug_info.py_part # the part being debugged
+        __part = self._get_debugged_part()
         _parts_proxy = LinkedPartsScriptingProxy(__part)
 
         num_total_items = 0
@@ -158,10 +159,17 @@ class DebugOpsPanel(QWidget):
         self.ui.continue_button.setEnabled(enable)
         self.ui.step_into_button.setEnabled(enable)
         self.ui.evaluate_button.setEnabled(enable)
+        self.ui.clear_button.setEnabled(enable)
         self.ui.stop_button.setEnabled(enable)
         self.python_expression.setEnabled(enable)
         self.ui.local_variables_table.setEnabled(enable)
         self.ui.expression_result_list.setEnabled(enable)
+
+    def _get_debugged_part(self) -> BasePart:
+        """
+        Get the part being debugged
+        """
+        return PyDebugger.get_singleton().current_debug_info.py_part
 
     def _on_continue_button_clicked(self):
         """
