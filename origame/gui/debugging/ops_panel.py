@@ -26,8 +26,7 @@ from PyQt5.Qt import Qt
 from ...core import override
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
 from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
-from ...scenario.part_execs import PyDebugger
-from ...scenario.part_execs import LinkedPartsScriptingProxy, LINKS_SCRIPT_OBJ_NAME
+from ...scenario.part_execs import PyDebugger, LinkedPartsScriptingProxy, LINKS_SCRIPT_OBJ_NAME
 from ..gui_utils import get_scenario_font
 from ..safe_slot import safe_slot
 from ..async_methods import AsyncRequest, AsyncErrorInfo
@@ -92,10 +91,7 @@ class DebugOpsPanel(QWidget):
         self.python_expression.returnPressed.connect(self._slot_on_eval_pyexpr)
 
         self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
-        self.ui.local_variables_table.setFont(get_scenario_font(mono=True))
         self.ui.local_variables_table.verticalHeader().setVisible(False)
-        styleSheet = "::section { border: 1px solid grey; border-left: none; border-right: none; border-top: none; }"
-        self.ui.local_variables_table.horizontalHeader().setStyleSheet(styleSheet)
         self.ui.local_variables_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.local_variables_table.cellDoubleClicked.connect(self._slot_on_local_var_clicked)
 
@@ -114,6 +110,7 @@ class DebugOpsPanel(QWidget):
         num_total_items = 0
         var_name_col = 0
         var_value_col = 1
+
         for row, var in enumerate(variables.items()):
             # "var" is a list of two elements:
             #       the first element (i.e. var[var_name_col]) is the name of the local variable, and
@@ -125,12 +122,30 @@ class DebugOpsPanel(QWidget):
                 _var_name = QLabel(var[var_name_col])
                 _var_name.setAlignment(Qt.AlignHCenter)
                 self.ui.local_variables_table.setCellWidget(row, var_name_col, _var_name)
-                # The value of the variable might be a number so convert it to a String
+
                 _var_value = QLabel(str(var[var_value_col]))
                 _var_value.setAlignment(Qt.AlignHCenter)
                 self.ui.local_variables_table.setCellWidget(row, var_value_col, _var_value)
 
                 num_total_items += 1
+
+        # Add the names of parts accessible through the link object to the table of local variables.
+        # Add links to parts only but not to part frames (i.e. names starting and ending with _)
+        for item in _parts_proxy.__dir__():
+            if item.startswith("_") and item.endswith("_"):
+                continue
+
+            self.ui.local_variables_table.insertRow(num_total_items)
+
+            _var_name = QLabel(f"link.{item}")
+            _var_name.setAlignment(Qt.AlignHCenter)
+            self.ui.local_variables_table.setCellWidget(num_total_items, var_name_col, _var_name)
+
+            _var_value = QLabel(str(_parts_proxy.__getattr__(item)))
+            _var_value.setAlignment(Qt.AlignHCenter)
+            self.ui.local_variables_table.setCellWidget(num_total_items, var_value_col, _var_value)    
+
+            num_total_items += 1
 
         self.__local_debug_vars = variables
         self.__local_debug_vars[LINKS_SCRIPT_OBJ_NAME] = _parts_proxy
