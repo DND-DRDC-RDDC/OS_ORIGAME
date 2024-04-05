@@ -58,7 +58,7 @@ LOCAL_VARIABLES_TABLE_HEADER_NAMES = ['Name', 'Value']
 class PythonExpression(QLineEdit):
     def __init__(self, parent):
         """
-        :param part:  The Function part that the python expression box is being added to.
+        :param part: The widget this python expression box is being added to.
         """
         super().__init__(parent)
 
@@ -82,18 +82,17 @@ class DebugOpsPanel(QWidget):
         self.ui.stop_button.clicked.connect(self._slot_on_stop_button_clicked)
         self.ui.evaluate_button.clicked.connect(self._slot_on_eval_pyexpr)
         self.ui.clear_button.clicked.connect(self._slot_on_clear_pyexpr)
-        self.ui.breakpoint_on_off_button.clicked.connect(self._slot_on_breakpoint_on_off_button_clicked)
-        self.__local_debug_vars = dict()
-
         self.python_expression = PythonExpression(self.ui.groupBox)
         self.python_expression.setObjectName("python_expression")
         self.ui.horizontalLayout_4.insertWidget(0, self.python_expression)
         self.python_expression.returnPressed.connect(self._slot_on_eval_pyexpr)
-
+        self.ui.breakpoint_on_off_button.clicked.connect(self._slot_on_breakpoint_on_off_button_clicked)
         self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
         self.ui.local_variables_table.verticalHeader().setVisible(False)
         self.ui.local_variables_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.ui.local_variables_table.cellDoubleClicked.connect(self._slot_on_local_var_clicked)
+        self.ui.local_variables_table.setFont(get_scenario_font(mono=True))
+        self.__local_debug_vars = dict()
 
     def set_local_variables(self, variables: Dict[str, str]):
         """
