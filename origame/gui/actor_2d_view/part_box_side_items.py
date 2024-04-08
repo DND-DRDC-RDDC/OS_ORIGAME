@@ -35,7 +35,7 @@ from ...core.typing import AnnotationDeclarations
 from ...scenario.defn_parts import PartFrame, PartLink, BasePart, DetailLevelEnum
 from ..part_editors import get_part_editor_class
 from ..undo_manager import SwitchIfxPortSideCommand, ChangeIfxLevelCommand, VerticalMoveIfxCommand, scene_undo_stack
-from ..actions_utils import verify_ifx_level_change_ok, get_labels_ifx_levels, get_labels_ifx_ports
+from ..actions_utils import verify_ifx_level_change_ok, get_labels_ifx_levels, get_labels_ifx_ports, get_labels_actor_parts
 from ..gui_utils import ITEM_SPACE, get_icon_path, part_image, OBJECT_NAME
 from ..gui_utils import IFX_TEXT_COLOR, PART_ITEM_BORDER_WIDTH, HIGHLIGHTED_BORDER_COLOR, IFX_BAR_TEXT_SIZE
 from ..gui_utils import IFX_BACKGROUND_COLOR, IFX_TEXT_SIZE
@@ -980,6 +980,16 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
         port.signals.sig_name_changed.connect(self.__slot_on_name_changed)
         port.signals.sig_ifx_level_changed.connect(self.__slot_ifx_level_changed)
 
+        self.__add_to_parent_interface_action = create_action(self,
+                                                              "Add to Parent Interface",
+                                                              tooltip="Increments the interface level by one so it is visible on the parent actor")
+        self.__add_to_parent_interface_action.triggered.connect(self.__slot_on_add_to_parent_interface)
+
+        self.__remove_from_parent_interface_action = create_action(self,
+                                                                   "Remove from Parent Interface",
+                                                                   tooltip="Decreases the interface level to the current actor view")
+        self.__remove_from_parent_interface_action.triggered.connect(self.__slot_on_remove_from_parent_interface)
+
     def set_left_side(self, is_left_side: bool):
         """
         The ifx port looks different, depending on which side it resides. This function adjusts the ifx port's position,
@@ -1148,6 +1158,18 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
                 evt.ignore()
 
         self._populate_create_missing_link_menu(context_menu, end_callback=populate_more_menu_items)
+
+        ifx_levels_labels = get_labels_actor_parts(self.__part)
+
+        current_actor = scene_undo_stack().get_actor_2d_panel().get_current_scene().content_actor
+        current_level = ifx_levels_labels[current_actor]
+        max_level = max(ifx_levels_labels.values())
+
+        if current_level > self.__ifx_level and self.__ifx_level != (max_level - 1):
+            context_menu.addAction(self.__add_to_parent_interface_action)
+
+        if self.__ifx_level > (current_level - 1):
+            context_menu.addAction(self.__remove_from_parent_interface_action)
 
     @override(QGraphicsItem)
     def boundingRect(self):
@@ -1342,9 +1364,24 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
 
         self.__ifx_ind_short.setVisible(self.__parent_actor_has_port)
 
+    def __on_add_to_parent_interface(self):
+        if verify_ifx_level_change_ok(self.__part, self.__ifx_level + 1):
+            scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, self.__ifx_level + 1))
+
+    def __on_remove_from_parent_interface(self):
+        ifx_levels_labels = get_labels_actor_parts(self.__part)
+
+        current_actor = scene_undo_stack().get_actor_2d_panel().get_current_scene().content_actor
+        current_level = ifx_levels_labels[current_actor]
+
+        if verify_ifx_level_change_ok(self.__part, current_level):
+            scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, current_level - 1))
+
     __slot_ifx_level_changed = safe_slot(__ifx_level_changed)
     __slot_on_edit_ifx_port = safe_slot(__on_edit_ifx_port)
     __slot_on_go_to_part = safe_slot(__on_go_to_part)
     __slot_on_create_link = safe_slot(__on_create_link)
     __slot_on_part_item_activated = safe_slot(__on_part_item_activated)
     __slot_on_name_changed = safe_slot(__on_name_changed)
+    __slot_on_remove_from_parent_interface = safe_slot(__on_remove_from_parent_interface)
+    __slot_on_add_to_parent_interface = safe_slot(__on_add_to_parent_interface)

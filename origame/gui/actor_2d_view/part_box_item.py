@@ -39,8 +39,8 @@ from ..gui_utils import PROXIMITY_MARGIN_LEFT, PROXIMITY_MARGIN_RIGHT, PROXIMITY
 from ..gui_utils import exec_modal_dialog, LINK_CREATION_ACTION_ITEM_WIDTH, LINK_CREATION_ACTION_ITEM_HEIGHT
 from ..conversions import map_from_scenario, SCALE_FACTOR
 from ..safe_slot import safe_slot, ext_safe_slot
-from ..actions_utils import create_action
-from ..undo_manager import RemovePartCommand, scene_undo_stack
+from ..actions_utils import create_action, verify_ifx_level_change_ok, get_labels_actor_parts
+from ..undo_manager import RemovePartCommand, ChangeIfxLevelCommand, scene_undo_stack
 from ..part_editors.common_part_help import PartHelp
 from ..part_editors import get_part_editor_class
 
@@ -159,7 +159,15 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         self.__copy_part_action = create_action(self, "Copy", tooltip="Copy part")
         self.__delete_action = create_action(self, "Delete", tooltip="Delete part")
         self.__help_action = create_action(self, "Help", tooltip="Help on part")
+        self.__add_to_parent_interface_action = create_action(self,
+                                                              "Add to Parent Interface",
+                                                              tooltip="Increments the interface level by one so it is visible on the parent actor")
+        self.__remove_from_parent_interface_action = create_action(self,
+                                                                   "Remove from Parent Interface",
+                                                                   tooltip="Decreases the interface level to the current actor view")
 
+        self.__remove_from_parent_interface_action.triggered.connect(self.slot_on_remove_from_parent_interface)
+        self.__add_to_parent_interface_action.triggered.connect(self.slot_on_add_to_parent_interface)
         self.__create_link_action.triggered.connect(self.slot_on_create_link_action)
         self.__edit_part_action.triggered.connect(self.slot_on_edit_part_action)
         self.__cut_part_action.triggered.connect(self.slot_on_cut_part_action)
@@ -340,6 +348,20 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         if self.__part.SHOW_FRAME:
             context_menu.addSeparator()
             context_menu.addAction(self.__toggle_icon_action)
+
+        context_menu.addSeparator()
+
+        ifx_levels_labels = get_labels_actor_parts(self.__part)
+
+        current_actor = scene_undo_stack().get_actor_2d_panel().get_current_scene().content_actor
+        current_level = ifx_levels_labels[current_actor]
+        max_level = max(ifx_levels_labels.values())
+
+        if current_level > self.__ifx_level and self.__ifx_level != (max_level - 1):
+            context_menu.addAction(self.__add_to_parent_interface_action)
+
+        if self.__ifx_level > (current_level - 1):
+            context_menu.addAction(self.__remove_from_parent_interface_action)
 
         context_menu.addSeparator()
 
@@ -566,6 +588,19 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         self.__right_side_tray_item.update_item()
         self.__resize_to_cover_side_items()
 
+    def on_add_to_parent_interface(self):
+        if verify_ifx_level_change_ok(self.__part, self.__ifx_level + 1):
+            scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, self.__ifx_level + 1))
+
+    def on_remove_from_parent_interface(self):
+        ifx_levels_labels = get_labels_actor_parts(self.__part)
+
+        current_actor = scene_undo_stack().get_actor_2d_panel().get_current_scene().content_actor
+        current_level = ifx_levels_labels[current_actor]
+
+        if verify_ifx_level_change_ok(self.__part, current_level):
+            scene_undo_stack().push(ChangeIfxLevelCommand(self.__part, current_level - 1))
+
     def on_detail_level_changed(self, detail_level: DetailLevelEnum, current_override: DetailLevelOverrideEnum):
         """
         Updates the various attributes with the new detail level setting.
@@ -595,6 +630,8 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
     slot_on_help_action = safe_slot(on_part_help_request)
     slot_on_link_added = ext_safe_slot(on_link_added)
     slot_on_size_changed = safe_slot(on_size_changed)
+    slot_on_add_to_parent_interface = safe_slot(on_add_to_parent_interface)
+    slot_on_remove_from_parent_interface = safe_slot(on_remove_from_parent_interface)
 
     part = property(get_part)
     ifx_bar_item = property(get_ifx_bar_item)
