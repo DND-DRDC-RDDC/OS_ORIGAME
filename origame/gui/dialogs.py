@@ -156,4 +156,4 @@ class LinkRenameDialog(QDialog):
             # No changes
             pass
 
-        self.resize(self.width(), total_height)
+        self.resize(int(self.width()), int(total_height))

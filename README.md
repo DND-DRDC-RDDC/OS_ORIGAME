@@ -10,22 +10,34 @@ See LICENSE file.
 
 ## RECOMMENDED INSTALLATION
 
-1. Install Python 3.5.2 (python-3.5.2-amd64.exe)
-	- https://www.python.org/downloads/release/python-352/
+These instructions are for running ORIGAME on python 3.8 and 3.11 
 
-2. Install Visual C++ Redistributable for Visual Studio 2015 (vc_redist.x64.exe)
+1. Install Python 3.8.10 (python-3.8.10-amd64.exe)
+	- https://www.python.org/downloads/release/python-3810/
+
+2. Install Python 3.11.2 (python-3.11.2-amd64.exe)
+	- https://www.python.org/downloads/release/python-3112/
+
+3. Install Visual C++ Redistributable for Visual Studio 2015 (vc_redist.x64.exe)
 	- https://www.microsoft.com/en-ca/download/details.aspx?id=48145
 
-3. Clone or download ORIGAME to a project folder on your system
+4. Clone or download ORIGAME to a project folder on your system
 
-4. From the project folder, create a virtual environment for ORIGAME
-	- e.g. "C:\Python35\python -m venv venv"
+5. From the project folder, create a virtual environment for ORIGAME for each Python version
+	- e.g. `C:\Python38\python -m venv venv8`
+	- e.g. `C:\Python311\python -m venv venv11`
 
-5. Install dependencies in "requirements.txt" to the virtual environment
-	- e.g. "venv\Scripts\pip install -r requirements.txt"
+6. Activate a virtual environment and install dependencies in "requirements.txt". Deactivate the virtual environment
+if not in use.
+	- `venv11\Scripts\activate`
+	- `pip install -r requirements.txt`
+	- `deactivate`
 
-6. Launch ORIGAME GUI
-	- e.g. "venv\Scripts\python origame_gui.py"
+7. Activate the desired virtual environment, and launch ORIGAME GUI.
+	- `venv11\Scripts\activate`
+	- `py .\origame_gui.py`
+
+Visit this [this page](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#activating-a-virtual-environment) for more information about virtual environments.
 
 ## DOCUMENTATION
 

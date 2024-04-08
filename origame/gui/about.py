@@ -58,7 +58,7 @@ __all__ = [
 log = logging.getLogger('system')
 
 # When released to client, update this
-RELEASE_VERSION = '0.7.1 beta (2021-12-03)'
+RELEASE_VERSION = '0.8.0 beta (2023-03-02)'
 
 ABOUT_APP = '''\
 <h1 align="center">ORIGAME</h1>

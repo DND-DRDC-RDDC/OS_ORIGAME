@@ -406,8 +406,8 @@ class ObjectPropertiesPanel(QWidget):
         :param object_type: The type of object selected
         """
         self.ui.icon_display.load(str(part_image(object_type)))
-        self.ui.icon_display.setFixedSize(ObjectPropertiesPanel.PROPERTY_ICON_WIDTH,
-                                          ObjectPropertiesPanel.PROPERTY_ICON_HEIGHT)
+        self.ui.icon_display.setFixedSize(int(ObjectPropertiesPanel.PROPERTY_ICON_WIDTH),
+                                          int(ObjectPropertiesPanel.PROPERTY_ICON_HEIGHT))
 
     def __on_no_object_selected(self):
         """
@@ -422,8 +422,8 @@ class ObjectPropertiesPanel(QWidget):
 
         self.__selected_object = None
         self.ui.icon_display.load(get_icon_path("blank.svg"))
-        self.ui.icon_display.setFixedSize(ObjectPropertiesPanel.PROPERTY_ICON_WIDTH,
-                                          ObjectPropertiesPanel.PROPERTY_ICON_HEIGHT)
+        self.ui.icon_display.setFixedSize(int(ObjectPropertiesPanel.PROPERTY_ICON_WIDTH),
+                                          int(ObjectPropertiesPanel.PROPERTY_ICON_HEIGHT))
 
         self.__old_name = None
         self.ui.id_line_edit.clear()

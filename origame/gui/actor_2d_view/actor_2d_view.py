@@ -798,7 +798,7 @@ class Actor2dView(QGraphicsView):
             scale = self.EMPTY_ACTOR_SCALE_ADJUSTMENT
         else:
             vp_rect = QRectF(self.viewport().rect())
-            vp_polygon = self.mapToScene(QRect(vp_rect.x(), vp_rect.y(), vp_rect.width(), vp_rect.height()))
+            vp_polygon = self.mapToScene(QRect(int(vp_rect.x()), int(vp_rect.y()), int(vp_rect.width()), int(vp_rect.height())))
             if rect_needed.width() > 0.0:
                 width_ratio = vp_polygon.boundingRect().width() / rect_needed.width()
             else:
@@ -1289,7 +1289,7 @@ class Actor2dView(QGraphicsView):
         rect_needed = self.__eval_rect_needed_by_all_items()
 
         # mapToScene(QRectF) does not exist, so...
-        vp_polygon = self.mapToScene(QRect(vp_rect.x(), vp_rect.y(), vp_rect.width(), vp_rect.height()))
+        vp_polygon = self.mapToScene(QRect(int(vp_rect.x()), int(vp_rect.y()), int(vp_rect.width()), int(vp_rect.height())))
 
         rect_needed = rect_needed.united(vp_polygon.boundingRect())
 
@@ -1344,7 +1344,7 @@ class Actor2dView(QGraphicsView):
         content_center = rect_needed.center()
 
         # mapToScene(QRectF) does not exist, so...
-        vp_polygon = self.mapToScene(QRect(vp_rect.x(), vp_rect.y(), vp_rect.width(), vp_rect.height()))
+        vp_polygon = self.mapToScene(QRect(int(vp_rect.x()), int(vp_rect.y()), int(vp_rect.width()), int(vp_rect.height())))
 
         rect_needed = rect_needed.united(vp_polygon.boundingRect())
 

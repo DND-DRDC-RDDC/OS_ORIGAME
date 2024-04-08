@@ -25,8 +25,7 @@ from importlib import import_module
 
 # [2. third-party]
 import jedi
-from jedi.api.classes import Definition as JediDefn
-from jedi.parser.pgen2.parse import ParseError as JediParseError
+from jedi.api.classes import Name as JediName
 
 from PyQt5.Qsci import QsciLexer, QsciLexerPython, QsciScintilla
 from PyQt5.QtCore import QObject, Qt, pyqtSignal, QTimer
@@ -69,15 +68,15 @@ log = logging.getLogger('system')
 
 # -- Function definitions -----------------------------------------------------------------------
 
-def get_jedi_docstring(defn: JediDefn) -> str:
+def get_jedi_docstring(jediName: JediName) -> str:
     """
     Returns a string that represents the docstring of a Python object as determined by Jedi.
     :param defn: the Jedi Definition object that represents a Python object
     """
-    if defn.type == 'module':
+    if jediName.type == 'module':
         # jedi only provides object docstring, whereas really we want members similar to help(object)
         try:
-            module = import_module(defn.name)
+            module = import_module(jediName.name)
             return get_docstring(module)
 
         except (ImportError, ValueError):
@@ -85,7 +84,7 @@ def get_jedi_docstring(defn: JediDefn) -> str:
             # not be resolved to an actual module (this is the case of random module, which jedi says is random.p)
             pass
 
-    return '{} {}:\n{}'.format(defn.type, defn.name, defn.raw_doc or defn.doc)
+    return '{} {}:\n{}'.format(jediName.type, jediName.name, jediName.docstring(raw=True))
 
 
 def get_docstring(obj: Any) -> str:
@@ -815,14 +814,11 @@ class PyCodingAssistant(CodingAssistant):
     @override(CodingAssistant)
     def get_docs(self, text: str, line: int, col: int, context_words: List[str]) -> str:
         try:
-            jedi_scripter1, jedi_scripter2 = self.__get_jedies(text, line, col)
-            definitions = jedi_scripter2.goto_definitions()
+            # in jedi, first line is 1, but in Scintilla it is 0
+            jedi_scripter1, jedi_scripter2 = self.__get_jedies(text)
+            definitions = jedi_scripter2.infer(line=line + 1, column=col)
             # call_signatures = jedi_scripter2.call_signatures()
             # definitions = jedi_scripter1.goto_definitions()  # doesn't work
-
-        except JediParseError:
-            log.error("Caught Jedi parse error, please complete input.")
-            return
 
         except Exception as exc:
             log.error(exc)
@@ -868,9 +864,6 @@ class PyCodingAssistant(CodingAssistant):
             self.__update_completions(text, line, col)
             return self.__completion_names
 
-        except JediParseError:
-            log.error("Caught Jedi parse error, please complete input.")
-
         except Exception as exc:
             log.error(exc)
 
@@ -893,13 +886,14 @@ class PyCodingAssistant(CodingAssistant):
         self.__completion_names = list()
         self.__call_signature = None
 
-        jedi_scripter1, jedi_scripter2 = self.__get_jedies(text, line, line_pos)
+        jedi_scripter1, jedi_scripter2 = self.__get_jedies(text)
         try:
-            completions1 = jedi_scripter1.completions()
-            completions2 = jedi_scripter2.completions()
+            # in jedi, first line is 1, but in Scintilla it is 0
+            completions1 = jedi_scripter1.complete(line=line + 1, column=line_pos)
+            completions2 = jedi_scripter2.complete(line=line + 1, column=line_pos)
 
             # signatures1 = jedi_scripter1.call_signatures()
-            signatures2 = jedi_scripter2.call_signatures()
+            signatures2 = jedi_scripter2.get_signatures(line=line + 1, column=line_pos)
             assert len(signatures2) <= 1  # how can there be more than one call signature possible (no overloads)
             if signatures2:
                 self.__call_signature = signatures2[0]
@@ -955,15 +949,11 @@ class PyCodingAssistant(CodingAssistant):
                     completion = self.__map_name_to_completion.pop(param.name)
                     self.__map_name_to_completion[choice] = completion
 
-    def __get_jedies(self, text: str, line: int, line_pos: int) -> Tuple[jedi.api.Script, jedi.api.Interpreter]:
-        # in jedi, first line is 1, but in Scintilla it is 0
+    def __get_jedies(self, text: str) -> Tuple[jedi.api.Script, jedi.api.Interpreter]:
         # Note: Script is able to match local vars created (like defining a class and accessing its methods),
         # whereas Interpreter is not. This is surely a bug, because Interpreter derives from Script. For
         # now, combine the two:
-        if line_pos > len(text):
-            pass
         text = text.replace('\r', '')
-        jedi_scripter1 = jedi.api.Script(source=text, line=line + 1, column=line_pos)
-        jedi_scripter2 = jedi.api.Interpreter(source=text, line=line + 1, column=line_pos,
-                                              namespaces=self.__completion_namespaces)
+        jedi_scripter1 = jedi.api.Script(code=text)
+        jedi_scripter2 = jedi.api.Interpreter(code=text, namespaces=self.__completion_namespaces)
         return jedi_scripter1, jedi_scripter2

@@ -206,7 +206,7 @@ class InvalidPythonNameError(ValueError):
 
 def get_enum_val_name(enum_obj: Enum) -> str:
     """Get the name for an enumeration value. MyEnum.some_val returns "some_val"."""
-    return str(enum_obj).split('.')[1]
+    return enum_obj.name
 
 
 def rel_to_timedelta(delta: relativedelta) -> timedelta:

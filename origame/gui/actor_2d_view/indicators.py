@@ -92,7 +92,7 @@ class CommentBoxItem(ICustomItem, QGraphicsProxyWidget):
 
         comment_box = CommentBoxWidget()
         self.setWidget(comment_box)
-        comment_box.setFixedWidth(self.DEFAULT_WIDTH)
+        comment_box.setFixedWidth(int(self.DEFAULT_WIDTH))
         self.setZValue(ZLevelsEnum.bubble_comment)
         self.setVisible(False)
         self.setOpacity(QTBUG_55918_OPACITY)  # QTBUG-55918
@@ -120,7 +120,7 @@ class CommentBoxItem(ICustomItem, QGraphicsProxyWidget):
         else:
             height_needed += self.ROOM_TO_AVOID_SCROLL
 
-        self.widget().setFixedHeight(height_needed)
+        self.widget().setFixedHeight(int(height_needed))
         self.parentItem().setVisible(bool(text.strip()))
 
         self.setY(-self.boundingRect().height())

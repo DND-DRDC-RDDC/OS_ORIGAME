@@ -1,0 +1,7 @@
+# virtual environment folder
+venv*/
+# compiled bytecode
+**/__pycache__/
+**/*.pyc
+# Simulation result folders
+**/batch_202*

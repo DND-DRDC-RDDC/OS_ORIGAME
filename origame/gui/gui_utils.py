@@ -353,7 +353,7 @@ class CustomMessageBox(QMessageBox):
             text_field.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             # move it so it stays centered:
             new_width = text_field.width()
-            self.move(self.pos().x() - (new_width - cur_width) / 2, self.pos().y())
+            self.move(int(self.pos().x() - (new_width - cur_width) / 2), int(self.pos().y()))
 
 
 def exec_modal_dialog(dialog_title: str,
@@ -527,7 +527,7 @@ def set_button_image(button: QToolButton, image_path: str, size: QSize = None, r
     if resize:
         height = button.height() - margin
         width = button.width() - margin
-        q_size = QSize(height, width)
+        q_size = QSize(int(height), int(width))
         button.setIconSize(q_size)
 
     if text:

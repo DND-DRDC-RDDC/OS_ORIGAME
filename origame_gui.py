@@ -323,7 +323,7 @@ class GuiMain(QObject):
         desktop_top_left = desktop.screenGeometry().topLeft()
         main_win_width = self.__main_window.width()
         main_win_height = self.__main_window.height()
-        self.__main_window.move((desktop_width - main_win_width) / 2, (desktop_height - main_win_height) / 2)
+        self.__main_window.move(int((desktop_width - main_win_width) / 2), int((desktop_height - main_win_height) / 2))
 
         # set size of main window:
         top_margin = 50  # Prevents the application top bar from disappearing above the screen when minimized

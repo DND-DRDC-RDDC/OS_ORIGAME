@@ -72,6 +72,13 @@ log = logging.getLogger("system")
 
 AfterCheckCB = Callable[[], None]
 
+try:
+    from ctypes import windll  # Only exists on Windows.
+    app_id = 'Canada.DRDC.ORIGAME'
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+except ImportError:
+    pass
+
 class Decl(AnnotationDeclarations):
     GuiLogCacher = 'GuiLogCacher'
 
@@ -397,8 +404,8 @@ class MainWindow(QMainWindow):
         editor_width = part_editor.width()
         editor_height = part_editor.height()
 
-        part_editor.move(desk_width / 2 - editor_width / 2 + desk_rect.left(),
-                         desk_height / 2 - editor_height / 2 + desk_rect.top())
+        part_editor.move(int(desk_width / 2 - editor_width / 2 + desk_rect.left()),
+                         int(desk_height / 2 - editor_height / 2 + desk_rect.top()))
 
         part_editor.show()
         part_editor.activateWindow()

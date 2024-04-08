@@ -510,7 +510,7 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
         Update the panel state when signalled by the Sim Controller.
         :param state: The state of the Main Simulation (running, paused, debugging)
         """
-        state_name = self.__sim_controller.state_name.capitalize()
+        state_name = MainSimStatesEnum(state).name.capitalize()
         self.ui.sim_state_label.setText(state_name)
         self.__update_buttons(state)
 

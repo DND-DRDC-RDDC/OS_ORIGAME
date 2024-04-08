@@ -707,7 +707,7 @@ class LinkCreationActionItem(BaseSideTrayItem):
             self.__image.setScale(scale)
         self.setVisible(False)
         self.__action = action
-        self.resize(LINK_CREATION_ACTION_ITEM_WIDTH, LINK_CREATION_ACTION_ITEM_HEIGHT)
+        self.resize(int(LINK_CREATION_ACTION_ITEM_WIDTH), int(LINK_CREATION_ACTION_ITEM_HEIGHT))
 
     @override(BaseSideTrayItem)
     def type(self) -> int:
@@ -938,7 +938,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
         self.__part_name = part_name  # the real name in full
         self.__name = QLabel()  # will be abridged
         self.__name.setFont(get_scenario_font(point_size=IFX_TEXT_SIZE, mono=True, stretch=QFont.SemiCondensed))
-        self.__name.resize(get_ifx_port_name_width(), self.NAME_HEIGHT)
+        self.__name.resize(int(get_ifx_port_name_width()), int(self.NAME_HEIGHT))
         pal = QPalette()
         pal.setColor(QPalette.Window, IFX_BACKGROUND_COLOR[part_type])
         pal.setColor(QPalette.Text, IFX_TEXT_COLOR)

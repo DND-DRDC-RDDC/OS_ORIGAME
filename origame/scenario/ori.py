@@ -201,8 +201,8 @@ class JsonObj(dict):
     """
     A JSON object. A JSON object is represented in Python by a Dict[str, Any] i.e. a dict
     where every key is a string, and every value is an object as supported by json.JSONEncoder
-    (as of Python 3.5, these are dict, list, str, int, float, True, False, and None; dict is a
-    JsonObj!).
+    (as of Python 3.11, these are dict, list, typle, str, int, float, int-derived Enums, float-derived Enums,
+    True, False, and None; dict is a JsonObj!).
     """
     pass
 

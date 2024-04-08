@@ -364,7 +364,7 @@ def read_from_excel(xls_file: str, xls_sheet: str, xls_range: str, accept_empty_
 
         # convert range to rows and cols
         # if range is None, get all items in the sheet
-        if xls_range is '':
+        if xls_range == '':
             col1 = 0
             row1 = 0
             col2 = sh.ncols - 1
