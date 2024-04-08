@@ -125,7 +125,7 @@ class ScenarioReaderWriter:
             if not path.parent.exists():
                 path.parent.mkdir(parents=True)
 
-            self._dump_to_file(ori_scenario, path)
+            return self._dump_to_file(ori_scenario, path)
 
         except Exception as exc:
             log.exception('Error saving scenario to file "{}": {}', path, exc)
@@ -133,8 +133,25 @@ class ScenarioReaderWriter:
 
         log.info('Scenario file saved: {}', path)
 
+    def find_save_error_objs(self, data: any) -> List[str]:
+        '''Returns the list of SaveError objects to be saved in the file or loaded from the file'''
+        non_serialized_obj = []
+    
+        def find_save_error_obj(d: any):
+            if isinstance(d, dict):
+                for k,v in d.items():
+                    find_save_error_obj(v)
+            elif isinstance(d, list):
+                for item in d:
+                    find_save_error_obj(item)
+            elif isinstance(d, str) and d.startswith("SaveError: ") and d not in non_serialized_obj:
+                non_serialized_obj.append(d)
+        
+        find_save_error_obj(data)
+        return non_serialized_obj
+
     @override_required
-    def _load_from_file(self, pathname: Path) -> OriScenData:
+    def _load_from_file(self, pathname: Path):
         """Derived class must implement reading from the given file object and returning an ORI dict."""
         raise ScenarioFormatNotLoadable('File format does not support loading')
 

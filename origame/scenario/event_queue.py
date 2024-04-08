@@ -39,7 +39,8 @@ from pathlib import Path
 # [3. local]
 from ..core import BridgeEmitter, BridgeSignal, override, override_required
 from ..core.typing import Any, Either, Optional, List, Tuple, Sequence, Set, Dict, Iterable, Callable, PathType
-from .ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSimEventKeys as EqKeys
+from .ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, SaveError, SaveErrorLocationEnum, OriSimEventKeys as EqKeys
+from .ori import get_pickled_str
 from .part_execs import IExecutablePart
 from .defn_parts import BasePart
 
@@ -1048,6 +1049,17 @@ class EventQueue(IOriSerializable):
         events_ori = []
         for event_info in event_infos:
             call_info = event_info.call_info
+            for arg in call_info.args:
+                if isinstance(arg, dict):
+                    for k, v in arg.items():
+                        safe_val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_queue)
+                        if not is_pickle_successful:
+                            arg[k] = safe_val
+                else:
+                    safe_val, is_pickle_successful = get_pickled_str(arg, SaveErrorLocationEnum.event_queue)
+                    if not is_pickle_successful:
+                        arg = safe_val
+
             events_ori.append({
                 EqKeys.TIME_DAYS: event_info.time_days,
                 EqKeys.PRIORITY: event_info.priority,

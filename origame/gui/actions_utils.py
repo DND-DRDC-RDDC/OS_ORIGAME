@@ -16,6 +16,7 @@ Version History: See SVN log.
 
 # [1. standard library]
 import logging
+from os import path, listdir
 
 # [2. third-party]
 from PyQt5.QtGui import QPixmap, QIcon, QKeySequence
@@ -244,3 +245,16 @@ def get_labels_ifx_ports(part: BasePart, actor: ActorPart) -> Tuple[IfxLevelLabe
     view_ifx_level = current_ifx_level - parts_path.index(actor)  # ifx level of the port we're viewing
 
     return ifx_labels, view_ifx_level
+
+def get_batch_folders(scenario_path: path) -> List[str]:
+    """
+    Returns the list of batch folders in the given location.
+    :param scenario_path: Location of the current open scenario
+    :returns: A list of batch folders paths in the given location
+    """
+    batch_folders = []
+    for file in sorted(listdir(scenario_path)):
+        if path.isdir(path.join(scenario_path, file)) and file.startswith("batch_"):
+            batch_folders.append(path.join(scenario_path, file))
+
+    return batch_folders

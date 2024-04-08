@@ -229,8 +229,8 @@ pause the simulation if it&#8217;s running after it does the following if select
 <li>The <a class="reference internal" href="using origame.html#ref-menus"><span class="std std-ref">Simulation menu</span></a>.</li>
 </ol>
 <p><a class="reference internal" href="#fig-simulation-control-batch2"><span class="std std-numref">Figure 4.4</span></a> shows the Batch Simulation Control tab that features status and control components, and common batch settings.</p>
-<p>On the top left of the panel, the simulation status readout will initially be shown as <em>Ready</em>. When the simulation is run, the status will change to display the <em>Running</em> state and the percent complete based upon the number of simulations completed out of the total number of variants and replications specified. The number of variants and replications can be input directly via the control panel along with the desired number of computer cores to use (one core is used per simulation). Specifying zero cores will automatically use the maximum number available.</p>
-<p>While the batch simulation is running, the panel displays the average time per replication and the estimated time remaining for the batch run to complete. The <em>Open Batch Folder</em> button becomes enabled once the batch run starts and will open the folder to the directory containing the batch output. Also, displayed in the top right of the panel are the number of replications finished, running, and failed, and the number of variants finished and failed.</p>
+<p>The drop-down menu beside the <em>Open Batch Folder</em> button is used to select a batch folder in the same location as the opened scenario. The selected folder can be opened using the <em>Open Batch Folder</em> button. By default, the latest batch folder is selected once a scenario is loaded or saved. If there is no scneario opened, or there are no batch folders in the location of the opened scenario, the drop-down menu will be empty and the <em>Open Batch Folder</em> button will be disabled. On the top left of the panel, the simulation status readout will initially be shown as <em>Ready</em>. When the simulation is running, the status will change to display the <em>Running</em> state and the percent complete based upon the number of simulations completed out of the total number of variants and replications specified. The number of variants and replications can be input directly via the control panel along with the desired number of computer cores to use (one core is used per simulation). Specifying zero cores will automatically use the maximum number available.</p>
+<p>While the batch simulation is running, the panel displays the average time per replication and the estimated time remaining for the batch run to complete. After a batch simulation run, the new batch folder is automatically selected in the drop-down menu. The <em>Open Batch Folder</em> will open the folder to the directory containing the batch output. Also, displayed in the top right of the panel are the number of replications finished, running, and failed, and the number of variants finished and failed.</p>
 <p>On the lower left of the batch control panel are controls to <em>Run Batch Simulation</em> and <em>Pause</em>, the latter of which is disabled while in the <em>Ready</em> state. Once the batch status has transitioned to <em>Running</em>, the <em>Run Batch Simulation</em> changes to <em>Abort</em> and <em>Pause</em> becomes enabled. Pausing the simulation will cause the <em>Pause</em> button to change to <em>Play</em>. Pressing the <em>Abort</em> button will stop the batch run after the user confirms the action from the pop-up dialog. The simulation status will then changed to <em>Aborted</em> and the <em>Abort</em> button changes to <em>New</em>. Alternatively, if the batch run completes, the status will change to <em>Completed</em> and, as before, the <em>New</em> button appears. Pressing the <em>New</em> button will reset the batch simulation to the <em>Ready</em> state after the user confirms the action from the pop-up dialog, and a new batch run can be configured and run.</p>
 <div class="figure align-center" id="id4">
 <span id="fig-simulation-control-batch2"></span><img alt="_images/simulation_control_batch.png" src="_images/simulation_control_batch.png" />
@@ -257,16 +257,19 @@ pause the simulation if it&#8217;s running after it does the following if select
 <tr class="row-even"><td>Use cores</td>
 <td>The number of cores to use (one core per simulation). Setting 0 uses all available.</td>
 </tr>
-<tr class="row-odd"><td>Open Batch Folder</td>
-<td>Opens the folder contain the batch simulation results. Enable once batch started.</td>
+<tr class="row-odd"><td>Batch folders menu</td>
+<td>Selects a batch folder in the location of the opened scenario.</td>
 </tr>
-<tr class="row-even"><td>Run Batch Simulation</td>
+<tr class="row-even"><td>Open Batch Folder</td>
+<td>Opens the selected folder in the drop-own menu</td>
+</tr>
+<tr class="row-odd"><td>Run Batch Simulation</td>
 <td>Starts running the batch simulation.</td>
 </tr>
-<tr class="row-odd"><td>Pause / Play</td>
+<tr class="row-even"><td>Pause / Play</td>
 <td>Toggles pausing and running the simulation.</td>
 </tr>
-<tr class="row-even"><td>Settings</td>
+<tr class="row-odd"><td>Settings</td>
 <td>Open the Batch Simulation settings panel as shown in
 <a class="reference internal" href="#fig-batch-sim-settings"><span class="std std-numref">Figure 4.5</span></a>.</td>
 </tr>
@@ -369,7 +372,7 @@ main simulation.</td>
 </ul>
 <p>Methods will by default assume that a batch data file is in the folder of the scenario loaded. They can be given a path and a path type if this is not suitable. Note that a batch folder has a copy of the scenario used for the batch run, and the batch data is in that folder. Hence running a batch part only makes sense in two situations:</p>
 <ul class="simple">
-<li>If a scenario of a batch folder is opened in the GUI, such as after having clicked “View Batch Data”, then all batch data operations are using the batch data produced by the batch simulation.</li>
+<li>If a scenario of a batch folder is opened in the GUI, then all batch data operations are using the batch data produced by the batch simulation.</li>
 <li>While testing the batch processing of a scenario, before running a batch simulation, batch operations are then operating on a “scratch” batch data file saved in the scenario folder; this file can be edited at will without affecting any batch run’s folder.</li>
 </ul>
 </div>

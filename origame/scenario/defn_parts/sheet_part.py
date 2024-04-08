@@ -41,8 +41,8 @@ from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ...core.typing import AnnotationDeclarations
 from ...core.utils import get_verified_repr
 
-from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSchemaEnum, pickle_from_str, pickle_to_str
-from ..ori import get_pickled_str, check_needs_pickling
+from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSchemaEnum, SaveErrorLocationEnum
+from ..ori import get_pickled_str, pickle_from_str, pickle_to_str, check_needs_pickling
 from ..ori import OriCommonPartKeys as CpKeys
 from ..ori import OriSheetPartKeys as SpKeys
 from ..proto_compat_warn import prototype_compat_property_alias
@@ -2043,7 +2043,7 @@ class SheetPart(BasePart, ExcelSheet):
     def get_matching_properties(self, re_pattern: str) -> List[str]:
         matches = BasePart.get_matching_properties(self, re_pattern)
 
-        regexp = re.compile(re_pattern)
+        regexp = re.compile(re.escape(re_pattern), re.IGNORECASE)
         for row_num, row in enumerate(self._sheet_data):
             for cell_num, val in enumerate(row):
                 val_str = str(val)
@@ -2408,7 +2408,7 @@ class SheetPart(BasePart, ExcelSheet):
                 ori_sheet_data = [row.copy() for row in self._sheet_data]
                 for row_index, row in enumerate(ori_sheet_data):
                     for col_index, value in enumerate(row):
-                        safe_val, is_pickle_successful = get_pickled_str(value)
+                        safe_val, is_pickle_successful = get_pickled_str(value, SaveErrorLocationEnum.sheet_part)
                         if not is_pickle_successful:
                             ori_sheet_data[row_index][col_index] = safe_val
 
@@ -2502,7 +2502,7 @@ class SheetPart(BasePart, ExcelSheet):
         :param pickled_cells: container in which to put the cell_id if the object was succesfully pickled
         :return: the pickle, or a replacement (text) if the object could not be pickled
         """
-        safe_val, is_pickle_successful = get_pickled_str(orig_value)
+        safe_val, is_pickle_successful = get_pickled_str(orig_value, SaveErrorLocationEnum.sheet_part)
         if is_pickle_successful:
             pickled_cells.append(cell_id)
         return safe_val

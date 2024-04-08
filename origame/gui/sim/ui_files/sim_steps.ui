@@ -412,12 +412,12 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>100</width>
+            <width>200</width>
             <height>16777215</height>
            </size>
           </property>
           <property name="placeholderText">
-           <string>dddd hh:mm:ss</string>
+           <string>ddddddddd hh:mm:ss</string>
           </property>
          </widget>
         </item>
@@ -458,12 +458,12 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>100</width>
+            <width>200</width>
             <height>16777215</height>
            </size>
           </property>
           <property name="placeholderText">
-           <string>dddd hh:mm:ss</string>
+           <string>ddddddddd hh:mm:ss</string>
           </property>
          </widget>
         </item>

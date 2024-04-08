@@ -34,10 +34,11 @@ from ....core import override
 from ....core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
 from ....core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ....scenario import ScenarioManager, Scenario
-from ....batch_sim import BatchSimManager, BsmStatesEnum, BatchDoneStatusEnum
+from ....batch_sim import BatchSimManager, BsmStatesEnum, BatchDoneStatusEnum, BatchSimSettings
 from ....gui.menu_commands import SaveAsCallable
 
 from ...gui_utils import show_modal_dialog, exec_modal_dialog, get_icon_path, set_button_image
+from ...actions_utils import get_batch_folders
 from ...safe_slot import safe_slot, ext_safe_slot
 from ...gui_utils import IScenarioMonitor
 from ...async_methods import AsyncRequest
@@ -82,6 +83,10 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
     BLUE_STYLE_SHEET = "QLabel { color: blue; }"
     RED_STYLE_SHEET = "QLabel { color: red; }"
 
+    # The selected batch folder if self.__batch_sim_manager.scen_path is not None and,
+    # there are batch folders in the location of self.__batch_sim_manager.scen_path
+    selected_batch_folder = None
+
     # --------------------------- instance (self) PUBLIC methods --------------------------------
 
     def __init__(self, batch_sim_manager: BatchSimManager,
@@ -111,7 +116,7 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         self.ui.reps_per_variant_spinbox.valueChanged.connect(self.__slot_on_action_replics_changed)
         self.ui.use_cores_spindbox.valueChanged.connect(self.__slot_on_action_num_cores_changed)
         self.ui.open_batch_folder_button.clicked.connect(self.__slot_on_action_open_batch_folder)
-        self.ui.view_batch_data_button.clicked.connect(self.__slot_on_action_view_batch_data)
+        self.ui.batch_folder_combobox.activated.connect(self.__slot_on_update_batch_combobox_display)
 
         self.__batch_sim_manager.signals.sig_scen_path_changed.connect(self.__slot_on_scen_path_changed)
         self.__batch_sim_manager.signals.sig_state_changed.connect(self.__slot_on_batch_state_changed)
@@ -122,6 +127,7 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
 
         self.__display_batch_settings()
         self._monitor_scenario_replacement()
+        self.__on_update_batch_combobox(None)
 
     def on_action_open_settings(self):
         """
@@ -130,6 +136,24 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         batch_settings = BatchSimulationSettingsDialog(self.__batch_sim_manager)
         batch_settings.finished.connect(self.__slot_display_batch_sim_settings)
         batch_settings.exec()
+
+    def apply_settings(self) -> bool:
+        """
+        Apply the changed settings from the Batch Simulation Control Panel to the Batch Simulation Manager.
+        :returns: A boolean indicating if the settings were applied successfully.
+        """
+        settings = self.__batch_sim_manager.settings.get_settings_dict()
+        if settings:
+            assert len(settings) > 0
+            # Update only the variables that can be changed from the Batch Simulation Control Panel
+            settings.update({
+                'num_variants': self.__batch_sim_manager.num_variants,
+                'num_replics_per_variant': self.__batch_sim_manager.num_replics_per_variant,
+                'num_cores_wanted': self.__batch_sim_manager.num_cores_wanted
+            })
+            self.__batch_sim_manager.set_settings(BatchSimSettings(**settings))
+
+        return len(settings) > 0  # evaluates to True if settings are populated
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
 
@@ -175,6 +199,32 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         """
         if save_success:
             self.__run_batch(has_changes=False)
+
+    def __on_update_batch_combobox(self, combo_index: int):
+        batch_combobox = self.ui.batch_folder_combobox
+        open_button = self.ui.open_batch_folder_button
+
+        batch_combobox.clear()
+        open_button.setEnabled(False)
+        self.selected_batch_folder = None
+
+        if self.__batch_sim_manager.scen_path:
+            batch_folders = get_batch_folders(os.path.dirname(str(self.__batch_sim_manager.scen_path)))
+
+            for folder in batch_folders:
+                batch_combobox.addItem(os.path.basename(folder))
+
+            # Combo index is set by selecting an item from the drop-down menu in the GUI
+            if combo_index is not None:
+                batch_combobox.setCurrentIndex(combo_index)
+                self.selected_batch_folder = batch_folders[combo_index]
+                open_button.setEnabled(True)
+
+            # When loading a scenario or after running a new batch simulation, select the latest batch folder
+            elif len(batch_folders) != 0:
+                batch_combobox.setCurrentIndex(len(batch_folders)-1)
+                self.selected_batch_folder = batch_folders[-1]
+                open_button.setEnabled(True)
 
     # --------------------
     # Button-clicked slots
@@ -268,26 +318,32 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         """
         Update variant value in Batch Sim Settings when user edits spinbox value.
         """
-        self.__batch_sim_manager.settings.num_variants = variants
+        if variants != self.__batch_sim_manager.settings.num_variants:
+            self.__batch_sim_manager.settings.num_variants = variants
+            self.apply_settings()
 
     def __on_action_replics_changed(self, reps_per_variant: int):
         """
         Update replications per variant value in Batch Sim Settings when user edits spinbox value.
         """
-        self.__batch_sim_manager.settings.num_replics_per_variant = reps_per_variant
+        if reps_per_variant != self.__batch_sim_manager.settings.num_replics_per_variant:
+            self.__batch_sim_manager.settings.num_replics_per_variant = reps_per_variant
+            self.apply_settings()
 
     def __on_action_num_cores_changed(self, cores_wanted: int):
         """
         Update 'cores wanted' value in Batch Sim Settings when user edits spinbox value.
         """
-        num_cores_available = self.__batch_sim_manager.num_cores_available
-        if cores_wanted > num_cores_available:
-            log.warning('The number of cores specified exceeds the number available. Setting to {}',
-                        num_cores_available)
-            self.ui.use_cores_spindbox.setValue(num_cores_available)
-            self.__batch_sim_manager.settings.num_cores_wanted = num_cores_available
-        else:
-            self.__batch_sim_manager.settings.num_cores_wanted = cores_wanted
+        if cores_wanted != self.__batch_sim_manager.settings.num_cores_wanted:
+            num_cores_available = self.__batch_sim_manager.num_cores_available
+            if cores_wanted > num_cores_available:
+                log.warning('The number of cores specified exceeds the number available. Setting to {}',
+                            num_cores_available)
+                self.ui.use_cores_spindbox.setValue(num_cores_available)
+                self.__batch_sim_manager.settings.num_cores_wanted = num_cores_available
+            else:
+                self.__batch_sim_manager.settings.num_cores_wanted = cores_wanted
+                self.apply_settings()
 
     # -----------------------
     # Batch Sim Manager slots
@@ -303,6 +359,8 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
             self.ui.complete_label.setStyleSheet('')
         else:
             self.__on_batch_state_changed(self.__batch_sim_manager.state_id.value)
+
+        self.__on_update_batch_combobox(None)
 
     def __on_batch_state_changed(self, state: int):
         """
@@ -359,9 +417,6 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         self.ui.variants_spinbox.setEnabled(True)
         self.ui.reps_per_variant_spinbox.setEnabled(True)
         self.ui.use_cores_spindbox.setEnabled(True)
-
-        self.ui.open_batch_folder_button.setEnabled(False)
-        self.ui.view_batch_data_button.setEnabled(False)
 
         self.ui.ave_time_per_rep_label.setText('-')
         self.ui.est_time_remaining_label.setText('-')
@@ -457,7 +512,6 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         self.ui.play_pause_toolbutton.setEnabled(False)
 
         self.ui.batch_settings_toolbutton.setEnabled(False)
-        self.ui.view_batch_data_button.setEnabled(True)
 
     def __on_replication_done(self, num_reps_done: int, num_total_reps: int):
         """
@@ -500,78 +554,21 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         self.ui.finished_variants_label.setText(str(num_variants_done))
         self.ui.failed_variants_label.setText(str(num_variants_failed))
 
-    def __on_batch_folder_changed(self, folder: str):
+    def __on_batch_folder_changed(self):
         """
         Slot called when batch folder changed.
         """
-        if folder:
-            self.ui.open_batch_folder_button.setEnabled(True)
-        else:
-            self.ui.open_batch_folder_button.setEnsabled(False)
+        self.__on_update_batch_combobox(None)
 
     def __on_action_open_batch_folder(self):
         """
         Open a Windows Explorer window for the current batch folder.
         """
-        folder = self.__batch_sim_manager.batch_folder
+        folder = self.selected_batch_folder
         if folder is None:
             raise RuntimeError("No batch folder exists yet!")
 
         os.startfile(str(folder))
-
-    def __on_action_view_batch_data(self):
-        """
-        Open a new instance of Origame with batch folder scenario.
-
-        Since Origame can be run in a Python virtual environemnt (venv), or an IDE (PyCharm), it must support two
-        different file hierarchies. venv's put the Python exe in the Scripts folder where the Origame GUI script
-        resides, while the dev environment runs from the base Python installation where the exe is located in the root
-        Python directory, one level up from Scripts.
-        """
-        batch_results_scen_path = self.__batch_sim_manager.batch_results_scen_path
-        if batch_results_scen_path is None:
-            raise RuntimeError("No batch folder exists yet, or startup scenario not found in it!")
-
-        # construct two possible paths to the GUI script
-        py_exe = Path(sys.executable)
-        py_scripts = py_exe.parent
-        origame_gui = 'origame_gui.py'
-        venv_script_path = py_scripts / origame_gui  # 1: venv
-        dev_script_path = Path(os.getcwd()) / origame_gui  # 2: dev IDE
-
-        # LEAVE CODE BELOW FOR NOW: ALTERNATE STRATEGY FOR LAUNCHING 2ND GUI THAN THE ONE BELOW
-        # if venv_script_path.exists():
-        #     # this instance is running in a Python virtual environment
-        #     subprocess.Popen([str(py_exe), str(venv_script_path), '-f', str(batch_results_scen_path)])
-        # elif dev_script_path.exists():
-        #     # this instance is running from an IDE
-        #     subprocess.Popen([str(py_exe), 'origame_gui.py', '-f', str(batch_results_scen_path)])
-        # else:
-        #     # unsupported configuration
-        #     msg = "Origame could not open because the GUI script could not be found.\n{}"
-        #     exec_modal_dialog("Script Not Found", msg, QMessageBox.Critical)
-
-        # launch second gui assuming running in a Python virtual environment
-        p = subprocess.Popen([str(py_exe), str(venv_script_path), '-f', str(batch_results_scen_path)])
-        try:
-            # wait for process to exit prematurely
-            p.wait(.1)
-        except subprocess.TimeoutExpired:
-            # the process didn't exit, which means second GUI launched successfully
-            pass
-        else:
-            # launch second gui assuming running in a dev IDE
-            p = subprocess.Popen([str(py_exe), str(dev_script_path), '-f', str(batch_results_scen_path)])
-            try:
-                # wait for process to exit prematurely
-                p.wait(.1)
-            except subprocess.TimeoutExpired:
-                # the process didn't exit, which means second GUI launched successfully
-                pass
-            else:
-                # if we get here, the script could not be found
-                msg = "Origame could not open because the GUI script could not be found.\n{}"
-                exec_modal_dialog("Script Not Found", msg, QMessageBox.Critical)
 
     def __on_batch_time_stats_changed(self, _1: timedelta, _2: int, _3: int,
                                       ave_time_per_rep: timedelta, est_time_remaining: timedelta):
@@ -602,5 +599,5 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
     __slot_on_replication_error = safe_slot(__on_replication_error)
     __slot_on_batch_folder_changed = safe_slot(__on_batch_folder_changed)
     __slot_on_action_open_batch_folder = safe_slot(__on_action_open_batch_folder)
-    __slot_on_action_view_batch_data = safe_slot(__on_action_view_batch_data)
+    __slot_on_update_batch_combobox_display = safe_slot(__on_update_batch_combobox)
     __slot_on_batch_time_stats_changed = ext_safe_slot(__on_batch_time_stats_changed)

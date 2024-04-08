@@ -145,7 +145,7 @@ def validate_python_name(name: str):
         bad_format = True
 
     regex_valid_char = '[_a-zA-Z0-9]'
-    name = list(name)  # str -> list[char]: allows assignment at index
+    name = list(name)  # str -> List[char]: allows assignment at index
     for index, char in enumerate(name):
         if not re.fullmatch(regex_valid_char, char):
             name[index] = '_'

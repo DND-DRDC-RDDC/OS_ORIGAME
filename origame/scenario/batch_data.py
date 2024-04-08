@@ -328,6 +328,8 @@ class BatchDataMgr:
         if data_path is not None:
             self.set_data_path(data_path, file_type=file_type)
 
+        self.replic_data_buffer = []
+
     def set_data_path(self, data_path: Optional[PathType], file_type: DataPathTypesEnum = None):
         """
         Set or change the data path to use when loading batch data or writing replication data.
@@ -518,22 +520,40 @@ class BatchDataMgr:
         :param replic_id: replication ID for which TEST data is being defined
         :param data: the data
         """
+        self.replic_data_buffer.append({"variant_id": variant_id, "replic_id": replic_id, "data": data})
+        self.__write_batch_data_to_db()
+
+    def __write_batch_data_to_db(self):
         data_file = self.get_data_file_path()
         if data_file is None:
             raise RuntimeError("No data file could be identified, cannot write replication data to file")
 
-        log.info("Saving batch replication data to {}", data_file)
-        conn = sqlite3.connect(str(data_file), timeout=TO)
-        with conn:
-            for data_key in data:
-                table_name = data_key
-                if re.match(r'\w+$', table_name) is None:
-                    raise RuntimeError("DANGER! the key name is somehow not a word!")
+        try:
+            with sqlite3.connect(str(data_file), timeout=TO) as conn:
+                replic_data = self.replic_data_buffer[-1] # Write data to database on first-in-first-out basis
+                variant_id = replic_data["variant_id"]
+                replic_id = replic_data["replic_id"]
+                data = replic_data["data"]
+                log.info("Saving batch replication data to {}", data_file)
+                for data_key in data:
+                    table_name = data_key
+                    if re.match(r'\w+$', table_name) is None:
+                        raise RuntimeError("DANGER! the key name is somehow not a word!")
 
-                sql_cmd = 'CREATE TABLE IF NOT EXISTS {} (replic_id INTEGER, variant_id INTEGER, py_pickled_obj BLOB)'
-                conn.execute(sql_cmd.format(table_name))
-                data_pickle = pickle.dumps(data[data_key])
-                conn.execute('INSERT INTO {} VALUES (?, ?, ?)'.format(table_name),
-                             (replic_id, variant_id, data_pickle))
-        log.debug('Data for keys {} saved', ', '.join(sorted(data)))
+                    sql_cmd = 'CREATE TABLE IF NOT EXISTS {} (replic_id INTEGER, variant_id INTEGER, py_pickled_obj BLOB)'
+                    conn.execute(sql_cmd.format(table_name))
+                    data_pickle = pickle.dumps(data[data_key])
+                    conn.execute('INSERT INTO {} VALUES (?, ?, ?)'.format(table_name),
+                                (replic_id, variant_id, data_pickle))
+                conn.commit()
+                self.replic_data_buffer.pop() # Once the data is written to the database, remove it from the buffer
 
+        except sqlite3.OperationalError:
+            log.info("Saving batch replication data to {} failed, trying again ...", data_file)
+
+        else:
+            log.debug('Data for keys {} saved', ', '.join(sorted(data)))
+
+        finally:
+            if (len(self.replic_data_buffer)):
+                self.__write_batch_data_to_db()

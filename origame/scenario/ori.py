@@ -87,6 +87,7 @@ __all__ = [
     'OriRotation3dKeys',
     'OriPartLinkKeys',
     'OriWaypointKeys',
+    'SaveError'
 ]
 
 log = logging.getLogger('system')
@@ -119,7 +120,7 @@ def check_needs_pickling(value: Any) -> Tuple[bool, Any]:
     return False, None
 
 
-def get_pickled_str(value: Any) -> Tuple[str, bool]:
+def get_pickled_str(value: Any, location: Enum) -> Tuple[str, bool]:
     """
     Get a "nice" string representation of a pickle of a value.
 
@@ -131,14 +132,39 @@ def get_pickled_str(value: Any) -> Tuple[str, bool]:
         return pickle_to_str(pickled_val), True
 
     except Exception as ex:
-        warning_val = ('WARNING: This is not the value that was in Origame '
-                       'as it could not be pickled for output into this file: {}').format(repr(value))
-        log.warning(warning_val)
-        log.warning("Detailed exception: {}", ex)
-        return warning_val, False
+        return SaveError(value, location).to_json(), False
 
 
 # -- Class Definitions --------------------------------------------------------------------------
+
+class SaveError():
+    """ This class represents an object that will replace any non-serializble object in the save model """
+
+    def __init__(self, obj: Any, location_enum: Enum):
+        self.type = type(obj).__name__
+        self.location = location_enum.name
+
+    def to_json(self) -> str:
+        """ Converts this class to a JSON serializble format """
+        return f'SaveError: {json.dumps(self.__dict__)}'
+
+    def get_type_from_json(jsond_str: str) -> str:
+        """Returns type of the given JSON-formatted SaveError object"""
+        jsond = jsond_str.split('SaveError: ')[-1]
+        return json.loads(jsond)['type']
+
+    def get_location_from_json(jsond_str: str) -> str:
+        """Returns location of the given JSON-formatted SaveError object"""
+        jsond = jsond_str.split('SaveError: ')[-1]
+        return json.loads(jsond)['location']
+
+
+class SaveErrorLocationEnum(IntEnum):
+    """
+    Enumerate the various locations of the non-serializable objects
+    """
+    data_part, variable_part, sheet_part, event_queue, other = range(5)
+
 
 @functools.total_ordering
 @unique
@@ -632,6 +658,7 @@ class OriButtonPartKeys:
     ROTATION_2D_RELEASED = "rotation_2d_released"
     IMAGE_ID_PRESSED = "image_id_pressed"
     IMAGE_ID_RELEASED = "image_id_released"
+    BUTTON_STATE = "state"
 
 
 class OriClockPartKeys:
