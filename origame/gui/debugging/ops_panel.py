@@ -84,7 +84,6 @@ class DebugOpsPanel(QWidget):
         self.ui.evaluate_button.clicked.connect(self._slot_on_eval_pyexpr)
         self.ui.clear_button.clicked.connect(self._slot_on_clear_pyexpr)
         self.python_expression = PythonExpression(self.ui.groupBox)
-        self.python_expression.setObjectName("python_expression")
         self.ui.horizontalLayout_4.insertWidget(0, self.python_expression)
         self.python_expression.returnPressed.connect(self._slot_on_eval_pyexpr)
         self.ui.breakpoint_on_off_button.clicked.connect(self._slot_on_breakpoint_on_off_button_clicked)
@@ -221,6 +220,7 @@ class DebugOpsPanel(QWidget):
 
     def _on_clear_pyexpr(self):
         """
+        Clears the python expression field and expression result.
         Called when the Clear button is clicked
         """
         self.ui.expression_result_list.clear()
