@@ -19,7 +19,7 @@ import logging
 
 # [2. third-party]
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel, QHeaderView
-from PyQt5.QtGui import QMouseEvent
+from PyQt5.QtGui import QMouseEvent, QIcon
 from PyQt5.Qt import Qt
 
 # [3. local]
@@ -28,7 +28,7 @@ from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, Bi
 from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ...scenario.part_execs import PyDebugger, LinkedPartsScriptingProxy, LINKS_SCRIPT_OBJ_NAME
 from ...scenario.defn_parts import BasePart
-from ..gui_utils import get_scenario_font
+from ..gui_utils import get_scenario_font, get_icon_path
 from ..safe_slot import safe_slot
 from ..async_methods import AsyncRequest, AsyncErrorInfo
 from .Ui_ops_panel import Ui_DebugWidget
@@ -57,6 +57,10 @@ LOCAL_VARIABLES_TABLE_HEADER_NAMES = ['Name', 'Value']
 
 # -- Class Definitions --------------------------------------------------------------------------
 class PythonExpression(QLineEdit):
+    """
+    Extends QLineEdit so that everything in the textbox gets highlighted when the user clicks on it.
+    """
+
     def __init__(self, parent):
         """
         :param part: The widget this python expression box is being added to.
@@ -93,6 +97,11 @@ class DebugOpsPanel(QWidget):
         self.ui.local_variables_table.cellDoubleClicked.connect(self._slot_on_local_var_clicked)
         self.ui.local_variables_table.setFont(get_scenario_font(mono=True))
         self.__local_debug_vars = dict()
+        _variable_refresh_button_icon = QIcon(str(get_icon_path("shortcut_refresh.svg")))
+        self.ui.variable_refresh_button.setIcon(_variable_refresh_button_icon)
+        self.ui.variable_refresh_button.setFixedHeight(self.ui.label.size().height())
+        self.ui.variable_refresh_button.setFixedWidth(self.ui.label.size().height())
+        self.ui.variable_refresh_button.clicked.connect(self._slot_on_variable_refresh_button_clicked)
 
     def set_local_variables(self, variables: Dict[str, str]):
         """
@@ -233,6 +242,9 @@ class DebugOpsPanel(QWidget):
         pass
 
     def _on_local_var_clicked(self, row: int, col: int):
+        """
+        Called when a cell in the local variables table is clicked.
+        """
         # Always get the name of the variable (i.e. column 0) of the clicked row
         # regardless if the user clicked on the variable name or value of that row.
         _var = self.ui.local_variables_table.cellWidget(row, 0).text()
@@ -247,6 +259,13 @@ class DebugOpsPanel(QWidget):
         for result_str in expression_results:
             self.ui.expression_result_list.addItem(str(result_str))
 
+    def _on_variable_refresh_button_clicked(self):
+        """
+        Clicked when the local variables refresh button is clicked.
+        """
+        debug_info = PyDebugger.get_singleton().current_debug_info
+        self.set_local_variables(debug_info.local_vars)
+
     _slot_on_continue_button_clicked = safe_slot(_on_continue_button_clicked)
     _slot_on_step_button_clicked = safe_slot(_on_step_button_clicked)
     _slot_on_step_into_button_clicked = safe_slot(_on_step_into_button_clicked)
@@ -255,3 +274,4 @@ class DebugOpsPanel(QWidget):
     _slot_on_clear_pyexpr = safe_slot(_on_clear_pyexpr)
     _slot_on_breakpoint_on_off_button_clicked = safe_slot(_on_breakpoint_on_off_button_clicked)
     _slot_on_local_var_clicked = safe_slot(_on_local_var_clicked)
+    _slot_on_variable_refresh_button_clicked = safe_slot(_on_variable_refresh_button_clicked)

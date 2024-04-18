@@ -178,11 +178,18 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Local Variables:</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Local Variables:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="variable_refresh_button"/>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QTableWidget" name="local_variables_table">
