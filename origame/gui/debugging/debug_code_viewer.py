@@ -54,7 +54,7 @@ log = logging.getLogger('system')
 
 class DebugCodeViewer(QDialog):
     """
-    Class that provides functioanlity for debugging code in scenario part scripts
+    Class that provides functionality for debugging code in scenario part scripts
     """
 
     def __init__(self, parent: QWidget = None):
