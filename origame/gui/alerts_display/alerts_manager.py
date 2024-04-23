@@ -356,7 +356,6 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.ui.val_warnings.setText(str(0))
         self.ui.details_text_browser.setText('')
         self.__ensure_clear_filters_button_states()
-        self.__update_filters_number()
         self.__set_alert_table_header()
 
         # Qt should automatically disconnect from previous Scenario when scenario is disposed of
@@ -396,7 +395,6 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.ui.details_text_browser.setHtml(pretty_details_in_html(alert_info))
 
         self.__ensure_clear_filters_button_states()
-        self.__update_filters_number()
 
     def __on_validate_button_clicked(self):
         """
@@ -432,6 +430,8 @@ class AlertsPanel(IScenarioMonitor, QWidget):
             self.ui.clear_filters_button.setEnabled(False)
         else:
             self.ui.clear_filters_button.setEnabled(True)
+
+        self.__update_filters_number()
 
     def __update_filters_number(self):
         """
@@ -517,7 +517,6 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.ui.val_warnings.setText(str(num_warnings))
         self.ui.details_text_browser.setText('')
         self.__ensure_clear_filters_button_states()
-        self.__update_filters_number()
 
         # This will ensure that the active filter(s), if any, apply on the new alert(s)
         self.__on_component_filter_update()
@@ -597,7 +596,6 @@ class AlertsPanel(IScenarioMonitor, QWidget):
                         if i in self.__hidden_rows[ALERT_COL_TYPE]: self.__hidden_rows[ALERT_COL_TYPE].remove(i)
 
         self.__ensure_clear_filters_button_states()
-        self.__update_filters_number()
 
     def __on_category_filter_update(self): 
         filters = self.alert_category_filter._filter_items
@@ -627,7 +625,6 @@ class AlertsPanel(IScenarioMonitor, QWidget):
                         if i in self.__hidden_rows[ALERT_COL_CATEGORY]: self.__hidden_rows[ALERT_COL_CATEGORY].remove(i)
 
         self.__ensure_clear_filters_button_states()
-        self.__update_filters_number()
 
     def __on_component_filter_update(self):
         filters = self.alert_component_filter._filter_items
@@ -657,7 +654,6 @@ class AlertsPanel(IScenarioMonitor, QWidget):
                         if i in self.__hidden_rows[ALERT_COL_COMPONENT]: self.__hidden_rows[ALERT_COL_COMPONENT].remove(i)
 
         self.__ensure_clear_filters_button_states()
-        self.__update_filters_number()
 
     __slot_on_alert_status_changed = safe_slot(__on_alert_status_changed)
     __slot_on_validate_button_clicked = safe_slot(__on_validate_button_clicked)
