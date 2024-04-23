@@ -252,7 +252,6 @@ class MainWindow(QMainWindow):
         self.__2d_panel.sig_part_selection_changed.connect(
             self.__object_properties_panel.slot_on_object_selection_changed)
 
-        self.__2d_panel.sig_alert_source_selected.connect(self.__alerts_panel.slot_on_alert_source_selected)
         self.__2d_panel.sig_alert_source_selected.connect(self.__slot_on_alert_source_selected)
         self.__2d_panel.sig_part_selection_changed.connect(self.__uil_file_commands.slot_on_part_selection_changed)
         self.__2d_panel.sig_update_context_help.connect(self.__slot_update_context_help)

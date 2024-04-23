@@ -13,6 +13,87 @@
   <property name="windowTitle">
    <string>Alerts Content</string>
   </property>
+  <widget class="QFrame" name="type_frame">
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="label_type">
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QToolButton" name="alert_type_btn">
+      <property name="styleSheet">
+       <string notr="true">QToolButton::menu-indicator { image: none; }</string>
+      </property>
+      <property name="arrowType">
+       <enum>Qt::DownArrow</enum>
+      </property>
+      <property name="popupMode">
+       <enum>QToolButton::InstantPopup</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="component_frame">
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item>
+     <widget class="QLabel" name="label_component">
+      <property name="text">
+       <string>Component</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QToolButton" name="alert_component_btn">
+      <property name="styleSheet">
+       <string notr="true">QToolButton::menu-indicator { image: none; }</string>
+      </property>
+      <property name="arrowType">
+       <enum>Qt::DownArrow</enum>
+      </property>
+      <property name="popupMode">
+       <enum>QToolButton::InstantPopup</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="category_frame">
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <item>
+     <widget class="QLabel" name="label_category">
+      <property name="text">
+       <string>Category</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QToolButton" name="alert_category_btn">
+      <property name="styleSheet">
+       <string notr="true">QToolButton::menu-indicator { image: none; }</string>
+      </property>
+      <property name="arrowType">
+       <enum>Qt::DownArrow</enum>
+      </property>
+      <property name="popupMode">
+       <enum>QToolButton::InstantPopup</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <widget class="QWidget" name="header_widget" native="true">
@@ -111,7 +192,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_filter">
            <property name="text">
-            <string>Filter:</string>
+            <string>Filters:</string>
            </property>
           </widget>
          </item>
@@ -124,7 +205,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>None</string>
+            <string>0</string>
            </property>
           </widget>
          </item>
@@ -171,22 +252,6 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QTableWidget" name="alert_table_widget">
-           <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-           <property name="columnCount">
-            <number>3</number>
-           </property>
-           <column/>
-           <column/>
-           <column/>
-          </widget>
-         </item>
-         <item>
           <widget class="QWidget" name="button_container" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <property name="leftMargin">
@@ -209,12 +274,12 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="filter_button">
+             <widget class="QPushButton" name="clear_filters_button">
               <property name="enabled">
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Filter</string>
+               <string>Clear Filters</string>
               </property>
              </widget>
             </item>
