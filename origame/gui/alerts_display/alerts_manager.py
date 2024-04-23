@@ -376,8 +376,6 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.alert_table_widget.setHorizontalHeaderItem(ALERT_COL_COMPONENT, self.ui.component_frame)
         self.alert_table_widget.setHorizontalHeaderItem(ALERT_COL_CATEGORY, self.ui.category_frame)
 
-        self.alert_table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-
         # The header labels are already set in the header items in self.ui.label_type, self.ui.label_component and self.ui.label_category
         self.alert_table_widget.setHorizontalHeaderLabels(["", "", ""])
 
@@ -527,11 +525,11 @@ class AlertsPanel(IScenarioMonitor, QWidget):
 
     def _clear_component_filter(self):
         self.__component_filter = None
-        self.__hidden_rows[ALERT_COL_COMPONENT] = []
 
-        for i in range(self.alert_table_widget.rowCount()):
-            if i not in self.__hidden_rows[ALERT_COL_TYPE] and i not in self.__hidden_rows[ALERT_COL_CATEGORY]:
-                self.alert_table_widget.setRowHidden(i, False)
+        for i in self.__hidden_rows[ALERT_COL_COMPONENT]:
+            self.alert_table_widget.setRowHidden(i, False)
+
+        self.__hidden_rows[ALERT_COL_COMPONENT] = []
     
         _font = QFont()
         _font.setBold(False)
@@ -540,11 +538,11 @@ class AlertsPanel(IScenarioMonitor, QWidget):
     
     def _clear_category_filter(self):
         self.__category_filter = None
-        self.__hidden_rows[ALERT_COL_CATEGORY] = []
+        
+        for i in self.__hidden_rows[ALERT_COL_CATEGORY]:
+            self.alert_table_widget.setRowHidden(i, False)
 
-        for i in range(self.alert_table_widget.rowCount()):
-            if i not in self.__hidden_rows[ALERT_COL_TYPE] and i not in self.__hidden_rows[ALERT_COL_COMPONENT]:
-                self.alert_table_widget.setRowHidden(i, False)
+        self.__hidden_rows[ALERT_COL_CATEGORY] = []
 
         _font = QFont()
         _font.setBold(False)
@@ -553,11 +551,11 @@ class AlertsPanel(IScenarioMonitor, QWidget):
 
     def _clear_type_filter(self):
         self.__type_filter = None
-        self.__hidden_rows[ALERT_COL_TYPE] = []
 
-        for i in range(self.alert_table_widget.rowCount()):
-            if i not in self.__hidden_rows[ALERT_COL_CATEGORY] and i not in self.__hidden_rows[ALERT_COL_COMPONENT]:
-                self.alert_table_widget.setRowHidden(i, False)
+        for i in self.__hidden_rows[ALERT_COL_TYPE]:
+            self.alert_table_widget.setRowHidden(i, False)
+
+        self.__hidden_rows[ALERT_COL_TYPE] = []
 
         _font = QFont()
         _font.setBold(False)
