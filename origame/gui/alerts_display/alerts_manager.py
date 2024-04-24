@@ -258,6 +258,7 @@ class AlertTableHeader(QHeaderView):
     
     __slot_on_section_resized = safe_slot(__on_section_resized)
 
+
 class AlertsTableWidget(QTableWidget):
     """
     Alerts Table with custom header.
