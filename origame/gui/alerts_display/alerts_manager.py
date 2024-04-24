@@ -270,7 +270,7 @@ class AlertsTableWidget(QTableWidget):
         header = AlertTableHeader(self)
         self.setHorizontalHeader(header)
 
-    def setHorizontalHeaderItem(self, column: int, widget: QWidget | QTableWidgetItem):
+    def setHorizontalHeaderItem(self, column: int, widget: QWidget):
         self.horizontalHeader().setItemWidget(column, widget)
 
     def scrollContentsBy(self, dx, dy):
