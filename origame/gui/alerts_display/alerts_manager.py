@@ -125,7 +125,7 @@ class AlertFilterMenu(QMenu):
 
         self.add_checkable_action("Select All", True)
 
-        self._filter_items = []
+        self.filter_items = []
 
     def add_checkable_action(self, item, checked):
         checkbox = QCheckBox(item, self)
@@ -160,15 +160,15 @@ class AlertFilterMenu(QMenu):
             else:
                 for _item in items:
                     _item.defaultWidget().setChecked(False)
-                self._filter_items = []
+                self.filter_items = []
         # All other items
         else:
             # If the item is unchecked, remove it from the filtering items
             if not checked:
-                self._filter_items.remove(item.text())
+                self.filter_items.remove(item.text())
             # If the item is checked, add it to the filtering items
             else:
-                self._filter_items.append(item.text())
+                self.filter_items.append(item.text())
 
             # If any item is checked, uncheck "Select All"
             if any(_item.defaultWidget().isChecked() for _item in items):
@@ -416,7 +416,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
             _filter.actions()[0].defaultWidget().setChecked(True)
 
             # Clear the list of filter items
-            _filter._filter_items = []
+            _filter.filter_items = []
 
         self.__get_alerts()
 
@@ -563,7 +563,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.ui.label_type.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_TYPE])
 
     def __on_type_filter_update(self):
-        filters = self.alert_type_filter._filter_items
+        filters = self.alert_type_filter.filter_items
 
         if filters == []:
             self._clear_type_filter()
@@ -596,7 +596,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.__ensure_clear_filters_button_states()
 
     def __on_category_filter_update(self): 
-        filters = self.alert_category_filter._filter_items
+        filters = self.alert_category_filter.filter_items
 
         if filters == []:
             self._clear_category_filter()
@@ -625,7 +625,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.__ensure_clear_filters_button_states()
 
     def __on_component_filter_update(self):
-        filters = self.alert_component_filter._filter_items
+        filters = self.alert_component_filter.filter_items
 
         if filters == []:    
             self._clear_component_filter()
