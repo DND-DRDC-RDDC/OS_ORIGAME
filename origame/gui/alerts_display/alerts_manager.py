@@ -523,54 +523,27 @@ class AlertsPanel(IScenarioMonitor, QWidget):
 
         self.alert_table_widget.resizeColumnsToContents()
 
-    def _clear_component_filter(self):
-        self.__component_filter = None
-
-        for i in self.__hidden_rows[ALERT_COL_COMPONENT]:
-            self.alert_table_widget.setRowHidden(i, False)
-
-        self.__hidden_rows[ALERT_COL_COMPONENT] = []
-    
-        _font = QFont()
-        _font.setBold(False)
-        self.ui.label_component.setFont(_font)
-        self.ui.label_component.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_COMPONENT])
-    
-    def _clear_category_filter(self):
-        self.__category_filter = None
-        
-        for i in self.__hidden_rows[ALERT_COL_CATEGORY]:
-            self.alert_table_widget.setRowHidden(i, False)
-
-        self.__hidden_rows[ALERT_COL_CATEGORY] = []
-
-        _font = QFont()
-        _font.setBold(False)
-        self.ui.label_category.setFont(_font)
-        self.ui.label_category.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_CATEGORY])
-
-    def _clear_type_filter(self):
-        self.__type_filter = None
-
-        for i in self.__hidden_rows[ALERT_COL_TYPE]:
-            self.alert_table_widget.setRowHidden(i, False)
-
-        self.__hidden_rows[ALERT_COL_TYPE] = []
-
-        _font = QFont()
-        _font.setBold(False)
-        self.ui.label_type.setFont(_font)
-        self.ui.label_type.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_TYPE])
-
     def __on_type_filter_update(self):
         filters = self.alert_type_filter.filter_items
 
         if filters == []:
-            self._clear_type_filter()
+            self.__type_filter = None
+
+            # Reset the font and column name
+            _font = QFont()
+            _font.setBold(False)
+            self.ui.label_type.setFont(_font)
+            self.ui.label_type.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_TYPE])
+
+            # Remove all row indices that were hidden because of the type filter
+            for i in self.__hidden_rows[ALERT_COL_TYPE]:
+                self.alert_table_widget.setRowHidden(i, False)
+            self.__hidden_rows[ALERT_COL_TYPE] = []
 
         else:
             self.__type_filter = filters
 
+            # Set the font to bold and change column name
             _font = QFont()
             _font.setBold(True)
             self.ui.label_type.setFont(_font)
@@ -599,11 +572,23 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         filters = self.alert_category_filter.filter_items
 
         if filters == []:
-            self._clear_category_filter()
+            self.__category_filter = None
+
+            # Reset the font and column name
+            _font = QFont()
+            _font.setBold(False)
+            self.ui.label_category.setFont(_font)
+            self.ui.label_category.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_CATEGORY])
+        
+            # Remove all row indices that were hidden because of the category filter
+            for i in self.__hidden_rows[ALERT_COL_CATEGORY]:
+                self.alert_table_widget.setRowHidden(i, False)
+            self.__hidden_rows[ALERT_COL_CATEGORY] = []
 
         else:
             self.__category_filter = filters
 
+            # Set the font to bold and change column name
             _font = QFont()
             _font.setBold(True)
             self.ui.label_category.setFont(_font)
@@ -628,11 +613,23 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         filters = self.alert_component_filter.filter_items
 
         if filters == []:    
-            self._clear_component_filter()
+            self.__component_filter = None
+
+            # Reset the font and column name
+            _font = QFont()
+            _font.setBold(False)
+            self.ui.label_component.setFont(_font)
+            self.ui.label_component.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_COMPONENT])   
+
+            # Remove all row indices that were hidden because of the component filter
+            for i in self.__hidden_rows[ALERT_COL_COMPONENT]:
+                self.alert_table_widget.setRowHidden(i, False)
+            self.__hidden_rows[ALERT_COL_COMPONENT] = []    
 
         else:
             self.__component_filter = filters
 
+            # Set the font to bold and change column name
             _font = QFont()
             _font.setBold(True)
             self.ui.label_component.setFont(_font)
