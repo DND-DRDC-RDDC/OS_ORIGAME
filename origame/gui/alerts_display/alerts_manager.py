@@ -59,6 +59,8 @@ log = logging.getLogger('system')
 ALERTS_TABLE_HEADER_NAMES = ['Type', 'Component', 'Category']
 ALERTS_TABLE_HEADER_NAMES_WITH_FILTER = ['Type*', 'Component*', 'Category*']
 
+COL_WIDTH = 150
+
 ALERT_IMG_SIZE = QSize(24, 24)
 MAP_ALERT_LEVEL_TO_IMG = {
 }
@@ -194,7 +196,7 @@ class AlertTableHeader(QHeaderView):
     def __init__(self, parent = None):
         super().__init__(Qt.Orientation.Horizontal, parent)
         self.sectionResized.connect(self.__slot_on_section_resized)
-        self.setMinimumSectionSize(150)
+        self.setMinimumSectionSize(COL_WIDTH)
 
         self.header_sections = []
 
@@ -269,6 +271,9 @@ class AlertsTableWidget(QTableWidget):
         super().__init__(parent)
         header = AlertTableHeader(self)
         self.setHorizontalHeader(header)
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setColumnCount(3)
 
     def setHorizontalHeaderItem(self, column: int, widget: QWidget):
         self.horizontalHeader().setItemWidget(column, widget)
@@ -307,9 +312,6 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.__scenario = None
 
         self.alert_table_widget = AlertsTableWidget(self)
-        self.alert_table_widget.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.alert_table_widget.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.alert_table_widget.setColumnCount(3)
         self.ui.verticalLayout.insertWidget(0, self.alert_table_widget)
         self.__set_alert_table_header()
 
@@ -358,6 +360,27 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.__ensure_clear_filters_button_states()
         self.__set_alert_table_header()
 
+        # Reset the columns labels
+        self._reset_label_component()
+        self._reset_label_category()
+        self._reset_label_type()
+
+        # Reset the columns size
+        self.alert_table_widget.setColumnWidth(ALERT_COL_TYPE, COL_WIDTH)
+        self.alert_table_widget.setColumnWidth(ALERT_COL_CATEGORY, COL_WIDTH)
+        self.alert_table_widget.setColumnWidth(ALERT_COL_COMPONENT, COL_WIDTH)
+
+        # Enure the drop-down menus in the columns header are cleared (they will still have "Select All")
+        self.alert_type_filter = AlertFilterMenu()
+        self.ui.alert_type_btn.setMenu(self.alert_type_filter)
+        self.alert_component_filter = AlertFilterMenu()
+        self.ui.alert_component_btn.setMenu(self.alert_component_filter)
+        self.alert_category_filter = AlertFilterMenu()
+        self.ui.alert_category_btn.setMenu(self.alert_category_filter)
+        self.alert_type_filter.filter_update_signal.connect(self.__slot_on_type_filter_update_signal)
+        self.alert_category_filter.filter_update_signal.connect(self.__slot_on_category_filter_update_signal)
+        self.alert_component_filter.filter_update_signal.connect(self.__slot_on_component_filter_update_signal)
+
         # Qt should automatically disconnect from previous Scenario when scenario is disposed of
         scenario.alert_signals.sig_alert_status_changed.connect(self.__slot_on_alert_status_changed)
 
@@ -378,6 +401,33 @@ class AlertsPanel(IScenarioMonitor, QWidget):
 
         # The header labels are already set in the header items in self.ui.label_type, self.ui.label_component and self.ui.label_category
         self.alert_table_widget.setHorizontalHeaderLabels(["", "", ""])
+
+    def _reset_label_component(self):
+        """
+        Resets the Component label back to default
+        """
+        _font = QFont()
+        _font.setBold(False)
+        self.ui.label_component.setFont(_font)
+        self.ui.label_component.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_COMPONENT])
+    
+    def _reset_label_category(self):
+        """
+        Resets the Category label back to default
+        """
+        _font = QFont()
+        _font.setBold(False)
+        self.ui.label_category.setFont(_font)
+        self.ui.label_category.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_CATEGORY])
+
+    def _reset_label_type(self):
+        """
+        Resets the Type label back to default
+        """
+        _font = QFont()
+        _font.setBold(False)
+        self.ui.label_type.setFont(_font)
+        self.ui.label_type.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_TYPE])
 
     def __init_icons(self):
         MAP_ALERT_LEVEL_TO_IMG[ScenAlertLevelEnum.warning] = QPixmap(get_icon_path("alert_warning.svg"))
@@ -530,10 +580,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
             self.__type_filter = None
 
             # Reset the font and column name
-            _font = QFont()
-            _font.setBold(False)
-            self.ui.label_type.setFont(_font)
-            self.ui.label_type.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_TYPE])
+            self._reset_label_type()
 
             # Remove all row indices that were hidden because of the type filter
             for i in self.__hidden_rows[ALERT_COL_TYPE]:
@@ -575,10 +622,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
             self.__category_filter = None
 
             # Reset the font and column name
-            _font = QFont()
-            _font.setBold(False)
-            self.ui.label_category.setFont(_font)
-            self.ui.label_category.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_CATEGORY])
+            self._reset_label_category()
         
             # Remove all row indices that were hidden because of the category filter
             for i in self.__hidden_rows[ALERT_COL_CATEGORY]:
@@ -616,10 +660,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
             self.__component_filter = None
 
             # Reset the font and column name
-            _font = QFont()
-            _font.setBold(False)
-            self.ui.label_component.setFont(_font)
-            self.ui.label_component.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_COMPONENT])   
+            self._reset_label_component()
 
             # Remove all row indices that were hidden because of the component filter
             for i in self.__hidden_rows[ALERT_COL_COMPONENT]:
