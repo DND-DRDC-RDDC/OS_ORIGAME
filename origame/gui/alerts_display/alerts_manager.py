@@ -229,7 +229,19 @@ class AlertTableHeader(QHeaderView):
     def updateGeometries(self):
         self.setViewportMargins(0, 0, 0, 0)
         super().updateGeometries()
-        self.__on_section_resized()
+        self.resizeSections()
+
+    def resizeSections(self):
+        super().resizeSections()
+
+        if not self.header_sections:
+            return
+
+        for i in range(self.count()):
+            section = self.header_sections[i]
+            height = section.sizeHint().height()
+            section.move(self.sectionPosition(self.logicalIndex(i)) - self.offset(), 0)
+            section.resize(self.sectionSize(self.logicalIndex(i)), height)
 
     def fixItemPosition(self):
         for i in range(self.count()):
@@ -246,17 +258,7 @@ class AlertTableHeader(QHeaderView):
     # --------------------------- instance _PROTECTED properties and safe slots -----------------
     # --------------------------- instance __PRIVATE members-------------------------------------
 
-    def __on_section_resized(self):
-        if not self.header_sections:
-            return
-
-        for i in range(self.count()):
-            section = self.header_sections[i]
-            height = section.sizeHint().height()
-            section.move(self.sectionPosition(self.logicalIndex(i)) - self.offset(), 0)
-            section.resize(self.sectionSize(self.logicalIndex(i)), height)
-    
-    __slot_on_section_resized = safe_slot(__on_section_resized)
+    __slot_on_section_resized = safe_slot(resizeSections)
 
 
 class AlertsTableWidget(QTableWidget):
@@ -567,12 +569,14 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.ui.details_text_browser.setText('')
         self.__ensure_clear_filters_button_states()
 
-        # This will ensure that the active filter(s), if any, apply on the new alert(s)
+        # Ensure the active filter(s), if any, apply on the new alert(s)
         self.__on_component_filter_update()
         self.__on_category_filter_update()
         self.__on_type_filter_update()
 
+        # Ensure the columns width and header are resized as necessary
         self.alert_table_widget.resizeColumnsToContents()
+        self.alert_table_widget.horizontalHeader().resizeSections()
 
     def __on_type_filter_update(self):
         filters = self.alert_type_filter.filter_items
