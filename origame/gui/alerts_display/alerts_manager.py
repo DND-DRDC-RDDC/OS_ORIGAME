@@ -346,11 +346,16 @@ class AlertsPanel(IScenarioMonitor, QWidget):
 
     def on_alert_source_selected(self, source: IScenAlertSource):
         """
-        It is equivalent to selecting an item from the Component drop-down menu.
+        If the source is an actor part, it will check all items descending from that source in the Component drop-down menu. Otherwise, it only checks the source.
         :param source: The source to be used as the checked item
         """
+        if source._source_name is None:
+            source_name = source.get_source_name().split("'")[1].split("'")[0]
+        else:
+            source_name = source.get_source_name()
+
         for _item in self.alert_component_filter.actions():
-            if _item.defaultWidget().text() == source.get_source_name():
+            if _item.defaultWidget().text() == source_name or _item.defaultWidget().text().startswith(source_name):
                 _item.defaultWidget().setChecked(True)
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
