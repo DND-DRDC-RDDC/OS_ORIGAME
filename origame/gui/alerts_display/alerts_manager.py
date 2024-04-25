@@ -344,7 +344,19 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         self.ui.clear_filters_button.clicked.connect(self.__slot_on_clear_filters_button_clicked)
         self._monitor_scenario_replacement()
 
+    def on_alert_source_selected(self, source: IScenAlertSource):
+        """
+        It is equivalent to selecting an item from the Component drop-down menu.
+        :param source: The source to be used as the checked item
+        """
+        for _item in self.alert_component_filter.actions():
+            if _item.defaultWidget().text() == source.get_source_name():
+                _item.defaultWidget().setChecked(True)
+
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
+
+    slot_on_alert_source_selected = safe_slot(on_alert_source_selected)
+
     # --------------------------- instance __SPECIAL__ method overrides -------------------------
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
