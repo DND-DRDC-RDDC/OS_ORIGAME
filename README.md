@@ -49,6 +49,9 @@ A number of test scenarios and run procedures are provided in the /testing folde
 
 These test scenarios constitute Government Supplied Material 2 (GSM 2), referred to in the task Statement of Work.
 
+Note: **Pandas 1.5.3** is required for loading and running Scenario 2 that is provided in the /testing folder, so make sure
+it is installed in the virtual enironment before launching ORIGAME.
+
 ## CONTACT
 
 Stephen Okazawa<br/>
