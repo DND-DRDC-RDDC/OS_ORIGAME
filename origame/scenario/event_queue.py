@@ -28,6 +28,7 @@ Version History: See SVN log.
 
 # [1. standard library]
 import json
+import typing
 import logging
 from bisect import bisect_left
 from collections import namedtuple
@@ -35,6 +36,7 @@ from datetime import datetime
 from pathlib import Path
 
 # [2. third-party]
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 # [3. local]
 from ..core import BridgeEmitter, BridgeSignal, override, override_required
@@ -70,6 +72,13 @@ MIN_EVENT_TIME = 0.0
 
 # -- Function definitions -----------------------------------------------------------------------
 
+def get_main_window() -> typing.Union[QMainWindow, None]:
+    """Get the main window of the running instance of QApplication"""
+    app = QApplication.instance()
+    for widget in app.topLevelWidgets():
+        if isinstance(widget, QMainWindow):
+            return widget
+    return None
 
 # -- Class Definitions --------------------------------------------------------------------------
 
@@ -131,6 +140,10 @@ class CallInfo:
         """Get the executable to be called"""
         return self._iexec
 
+    def set_iexec(self, iexec: IExecutablePart):
+        """Set the executable to be called"""
+        self._iexec = iexec
+
     def get_args(self):
         """Get the arguments to be passed to the executable part being signaled"""
         return self._args
@@ -188,7 +201,7 @@ class CallInfo:
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
 
-    iexec = property(get_iexec)
+    iexec = property(get_iexec, set_iexec)
     args = property(get_args, set_args)
     unique_id = property(get_unique_id)
 
@@ -201,8 +214,70 @@ class CallInfo:
         return "CallInfo({}, {}, {})".format(self._unique_id, self._iexec, self._args)
 
 
-# Class to aggregate the information for one event
-EventInfo = namedtuple('EventInfo', ('time_days', 'priority', 'call_info'))
+class EventInfo:
+    """Class to aggregate the information for one event"""
+
+    # --------------------------- instance (self) PUBLIC methods --------------------------------
+
+    def __init__(self, time_days: float, priority: float, call_info: CallInfo):
+        """
+        :param time_days: the simulation time (in days) at which event should be processed; if None, the last pop
+            time will be used, or MIN_EVENT_TIME if no time events ever popped
+        :param priority: the numerical value of priority, or ASAP_PRIORITY_VALUE if ASAP
+        :param call_info: the call information of the event
+        """
+        self._time_days = time_days
+        self._priority = priority
+        self._call_info = call_info
+
+    def get_time(self):
+        """Get the simulation time (in days) at which event should be processed"""
+        return self._time_days
+    
+    def get_priority(self):
+        """Get the numerical value of priority, or ASAP_PRIORITY_VALUE if ASAP"""
+        return self._priority
+    
+    def get_call_info(self):
+        """Get the call information of the event"""
+        return self._call_info
+
+    def update(self, target: IExecutablePart = None, args: str = None, time: float = None, priority: float = None):
+        """
+        Update an existing event in the event queue.
+        :param target: new exectuable part to be called
+        :param args: new arguments to be passed to the executable part of this event
+        :param time: new simulation time at which event should be processed
+        :param priority: new priority, within given time bin, of event
+        """
+        # Update the executable part here because event_queue.edit_event doesn't allow modification to the executable part
+        if target is not None:
+            self._call_info.iexec = target
+
+        # If the user didn't provide new args, time or priority, use the current ones.
+        if args is None:
+            args = self._call_info.get_args_as_string()
+
+        if time is None:
+            time = self._time_days
+
+        if priority is None:
+            priority = self._priority
+
+        # Edit the event in the queue
+        event_queue = get_main_window().scenario_manager.scenario.event_queue
+        event_queue.edit_event(self, time, priority, args)
+
+    def cancel(self):
+        """Remove an event from the event queue."""
+        event_queue = get_main_window().scenario_manager.scenario.event_queue
+        event_queue.remove_event(self._time_days, self._priority, self._call_info)
+
+    # --------------------------- instance PUBLIC properties and safe_slots ---------------------
+
+    time_days = property(get_time)
+    priority = property(get_priority)
+    call_info = property(get_call_info)
 
 
 class ConcurrentEventsSubQueue:
@@ -705,7 +780,7 @@ class EventQueue(IOriSerializable):
 
         :param time_days: the simulation time (in days) at which event should be processed; if None, the last pop
             time will be used, or MIN_EVENT_TIME if no time events ever popped
-        :param priority: numerical valu of priority, or ASAP_PRIORITY_VALUE if ASAP
+        :param priority: numerical value of priority, or ASAP_PRIORITY_VALUE if ASAP
         :param iexec: executable part to add
         :param args: call arguments when event eventually gets processed
         :return: the created CallInfo object
@@ -815,7 +890,7 @@ class EventQueue(IOriSerializable):
         Remove an event from this queue.
 
         :param time_days: the simulation time (in days) of event to be removed
-        :param priority: numerical valu of priority of event to be removed (can be ASAP_PRIORITY_VALUE if ASAP)
+        :param priority: numerical value of priority of event to be removed (can be ASAP_PRIORITY_VALUE if ASAP)
         :return: if restorable is True, returns the predecessor event callinfo ID *in same time bin*; returns None
             if not restorable, or if the predecessor event is not in same time bin
         :raise KeyError: if invalid time or priority
