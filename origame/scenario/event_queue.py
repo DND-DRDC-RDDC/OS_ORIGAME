@@ -31,7 +31,6 @@ import json
 import typing
 import logging
 from bisect import bisect_left
-from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
 
@@ -230,19 +229,19 @@ class EventInfo:
         self._priority = priority
         self._call_info = call_info
 
-    def get_time(self):
+    def get_time(self) -> float:
         """Get the simulation time (in days) at which event should be processed"""
         return self._time_days
     
-    def get_priority(self):
+    def get_priority(self) -> float:
         """Get the numerical value of priority, or ASAP_PRIORITY_VALUE if ASAP"""
         return self._priority
     
-    def get_call_info(self):
+    def get_call_info(self) -> CallInfo:
         """Get the call information of the event"""
         return self._call_info
 
-    def update(self, target: IExecutablePart = None, args: str = None, time: float = None, priority: float = None):
+    def update(self, target: IExecutablePart = None, args: str | Tuple = None, time: float = None, priority: float = None):
         """
         Update an existing event in the event queue.
         :param target: new exectuable part to be called
@@ -250,28 +249,61 @@ class EventInfo:
         :param time: new simulation time at which event should be processed
         :param priority: new priority, within given time bin, of event
         """
+       # Fetch the corresponding event from the events queue
+        event_queue = get_main_window().scenario_manager.scenario.event_queue
+        target_event = None
+        for event in event_queue.get_all_as_list():
+            if event.call_info.unique_id == self._call_info.unique_id:
+                target_event = event
+                break
+        if target_event is None:
+            raise RuntimeError("Event edit error. Edited event not found on the queue.")
+
         # Update the executable part here because event_queue.edit_event doesn't allow modification to the executable part
         if target is not None:
-            self._call_info.iexec = target
+            target_event._call_info.iexec = target
+        # self._call_info.iexec = target
 
         # If the user didn't provide new args, time or priority, use the current ones.
         if args is None:
-            args = self._call_info.get_args_as_string()
+            args = target_event._call_info.get_args_as_string()
+        else:
+            if isinstance(args, tuple):
+                new_args = ''
+                for arg in args:
+                    if isinstance(arg, str):
+                        # Add an additional pair of quotations if the argument is a string so that it can be processed properly using eval
+                        new_args += '"' + str(arg) + '" , '
+                    else:
+                        new_args += str(arg) + ', '
+            else:
+                new_args = f"'{args}'"
+
+            args = new_args
 
         if time is None:
-            time = self._time_days
+            time = target_event._time_days
 
         if priority is None:
-            priority = self._priority
+            priority = target_event._priority
 
         # Edit the event in the queue
-        event_queue = get_main_window().scenario_manager.scenario.event_queue
-        event_queue.edit_event(self, time, priority, args)
+        event_queue.edit_event(target_event, time, priority, args)
 
     def cancel(self):
         """Remove an event from the event queue."""
+        # Fetch the corresponding event from the events queue
         event_queue = get_main_window().scenario_manager.scenario.event_queue
-        event_queue.remove_event(self._time_days, self._priority, self._call_info)
+        target_event = None
+        for event in event_queue.get_all_as_list():
+            if event.call_info.unique_id == self._call_info.unique_id:
+                target_event = event
+                break
+        if target_event is None:
+            raise RuntimeError("Event cancel error. Cancelled event not found on the queue.")
+
+        # Remove the event from the queue
+        event_queue.remove_event(target_event._time_days, target_event._priority, target_event._call_info)
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
 
@@ -279,6 +311,10 @@ class EventInfo:
     priority = property(get_priority)
     call_info = property(get_call_info)
 
+    # --------------------------- instance __SPECIAL__ method overrides -------------------------
+
+    def __repr__(self):
+        return f"EventInfo {{ID: {self._call_info.unique_id}, Time: {self._time_days}, Priority: {self._priority}, Target Function: {self._call_info.iexec}, Args: {self._call_info.args}}}"
 
 class ConcurrentEventsSubQueue:
     """
@@ -773,7 +809,7 @@ class EventQueue(IOriSerializable):
         return call_info
 
     # noinspection PyUnboundLocalVariable
-    def add_event(self, time_days: float, priority: float, iexec: IExecutablePart, args: Tuple = ()) -> CallInfo:
+    def add_event(self, time_days: float, priority: float, iexec: IExecutablePart, args: Tuple = (), unique_id: int = None) -> CallInfo:
         """
         Add an event to the queue. If priority == ASAP_PRIORITY_VALUE, the event is an ASAP event, in which case
         the time_days is not used.
@@ -790,13 +826,16 @@ class EventQueue(IOriSerializable):
             raise ValueError("Event can only be created for callable part (part '{}' of type {} is not callable)"
                              .format(iexec.path, iexec.PART_TYPE_NAME))
 
-        call_info = CallInfo(self.__gen_next_event_id(), iexec, args)
+        if unique_id:
+            call_info = CallInfo(unique_id, iexec, args)
+        else:
+            call_info = CallInfo(self.__gen_next_event_id(), iexec, args)
         if time_days is None:
             time_days = self.__last_pop_time or MIN_EVENT_TIME
         self.__add_event(time_days, priority, call_info)
         return call_info
 
-    def edit_event(self, event_info: EventInfo, new_time_days: float, new_priority: float, new_call_args_str: str):
+    def edit_event(self, event_info: EventInfo, new_time_days: float, new_priority: float, new_call_args_str: str | Tuple):
         """
         Edit an event that is on this queue. Note: if none of the new_ arguments change the event, the event will
         be moved to be last in its concurrency bin (if ASAP) or priority bin (if timed).
@@ -814,6 +853,13 @@ class EventQueue(IOriSerializable):
         if call_info.get_args_as_string() != new_call_args_str:
             call_info.args = CallInfo.get_args_from_string(new_call_args_str)
             self.signals.sig_args_changed.emit(call_info)
+
+        # if call_info.args != new_call_args_str:
+        #     log.warning(f">>>>>>>>>>>>> new_call_args_str before {new_call_args_str}")
+        #     if not isinstance(new_call_args_str, Tuple):
+        #         new_call_args_str = tuple(new_call_args_str)
+        #         log.warning(f">>>>>>>>>>>>> new_call_args_str after {new_call_args_str}")
+        #     call_info.args = new_call_args_str
 
         if event_info.time_days != new_time_days or event_info.priority != new_priority:
             # need full remove + add since will change bins:
@@ -1114,9 +1160,20 @@ class EventQueue(IOriSerializable):
     @override(IOriSerializable)
     def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum,
                            refs_map: Dict[int, BasePart] = None, **kwargs):
+        event_info_keys = [EqKeys.UNIQUE_ID, EqKeys.TIME_DAYS, EqKeys.PRIORITY, EqKeys.PART_ID, EqKeys.CALL_ARGS]
         for event_info in ori_data['events']:
+            args = event_info[EqKeys.CALL_ARGS]
+            new_args = ()
+            for arg in args:
+                if isinstance(arg, dict) and sorted(list(arg.keys())) == sorted(event_info_keys):
+                    arg = EventInfo(arg[EqKeys.TIME_DAYS],
+                                          arg[EqKeys.PRIORITY],
+                                          CallInfo(event_id=arg[EqKeys.UNIQUE_ID],
+                                                   iexec=refs_map[arg[EqKeys.PART_ID]],
+                                                   args=tuple(arg[EqKeys.CALL_ARGS])))
+                new_args = new_args + (arg, )
             self.add_event(event_info[EqKeys.TIME_DAYS], event_info[EqKeys.PRIORITY],
-                           refs_map[event_info[EqKeys.PART_ID]], args=tuple(event_info[EqKeys.CALL_ARGS]))
+                           refs_map[event_info[EqKeys.PART_ID]], args=new_args, unique_id=event_info[EqKeys.UNIQUE_ID])
 
     @override(IOriSerializable)
     def _get_ori_def_impl(self, context: OriContextEnum, **kwargs) -> JsonObj:
@@ -1124,22 +1181,44 @@ class EventQueue(IOriSerializable):
         events_ori = []
         for event_info in event_infos:
             call_info = event_info.call_info
+            new_args = ()
             for arg in call_info.args:
                 if isinstance(arg, dict):
                     for k, v in arg.items():
                         safe_val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_queue)
                         if not is_pickle_successful:
                             arg[k] = safe_val
+                    new_args = new_args + (arg, )
+                elif isinstance(arg, EventInfo):
+                    arg_call_info = arg.call_info
+                    for call_info_arg in arg_call_info.args:
+                        if isinstance(call_info_arg, dict):
+                            for k, v in arg_call_info.items():
+                                safe_val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_info)
+                                if not is_pickle_successful:
+                                    call_info_arg[k] = safe_val
+                        else:
+                            safe_val, is_pickle_successful = get_pickled_str(call_info_arg, SaveErrorLocationEnum.event_info)
+                            if not is_pickle_successful:
+                                call_info_arg = safe_val
+                    arg = {EqKeys.UNIQUE_ID: arg_call_info.unique_id,
+                           EqKeys.TIME_DAYS: arg.time_days,
+                           EqKeys.PRIORITY: arg.priority,
+                           EqKeys.PART_ID: arg_call_info.iexec.SESSION_ID,
+                           EqKeys.CALL_ARGS: arg_call_info.args}
+                    new_args = new_args + (arg, )
                 else:
                     safe_val, is_pickle_successful = get_pickled_str(arg, SaveErrorLocationEnum.event_queue)
                     if not is_pickle_successful:
                         arg = safe_val
+                    new_args = new_args + (arg, )
 
             events_ori.append({
+                EqKeys.UNIQUE_ID: call_info.unique_id,
                 EqKeys.TIME_DAYS: event_info.time_days,
                 EqKeys.PRIORITY: event_info.priority,
                 EqKeys.PART_ID: call_info.iexec.SESSION_ID,
-                EqKeys.CALL_ARGS: call_info.args
+                EqKeys.CALL_ARGS: new_args
             })
         return dict(events=events_ori)
 

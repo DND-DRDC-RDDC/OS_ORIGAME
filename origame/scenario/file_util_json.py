@@ -70,7 +70,7 @@ class ExtendedJSONEncoder(json.JSONEncoder):
             return {'_datetime_object': json.dumps(obj.strftime('%Y-%m-%d %H:%M:%S.%f'))}
         #if isinstance(obj, set):
         #    return {'_set_object': json.dumps(list(obj))}
-        return json.JSONEncoder.default(self, obj) # handle default types + errors
+        return SaveError(obj, SaveErrorLocationEnum.other).to_json()
     
 class ScenFileUtilJsonOri(ScenarioReaderWriter):
     """
@@ -93,8 +93,7 @@ class ScenFileUtilJsonOri(ScenarioReaderWriter):
 
     @override(ScenarioReaderWriter)
     def _dump_to_file(self, ori_scenario: OriScenData, path: Path):
-        default = lambda o: SaveError(o, SaveErrorLocationEnum.other).to_json()
-        jsond = json.dumps(ori_scenario, indent=4, separators=(',', ': '), sort_keys=True, cls=ExtendedJSONEncoder, default=default)
+        jsond = json.dumps(ori_scenario, indent=4, separators=(',', ': '), sort_keys=True, cls=ExtendedJSONEncoder)
 
         with path.open("w") as f:
             f.write(jsond)

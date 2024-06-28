@@ -137,7 +137,7 @@ def get_pickled_str(value: Any, location: Enum) -> Tuple[str, bool]:
 
 # -- Class Definitions --------------------------------------------------------------------------
 
-class SaveError():
+class SaveError:
     """ This class represents an object that will replace any non-serializble object in the save model """
 
     def __init__(self, obj: Any, location_enum: Enum):
@@ -163,7 +163,7 @@ class SaveErrorLocationEnum(IntEnum):
     """
     Enumerate the various locations of the non-serializable objects
     """
-    data_part, variable_part, sheet_part, event_queue, other = range(5)
+    data_part, variable_part, sheet_part, event_queue, event_info, other = range(6)
 
 
 @functools.total_ordering
@@ -958,4 +958,5 @@ class OriSimEventKeys:
     PRIORITY = "priority"
     PART_ID = "part_id"
     CALL_ARGS = "call_args"
+    UNIQUE_ID = "unique_id"
 

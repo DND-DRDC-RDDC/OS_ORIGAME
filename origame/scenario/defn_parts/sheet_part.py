@@ -45,6 +45,7 @@ from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSch
 from ..ori import get_pickled_str, pickle_from_str, pickle_to_str, check_needs_pickling
 from ..ori import OriCommonPartKeys as CpKeys
 from ..ori import OriSheetPartKeys as SpKeys
+from ..ori import OriSimEventKeys as EqKeys
 from ..proto_compat_warn import prototype_compat_property_alias
 
 from .base_part import BasePart, check_diff_val
@@ -2342,11 +2343,30 @@ class SheetPart(BasePart, ExcelSheet):
         self._named_cols = submitted_data['custom_col_names']
 
     @override(IOriSerializable)
-    def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum, **kwargs):
+    def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum, refs_map: Dict[int, BasePart] = None,**kwargs):
+        # Import EventInfo and CallInfo here to avoid circular import
+        from ...scenario import EventInfo, CallInfo
+
         BasePart._set_from_ori_impl(self, ori_data, context, **kwargs)
 
         part_content = ori_data[CpKeys.CONTENT]
         self._sheet_data = part_content[SpKeys.DATA]
+        self._col_widths = part_content[SpKeys.COL_WIDTHS]
+        self._named_cols = part_content[SpKeys.NAMED_COLS]
+        self._num_cols = part_content[SpKeys.NUM_COLS]
+        self._num_rows = part_content[SpKeys.NUM_ROWS]
+        self._index_style = SheetIndexStyleEnum[part_content[SpKeys.INDEX_STYLE].lower()]
+
+        event_info_keys = [EqKeys.UNIQUE_ID, EqKeys.TIME_DAYS, EqKeys.PRIORITY, EqKeys.PART_ID, EqKeys.CALL_ARGS]
+        for row in range(self._num_rows):
+            for col in range(self._num_cols):
+                cell = self._sheet_data[row][col]
+                if isinstance(cell, dict) and sorted(list(cell.keys())) == sorted(event_info_keys):
+                    self._sheet_data[row][col] = EventInfo(cell[EqKeys.TIME_DAYS],
+                                                           cell[EqKeys.PRIORITY],
+                                                           CallInfo(event_id=cell[EqKeys.UNIQUE_ID],
+                                                                    iexec=refs_map[cell[EqKeys.PART_ID]],
+                                                                    args=tuple(cell[EqKeys.CALL_ARGS])))
 
         if ori_data.schema_version < OriSchemaEnum.version_2_1:
             # always pickled:
@@ -2360,12 +2380,6 @@ class SheetPart(BasePart, ExcelSheet):
                 self._sheet_data = eval(part_content[SpKeys.DATA])
 
             self.__unpickle_ori_cells(part_content[SpKeys.PICKLED_CELLS])
-
-        self._col_widths = part_content[SpKeys.COL_WIDTHS]
-        self._named_cols = part_content[SpKeys.NAMED_COLS]
-        self._num_cols = part_content[SpKeys.NUM_COLS]
-        self._num_rows = part_content[SpKeys.NUM_ROWS]
-        self._index_style = SheetIndexStyleEnum[part_content[SpKeys.INDEX_STYLE].lower()]
 
         # Replace any empty cells by default value:
         for row in range(self._num_rows):
@@ -2398,6 +2412,9 @@ class SheetPart(BasePart, ExcelSheet):
 
     @override(BasePart)
     def _get_ori_snapshot_local(self, snapshot: JsonObj, snapshot_slow: JsonObj):
+        # Import EventInfo here to avoid circular import
+        from ...scenario import EventInfo
+
         if snapshot_slow is not None:
             # data may be huge, so create an MD5 digest of it:
             try:
@@ -2408,9 +2425,28 @@ class SheetPart(BasePart, ExcelSheet):
                 ori_sheet_data = [row.copy() for row in self._sheet_data]
                 for row_index, row in enumerate(ori_sheet_data):
                     for col_index, value in enumerate(row):
-                        safe_val, is_pickle_successful = get_pickled_str(value, SaveErrorLocationEnum.sheet_part)
-                        if not is_pickle_successful:
-                            ori_sheet_data[row_index][col_index] = safe_val
+                        if isinstance(value, EventInfo):
+                            call_info = value.call_info
+                            for arg in call_info.args:
+                                if isinstance(arg, dict):
+                                    for k, v in arg.items():
+                                        safe_val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_info)
+                                        if not is_pickle_successful:
+                                            arg[k] = safe_val
+                                else:
+                                    safe_val, is_pickle_successful = get_pickled_str(arg, SaveErrorLocationEnum.event_info)
+                                    if not is_pickle_successful:
+                                        arg = safe_val
+
+                            ori_sheet_data[row_index][col_index] = {EqKeys.UNIQUE_ID: call_info.unique_id,
+                                                                    EqKeys.TIME_DAYS: value.time_days,
+                                                                    EqKeys.PRIORITY: value.priority,
+                                                                    EqKeys.PART_ID: call_info.iexec.SESSION_ID,
+                                                                    EqKeys.CALL_ARGS: call_info.args}
+                        else:
+                            safe_val, is_pickle_successful = get_pickled_str(value, SaveErrorLocationEnum.sheet_part)
+                            if not is_pickle_successful:
+                                ori_sheet_data[row_index][col_index] = safe_val
 
                 # At this point, the pickle has to succeed because every cell has been checked.
                 val = pickle.dumps(ori_sheet_data)
@@ -2502,10 +2538,32 @@ class SheetPart(BasePart, ExcelSheet):
         :param pickled_cells: container in which to put the cell_id if the object was succesfully pickled
         :return: the pickle, or a replacement (text) if the object could not be pickled
         """
-        safe_val, is_pickle_successful = get_pickled_str(orig_value, SaveErrorLocationEnum.sheet_part)
-        if is_pickle_successful:
-            pickled_cells.append(cell_id)
-        return safe_val
+        # Import EventInfo here to avoid circular import
+        from ...scenario import EventInfo
+
+        if isinstance(orig_value, EventInfo):
+                call_info = orig_value.call_info
+                for arg in call_info.args:
+                    if isinstance(arg, dict):
+                            for k, v in arg.items():
+                                safe_val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_info)
+                                if not is_pickle_successful:
+                                    arg[k] = safe_val
+                    else:
+                            safe_val, is_pickle_successful = get_pickled_str(arg, SaveErrorLocationEnum.event_info)
+                            if not is_pickle_successful:
+                                arg = safe_val
+
+                return {EqKeys.UNIQUE_ID: call_info.unique_id,
+                        EqKeys.TIME_DAYS: orig_value.time_days,
+                        EqKeys.PRIORITY: orig_value.priority,
+                        EqKeys.PART_ID: call_info.iexec.SESSION_ID,
+                        EqKeys.CALL_ARGS: call_info.args}
+        else:
+            safe_val, is_pickle_successful = get_pickled_str(orig_value, SaveErrorLocationEnum.sheet_part)
+            if is_pickle_successful:
+                pickled_cells.append(cell_id)
+            return safe_val
 
 
 # Add this part to the global part type/class lookup dictionary
