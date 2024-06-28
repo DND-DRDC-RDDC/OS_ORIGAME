@@ -854,13 +854,6 @@ class EventQueue(IOriSerializable):
             call_info.args = CallInfo.get_args_from_string(new_call_args_str)
             self.signals.sig_args_changed.emit(call_info)
 
-        # if call_info.args != new_call_args_str:
-        #     log.warning(f">>>>>>>>>>>>> new_call_args_str before {new_call_args_str}")
-        #     if not isinstance(new_call_args_str, Tuple):
-        #         new_call_args_str = tuple(new_call_args_str)
-        #         log.warning(f">>>>>>>>>>>>> new_call_args_str after {new_call_args_str}")
-        #     call_info.args = new_call_args_str
-
         if event_info.time_days != new_time_days or event_info.priority != new_priority:
             # need full remove + add since will change bins:
             try:
