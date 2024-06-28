@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_ButtonPartWidget(object):
+    # This has to be updated manually after running pyuic again
     def setupUi(self, ButtonPartWidget, button_pressed: bool = False):
         ButtonPartWidget.setObjectName("ButtonPartWidget")
         ButtonPartWidget.resize(200, 200)
