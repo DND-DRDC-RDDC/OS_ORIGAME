@@ -205,7 +205,7 @@ class VariablePart(BasePart):
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
     @override(IOriSerializable)
-    def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum, refs_map: Dict[int, BasePart] = None,**kwargs):
+    def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum, refs_map: Dict[int, BasePart] = None, **kwargs):
         # Import EventInfo and CallInfo here to avoid circular import
         from ...scenario import EventInfo, CallInfo
 
