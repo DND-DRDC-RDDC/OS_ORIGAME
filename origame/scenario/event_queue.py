@@ -262,24 +262,12 @@ class EventInfo:
         # Update the executable part here because event_queue.edit_event doesn't allow modification to the executable part
         if target is not None:
             target_event._call_info.iexec = target
-        # self._call_info.iexec = target
 
         # If the user didn't provide new args, time or priority, use the current ones.
         if args is None:
             args = target_event._call_info.get_args_as_string()
         else:
-            if isinstance(args, tuple):
-                new_args = ''
-                for arg in args:
-                    if isinstance(arg, str):
-                        # Add an additional pair of quotations if the argument is a string so that it can be processed properly using eval
-                        new_args += '"' + str(arg) + '" , '
-                    else:
-                        new_args += str(arg) + ', '
-            else:
-                new_args = f"'{args}'"
-
-            args = new_args
+            args = repr(args)
 
         if time is None:
             time = target_event._time_days
