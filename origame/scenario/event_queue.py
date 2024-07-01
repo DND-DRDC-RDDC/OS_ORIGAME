@@ -823,7 +823,7 @@ class EventQueue(IOriSerializable):
         self.__add_event(time_days, priority, call_info)
         return call_info
 
-    def edit_event(self, event_info: EventInfo, new_time_days: float, new_priority: float, new_call_args_str: str | Tuple):
+    def edit_event(self, event_info: EventInfo, new_time_days: float, new_priority: float, new_call_args_str: str):
         """
         Edit an event that is on this queue. Note: if none of the new_ arguments change the event, the event will
         be moved to be last in its concurrency bin (if ASAP) or priority bin (if timed).
