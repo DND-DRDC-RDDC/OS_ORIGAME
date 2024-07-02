@@ -441,7 +441,7 @@ class DataPart(BasePart):
                 dict_data[i] = (data[0],
                                 EventInfo(event_info[EqKeys.TIME_DAYS],
                                           event_info[EqKeys.PRIORITY],
-                                          CallInfo(unique_id=event_info[EqKeys.UNIQUE_ID],
+                                          CallInfo(event_id=event_info[EqKeys.UNIQUE_ID],
                                                    iexec=refs_map[event_info[EqKeys.PART_ID]],
                                                    args=tuple(event_info[EqKeys.CALL_ARGS]))))
 
