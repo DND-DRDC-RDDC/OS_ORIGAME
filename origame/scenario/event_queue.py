@@ -766,6 +766,7 @@ class EventQueue(IOriSerializable):
 
         self.__num_scheduled_events = 0  # ie non-ASAP events
         self.__next_event_id = 0  # every event is given a unique ID, useful for editing
+        self.__used_event_ids = []  # when loading an event queue with existing events, store their IDs so they don't get reused
         self.__starttime = None
 
         self.__animation_on = None
@@ -816,6 +817,7 @@ class EventQueue(IOriSerializable):
 
         if unique_id:
             call_info = CallInfo(unique_id, iexec, args)
+            self.__used_event_ids.append(unique_id)
         else:
             call_info = CallInfo(self.__gen_next_event_id(), iexec, args)
         if time_days is None:
@@ -1361,7 +1363,8 @@ class EventQueue(IOriSerializable):
         return None
 
     def __gen_next_event_id(self) -> int:
-        """Generate and return the next event's ID."""
-        next_id = self.__next_event_id
-        self.__next_event_id += 1
-        return next_id
+        """Generate and return the next event's ID."""      
+        while self.__next_event_id in self.__used_event_ids:
+            self.__next_event_id += 1
+        self.__used_event_ids.append(self.__next_event_id)
+        return self.__next_event_id
