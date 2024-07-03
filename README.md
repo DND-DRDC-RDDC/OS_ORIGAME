@@ -52,7 +52,7 @@ These test scenarios constitute Government Supplied Material 2 (GSM 2), referred
 Note: **Pandas 1.5.3** is required for loading and running Scenario 2 that is provided in the /testing folder, so make sure
 it is installed in the python virtual environment before launching ORIGAME, by running the following command:
 
-**pip install pandas==1.5.3**
+`pip install pandas==1.5.3`
 
 ## CONTACT
 
