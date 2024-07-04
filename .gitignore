@@ -5,3 +5,4 @@ venv*/
 **/*.pyc
 # Simulation result folders
 **/batch_202*
+batch_results.sqlite.db

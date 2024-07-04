@@ -36,6 +36,7 @@ from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSch
 from ..ori import get_pickled_str, check_needs_pickling, pickle_from_str, pickle_to_str
 from ..ori import OriCommonPartKeys as CpKeys
 from ..ori import OriDataPartKeys as DpKeys
+from ..ori import OriSimEventKeys as EqKeys
 
 from .part_types_info import register_new_part_type
 from .base_part import BasePart, check_diff_val
@@ -422,13 +423,28 @@ class DataPart(BasePart):
         self.signals.sig_data_reset.emit()
 
     @override(IOriSerializable)
-    def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum, **kwargs):
+    def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum, refs_map: Dict[int, BasePart] = None, **kwargs):
+        # Import EventInfo and CallInfo here to avoid circular import
+        from ...scenario import EventInfo, CallInfo
+
         BasePart._set_from_ori_impl(self, ori_data, context, **kwargs)
 
         part_content = ori_data[CpKeys.CONTENT]
 
         # if legacy, data is a pickle so giving it to ordered dict will raise:
         dict_data = part_content[DpKeys.DICT]
+
+        event_info_keys = [EqKeys.UNIQUE_ID, EqKeys.TIME_DAYS, EqKeys.PRIORITY, EqKeys.PART_ID, EqKeys.CALL_ARGS]
+        for i, data in enumerate(dict_data):
+            if isinstance(data[1], dict) and sorted(list(data[1].keys())) == sorted(event_info_keys):
+                event_info = data[1]
+                dict_data[i] = (data[0],
+                                EventInfo(event_info[EqKeys.TIME_DAYS],
+                                          event_info[EqKeys.PRIORITY],
+                                          CallInfo(event_id=event_info[EqKeys.UNIQUE_ID],
+                                                   iexec=refs_map[event_info[EqKeys.PART_ID]],
+                                                   args=tuple(event_info[EqKeys.CALL_ARGS]))))
+
         if ori_data.schema_version < OriSchemaEnum.version_2_1:
             # always pickled:
             ordered_data = pickle.loads(pickle_from_str(dict_data))
@@ -477,6 +493,8 @@ class DataPart(BasePart):
 
     @override(IOriSerializable)
     def _get_ori_snapshot_local(self, snapshot: JsonObj, snapshot_slow: JsonObj):
+        # Import EventInfo here to avoid circular import
+        from ...scenario import EventInfo
 
         try:
             val = pickle.dumps(self.__get_as_ordered_dict())
@@ -485,9 +503,28 @@ class DataPart(BasePart):
             # yes, need to loop over every value and test; first clone the data
             ori_data = self.__get_as_ordered_dict()
             for key, value in ori_data.items():
-                safe_val, is_pickle_successful = get_pickled_str(value, SaveErrorLocationEnum.data_part)
-                if not is_pickle_successful:
-                    ori_data[key] = safe_val
+                if isinstance(value, EventInfo):
+                    call_info = value.call_info
+                    for arg in call_info.args:
+                        if isinstance(arg, dict):
+                            for k, v in arg.items():
+                                safe_val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_info)
+                                if not is_pickle_successful:
+                                    arg[k] = safe_val
+                        else:
+                            safe_val, is_pickle_successful = get_pickled_str(arg, SaveErrorLocationEnum.event_info)
+                            if not is_pickle_successful:
+                                arg = safe_val
+
+                    ori_data[key] = {EqKeys.UNIQUE_ID: call_info.unique_id,
+                                     EqKeys.TIME_DAYS: value.time_days,
+                                     EqKeys.PRIORITY: value.priority,
+                                     EqKeys.PART_ID: call_info.iexec.SESSION_ID,
+                                     EqKeys.CALL_ARGS: call_info.args}
+                else:
+                    safe_val, is_pickle_successful = get_pickled_str(value, SaveErrorLocationEnum.data_part)
+                    if not is_pickle_successful:
+                        ori_data[key] = safe_val
 
             # At this point, the pickle has to succeed because every cell has been checked.
             val = pickle.dumps(ori_data)
@@ -572,10 +609,32 @@ class DataPart(BasePart):
         pickled_keys = []
 
         def pickle_value(orig_value: Any, value_id: str) -> bytes:
-            safe_val, is_pickled = get_pickled_str(orig_value, SaveErrorLocationEnum.data_part)
-            if is_pickled:
-                pickled_keys.append(value_id)
-            return safe_val
+            # Import EventInfo here to avoid circular import
+            from ...scenario import EventInfo
+
+            if isinstance(orig_value, EventInfo):
+                call_info = orig_value.call_info
+                for arg in call_info.args:
+                    if isinstance(arg, dict):
+                            for k, v in arg.items():
+                                safe_val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_info)
+                                if not is_pickle_successful:
+                                    arg[k] = safe_val
+                    else:
+                            safe_val, is_pickle_successful = get_pickled_str(arg, SaveErrorLocationEnum.event_info)
+                            if not is_pickle_successful:
+                                arg = safe_val
+
+                return {EqKeys.UNIQUE_ID: call_info.unique_id,
+                        EqKeys.TIME_DAYS: orig_value.time_days,
+                        EqKeys.PRIORITY: orig_value.priority,
+                        EqKeys.PART_ID: call_info.iexec.SESSION_ID,
+                        EqKeys.CALL_ARGS: call_info.args}
+            else:
+                safe_val, is_pickled = get_pickled_str(orig_value, SaveErrorLocationEnum.data_part)
+                if is_pickled:
+                    pickled_keys.append(value_id)
+                return safe_val
 
         if unjsoned_data is None:
             # it could not even be json'd, find the culprits and pickle them

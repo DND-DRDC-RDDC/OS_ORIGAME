@@ -272,14 +272,18 @@ class SvgPushButton(QPushButton):
 
         self.__stacked_layout.addWidget(self.__on_widget)
         self.__stacked_layout.addWidget(self.__off_widget)
-        if button_pressed:
-            self.__stacked_layout.setCurrentWidget(self.__on_widget)
-        else:
-            self.__stacked_layout.setCurrentWidget(self.__off_widget)
+
+        self.set_button_pressed(button_pressed)
 
         self.pressed.connect(self.__slot_on_pressed)
         self.released.connect(self.__slot_on_released)
         self.clicked.connect(self.__slot_on_clicked)
+
+    def set_button_pressed(self, button_pressed:bool):
+        if button_pressed:
+            self.__stacked_layout.setCurrentWidget(self.__on_widget)
+        else:
+            self.__stacked_layout.setCurrentWidget(self.__off_widget)
 
     def set_logical_owner(self, logical_owner):
         """

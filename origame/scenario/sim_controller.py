@@ -902,7 +902,7 @@ class SimController(IOriSerializable, IPyDebuggingListener, IScenAlertSource, IF
         Remove an event from the queue.
 
         :param time: the simulation time (in days) of event to be removed
-        :param priority: numerical valu of priority of event to be removed (can be ASAP_PRIORITY_VALUE if ASAP)
+        :param priority: numerical value of priority of event to be removed (can be ASAP_PRIORITY_VALUE if ASAP)
         :raise KeyError: if invalid time or priority
         :raise ValueError if invalid call_info.
         """

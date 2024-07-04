@@ -1735,7 +1735,8 @@ class ButtonPart2dContent(QWidget):
         """
         super().__init__()
         self.ui_button_part = Ui_ButtonPartWidget()
-        self.ui_button_part.setupUi(self, button_pressed)
+        self.ui_button_part.setupUi(self)
+        self.ui_button_part.push_button.set_button_pressed(button_pressed)
         self.ui_button_part.push_button.set_logical_owner(logical_owner)
 
     def set_image_pressed(self, new_path: str = None):

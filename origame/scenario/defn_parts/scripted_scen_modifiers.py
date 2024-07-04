@@ -32,7 +32,7 @@ from ...core.typing import AnnotationDeclarations
 
 from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj
 from ..ori import OriCommonPartKeys as CpKeys, OriLibraryPartKeys as LibKeys, OriPyScriptExecKeys as PsxKeys
-from ..event_queue import EventQueue
+from ..event_queue import EventQueue, EventInfo
 from ..part_execs import PyScriptExec, IExecutablePart, PyScenarioImportsManager
 from ..proto_compat_warn import prototype_compat_method_alias
 from ..batch_data import DataPathTypesEnum
@@ -569,9 +569,10 @@ class SimControllerProxy(SimControllerReaderProxy):
     def __init__(self, sim_controller: Decl.SimController):
         super().__init__(sim_controller)
 
-    def signal(self, iexec_part: IExecutablePart, args: Tuple = None, time: float = None, priority: float = 0):
+    def signal(self, iexec_part: IExecutablePart, args: Tuple = None, time: float = None, priority: float = 0) -> EventInfo:
         """Create a signal on the event queue, for given executable part, args, time, and priority"""
-        self._sim_controller.add_event(iexec_part, args, time, priority)
+        call_info = self._sim_controller.add_event(iexec_part, args, time, priority)
+        return EventInfo(time, priority, call_info)
 
     def pause(self):
         """Pause sim; works even if already paused"""

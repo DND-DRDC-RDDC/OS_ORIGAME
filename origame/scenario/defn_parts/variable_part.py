@@ -34,6 +34,7 @@ from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj, OriSch
 from ..ori import get_pickled_str, pickle_from_str, check_needs_pickling
 from ..ori import OriCommonPartKeys as CpKeys
 from ..ori import OriVariablePartKeys as VpKeys
+from ..ori import OriSimEventKeys as EqKeys
 
 from .base_part import BasePart
 from .actor_part import ActorPart
@@ -204,7 +205,10 @@ class VariablePart(BasePart):
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
     @override(IOriSerializable)
-    def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum, **kwargs):
+    def _set_from_ori_impl(self, ori_data: OriScenData, context: OriContextEnum, refs_map: Dict[int, BasePart] = None, **kwargs):
+        # Import EventInfo and CallInfo here to avoid circular import
+        from ...scenario import EventInfo, CallInfo
+
         BasePart._set_from_ori_impl(self, ori_data, context, **kwargs)
 
         part_content = ori_data[CpKeys.CONTENT]
@@ -212,6 +216,16 @@ class VariablePart(BasePart):
         self._editable_str = part_content.get(VpKeys.EDITABLE_STR, "None")
 
         temp_obj = part_content[VpKeys.VALUE_OBJ]
+
+        event_info_keys = [EqKeys.UNIQUE_ID, EqKeys.TIME_DAYS, EqKeys.PRIORITY, EqKeys.PART_ID, EqKeys.CALL_ARGS]
+        if isinstance(temp_obj, dict) and sorted(list(temp_obj.keys())) == sorted(event_info_keys):
+            event_info = temp_obj
+            temp_obj = EventInfo(event_info[EqKeys.TIME_DAYS],
+                                 event_info[EqKeys.PRIORITY],
+                                 CallInfo(event_id=event_info[EqKeys.UNIQUE_ID],
+                                          iexec=refs_map[event_info[EqKeys.PART_ID]],
+                                          args=tuple(event_info[EqKeys.CALL_ARGS])))
+
         # to determine whether value_obj was pickled
         if ori_data.schema_version < OriSchemaEnum.version_2_1:
             # always used pickling
@@ -254,10 +268,34 @@ class VariablePart(BasePart):
         return ori_def
 
     def __get_ori_def_for_saving(self):
+        # Import EventInfo here to avoid circular import
+        from ...scenario import EventInfo
+
         editable_str = self._editable_str
         needs_pickling, _ = check_needs_pickling(self._value_obj)
         if needs_pickling:
-            safe_value, is_pickled = get_pickled_str(self._value_obj, SaveErrorLocationEnum.variable_part)
+            if isinstance(self._value_obj, EventInfo):
+                call_info = self._value_obj.call_info
+                for arg in call_info.args:
+                    if isinstance(arg, dict):
+                            for k, v in arg.items():
+                                safe_val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_info)
+                                if not is_pickle_successful:
+                                    arg[k] = safe_val
+                    else:
+                            safe_val, is_pickle_successful = get_pickled_str(arg, SaveErrorLocationEnum.event_info)
+                            if not is_pickle_successful:
+                                arg = safe_val
+
+                editable_str = {EqKeys.UNIQUE_ID: call_info.unique_id,
+                        EqKeys.TIME_DAYS: self._value_obj.time_days,
+                        EqKeys.PRIORITY: self._value_obj.priority,
+                        EqKeys.PART_ID: call_info.iexec.SESSION_ID,
+                        EqKeys.CALL_ARGS: call_info.args}
+                safe_value = editable_str
+                is_pickled = False
+            else:
+                safe_value, is_pickled = get_pickled_str(self._value_obj, SaveErrorLocationEnum.variable_part)
             if not is_pickled:
                 editable_str = safe_value
         else:
@@ -266,8 +304,30 @@ class VariablePart(BasePart):
 
     @override(BasePart)
     def _get_ori_snapshot_local(self, snapshot: JsonObj, snapshot_slow: JsonObj):
+        # Import EventInfo here to avoid circular import
+        from ...scenario import EventInfo
+
         BasePart._get_ori_snapshot_local(self, snapshot, snapshot_slow)
-        safe_val, _ = get_pickled_str(self._value_obj, SaveErrorLocationEnum.variable_part)
+        if isinstance(self._value_obj, EventInfo):
+            call_info = self._value_obj.call_info
+            for arg in call_info.args:
+                if isinstance(arg, dict):
+                    for k, v in arg.items():
+                        val, is_pickle_successful = get_pickled_str(v, SaveErrorLocationEnum.event_info)
+                        if not is_pickle_successful:
+                            arg[k] = val
+                else:
+                    val, is_pickle_successful = get_pickled_str(arg, SaveErrorLocationEnum.event_info)
+                    if not is_pickle_successful:
+                        arg = val
+
+            safe_val = {EqKeys.UNIQUE_ID: call_info.unique_id,
+                        EqKeys.TIME_DAYS: self._value_obj.time_days,
+                        EqKeys.PRIORITY: self._value_obj.priority,
+                        EqKeys.PART_ID: call_info.iexec.SESSION_ID,
+                        EqKeys.CALL_ARGS: call_info.args}
+        else:
+            safe_val, _ = get_pickled_str(self._value_obj, SaveErrorLocationEnum.variable_part)
         val = pickle.dumps(safe_val)
 
         md5_var_obj = md5(val).digest()
