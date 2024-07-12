@@ -377,7 +377,7 @@ class _BsmStateRunning(BaseFsmState, CapturesNextReadyScenPath):
 
         scen_mgr = ScenarioManager()
         try:
-            scen = scen_mgr.load(self._batch_scen_path)
+            scen, _ = scen_mgr.load(self._batch_scen_path)
         except Exception as exc:
             log.error("Could not load scenario to process batch data: {}", exc)
             return
