@@ -337,8 +337,8 @@ def get_excel_sheets(xls_file: str) -> List[str]:
 
     try:
         log.info("Getting sheet names from Excel file: {}.", xls_file)
-        wb = open_workbook(xls_file)
-        return wb.sheet_names()
+        wb = load_workbook(xls_file)
+        return wb.sheetnames
 
     except Exception as exc:
         log.error("Read_from_excel() error. The following error occurred: {}.", str(exc))
@@ -426,12 +426,12 @@ def write_to_excel(data: List[List[Any]], xls_file: str, xls_sheet: str, xls_ran
 
         if Path(xls_file).exists():
             # open existing workbook
-            wb_orig = open_workbook(xls_file)
+            wb_orig = load_workbook(xls_file)
 
             # check if the sheet already exists.. if not, a new sheet will be added
-            if xls_sheet in wb_orig.sheet_names():
+            if xls_sheet in wb_orig.sheetnames:
                 # find the sheet index to insert data into
-                for i, name in enumerate(wb_orig.sheet_names()):
+                for i, name in enumerate(wb_orig.sheetnames):
                     if name == xls_sheet:
                         sheet_idx = i
                         break
