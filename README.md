@@ -1,5 +1,5 @@
 # ORIGAME
-ORIGAME (Operational Research Integrated Graphical Analysis and Modelling Environment - Pronounced "o-ri-ga-mee") is a Python-based discrete event modelling and simulation environment. Model events and data are defind using Python functions and data structures, and a graphical user interface allows users to interconnect model components, run Monte Carlo simulations, and analyze results.
+ORIGAME (Operational Research Integrated Graphical Analysis and Modelling Environment - pronounced "o-ri-ga-mee") is a Python-based discrete event modelling and simulation environment. Model events and data are defind using Python functions and data structures, and a graphical user interface allows users to interconnect model components, run Monte Carlo simulations, and analyze results.
 
 The project is released under Open Science (OS), an initiative of the Government of Canada to make the research products of federal scientists open to the public. ORIGAME was jointly developed by two research organizations within the Canadian Department of National Defence: Defence Research and Development Canada - Centre for Operational Research and Analysis (DRDC-CORA) and Director General Military Personnel Research and Analysis (DGMPRA).
 
