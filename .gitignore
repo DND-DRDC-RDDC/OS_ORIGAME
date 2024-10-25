@@ -6,3 +6,5 @@ venv*/
 # Simulation result folders
 **/batch_202*
 batch_results.sqlite.db
+# editor configs
+.vscode/
