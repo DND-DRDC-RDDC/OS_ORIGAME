@@ -1130,12 +1130,12 @@ class DataPart2dContent(QWidget):
 
     def __init__(self):
         super().__init__()
-        l = QVBoxLayout(self)
-        l.setContentsMargins(0, 0, 0, 0)
-        l.setSpacing(2)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(2)
 
         self._data_view = DataPartTableView()
-        l.addWidget(self._data_view)
+        layout.addWidget(self._data_view)
 
         self._data_view.setShowGrid(False)
         header = DataPartHeaderView(Qt.Horizontal)
@@ -2013,7 +2013,7 @@ class PlotPart2dContent(QWidget):
         :param display_widget: The widget component used to display the plot.
         """
         self.canvas = widget
-        self.__layout.setContentsMargins(1,1,1,1)
+        self.__layout.setContentsMargins(1, 1, 1, 1)
         self.__layout.addWidget(self.canvas)
 
     def remove_display_widget(self):
@@ -2045,6 +2045,7 @@ class PlotPart2dContent(QWidget):
         """
         fit_in = self.canvas.size().scaled(self.__logical_owner.size(), Qt.KeepAspectRatio)
         self.canvas.setFixedSize(fit_in * 0.9)
+
 
 class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
     """
@@ -2146,10 +2147,12 @@ class PlotPartWidget(BreakpointIndicator, FramedPartWidget):
         self._content_widget.add_display_widget(PlotFigureCanvas(self._part.figure))
         self._content_widget.refreshed = True
 
-        # If the dpi has been updated since the last time the plot was updated, resize the plot part frame to accommodate the new dpi
-        if self._content_widget.current_figure_dpi != self._part.figure.dpi:
+        if self._content_widget.current_figure_dpi is None:
             self._content_widget.current_figure_dpi = self._part.figure.dpi
-            min_width = self._part.MIN_CONTENT_SIZE['width']  * SCALE_FACTOR
+        # If the dpi has been updated since the last time the plot was updated, resize the plot part frame to accommodate the new dpi
+        elif self._content_widget.current_figure_dpi != self._part.figure.dpi:
+            self._content_widget.current_figure_dpi = self._part.figure.dpi
+            min_width = self._part.MIN_CONTENT_SIZE['width'] * SCALE_FACTOR
             min_height = self._part.MIN_CONTENT_SIZE['height'] * SCALE_FACTOR
             self.size_grip_corner.set_min_size(min_width, min_height)
             self.size_grip_right.set_min_size(min_width, min_height)
