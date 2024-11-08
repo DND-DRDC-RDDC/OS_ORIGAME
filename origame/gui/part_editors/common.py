@@ -96,6 +96,12 @@ class IPreviewWidget(QWidget):
         self.__display_widget = display_widget
         self.ui.tab.layout().addWidget(display_widget)
 
+    def get_display_widget(self):
+        """
+        Returns the display widget.
+        """
+        return self.__display_widget
+
     def remove_display_widget(self):
         """
         Remove the widget used to display the preview content from the UI of the preview widget.

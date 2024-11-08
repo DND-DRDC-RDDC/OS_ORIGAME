@@ -19,7 +19,7 @@ import logging
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QDialog, QMessageBox, QScrollArea
+from PyQt5.QtWidgets import QWidget, QDialog, QMessageBox, QScrollArea, QSizePolicy
 from PyQt5.QtCore import Qt
 
 from matplotlib import pyplot
@@ -27,7 +27,7 @@ import matplotlib
 
 if matplotlib.get_backend() != 'Qt5Agg':
     matplotlib.use('Qt5Agg')
-from matplotlib.backends.backend_qt5agg import FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 
 # [3. local]
 from ...core import override, override_required
@@ -35,7 +35,7 @@ from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, Bi
 from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ...scenario.defn_parts import PlotPart
 from ...scenario import ori
-from ..gui_utils import exec_modal_dialog
+from ..gui_utils import QWIDGETSIZE_MAX, exec_modal_dialog
 from ..safe_slot import safe_slot
 from ..async_methods import AsyncRequest
 
@@ -77,6 +77,7 @@ class PlotEditorDialog(EditorDialog):
     """
     The base class for Plot Editor dialogs sets up the UI features and interface with the plot editor.
     """
+
     def __init__(self, plot_part: PlotPart, ui: Any, parent: QWidget = None):
         super().__init__(parent)
         self._part = plot_part
@@ -106,6 +107,7 @@ class ExportImageDialog(PlotEditorDialog):
     """
     Dialog to export a plot part's figure to an image file.
     """
+
     def __init__(self, plot_part: PlotPart, plot_widget: QWidget = None):
         ui = Ui_PlotExportImageDialog()
         super().__init__(plot_part, ui, parent=plot_widget)
@@ -161,6 +163,7 @@ class ExportDataDialog(PlotEditorDialog):
     """
     Dialog to export a plot part's data to an Excel file.
     """
+
     def __init__(self, plot_part: PlotPart, plot_widget: QWidget = None):
         ui = Ui_PlotExportDataDialog()
         super().__init__(plot_part, ui, parent=plot_widget)
@@ -212,25 +215,31 @@ class ExportDataDialog(PlotEditorDialog):
 
         return False, str()
 
+
 class PlotDpiWidget(QWidget):
     """
     Creates the plot resolution setting widget for the plot part editor.
     """
+
     def __init__(self, current_dpi: int):
         super().__init__()
         self.ui = Ui_PlotDpiWidget()
         self.ui.setupUi(self)
         self.ui.resolution_combobox.setCurrentText(str(current_dpi))
 
+
 class PlotPreviewWidget(IPreviewWidget):
     """
     Creates the preview panel for the plot part editor.
     """
+
     def __init__(self, part: PlotPart, set_wait_mode_callback: Callable[[bool], None]):
         super().__init__(set_wait_mode_callback)
         self.__part = part
         self.__canvas = None
         self.script = None
+        self.setMinimumSize(0, 0)
+        self.setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX)
 
     @override(IPreviewWidget)
     def update(self):
@@ -246,12 +255,14 @@ class PlotPreviewWidget(IPreviewWidget):
             :param figure: An element containing the components of a plot.
             """
             self._set_wait_mode_callback(False)
+            # Get size of previous plot
+            size = self.get_display_widget().size()
             self.remove_display_widget()
             self.__canvas.setVisible(False)
             self.__canvas = FigureCanvas(figure)
             self.add_display_widget(self.__canvas)
-            fit_in = self.__canvas.size().scaled(self.size(), Qt.KeepAspectRatio)
-            self.__canvas.setFixedSize(fit_in * 0.9)
+            # Set the size of the new plot to the size of the previous one
+            self.get_display_widget().setFixedSize(size.width(), size.height())
 
         self._set_wait_mode_callback(True)
         AsyncRequest.call(self.__part.get_preview_fig, self.script, response_cb=on_figure_received)
@@ -290,13 +301,22 @@ class PlotPartEditorPanel(PythonScriptEditor):
         super().__init__(part, parent)
         self.__part = part
 
+        # Define behavior for code editor resizing
+        size_policy = self.ui.code_editor.sizePolicy()
+        size_policy.setHorizontalPolicy(QSizePolicy.Policy.Minimum)
+        size_policy.setVerticalPolicy(QSizePolicy.Policy.Preferred)
+        size_policy.setHorizontalStretch(2)
+        self.ui.code_editor.setMinimumWidth(600)
+        self.ui.code_editor.setSizePolicy(size_policy)
+
         # Add the preview panel
+        self.plot_dpi_widget = PlotDpiWidget(current_dpi=part.dpi)
         self.plot_preview_panel = PlotPreviewWidget(part, set_wait_mode_callback=self.set_wait_mode)
         self.plot_preview_panel.ui.update_button.clicked.connect(self.__slot_on_update_button_clicked)
-        self.plot_dpi_widget = PlotDpiWidget(current_dpi=part.dpi)
         self.plot_preview_panel.ui.verticalLayout.addWidget(self.plot_dpi_widget)
         self.plot_dpi_widget.ui.resolution_combobox.activated.connect(self.__slot_on_update_button_clicked)
         self.ui.main_code_editor_layout.layout().addWidget(self.plot_preview_panel)
+        self.ui.available_tabs.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
 
     @override(BaseContentEditor)
     def _on_data_arrived(self, data: Dict[str, Any]):
@@ -321,7 +341,7 @@ class PlotPartEditorPanel(PythonScriptEditor):
             self.__part.dpi = int(__new_dpi)
         # If the plot's dpi is None, the following error will be thrown:
         # ValueError: invalid literal for int() with base 10: 'None'
-        except ValueError: 
+        except ValueError:
             __new_dpi = 100
             self.__part.dpi = __new_dpi
             self.plot_dpi_widget.ui.resolution_combobox.setCurrentText(str(__new_dpi))

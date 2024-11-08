@@ -301,8 +301,8 @@ def export_data(fig: pyplot.Figure, file_path: str, sheet: str = None) -> bool:
 
 class ErrorCatEnum(Enum):
     compile, config_plot, axes, plot = range(4)
-    
-    
+
+
 class PlotPart(BasePart, PyScriptExec, IScriptedPart):
     """
     The plot part contains a Python script that configures a matplotlib Figure instance to have one or more
@@ -360,7 +360,7 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         self.signals = self.PlotSignals()
 
         self.__figure = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, facecolor=PlotPart.DEFAULT_FACE_COLOR, layout="tight")
-        self.set_dpi(int(self.__figure.dpi)) # default value by matplotlib
+        self.set_dpi(int(self.__figure.dpi))  # default value by matplotlib
         self.__script_str = None
         self.__clear_data_on_each_plot = True
         self.__plot_update_reqd__possible = False
@@ -416,7 +416,8 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         already, first compile and execute script. Any exception raised in the script will get trapped and
         put in the part's last_exec_err_info property. No exceptions should escape from this method.
         """
-        self._clear_own_alerts(ScenAlertLevelEnum.error, ErrorCatEnum.compile, ErrorCatEnum.config_plot, ErrorCatEnum.axes,  ErrorCatEnum.plot)
+        self._clear_own_alerts(ScenAlertLevelEnum.error, ErrorCatEnum.compile,
+                               ErrorCatEnum.config_plot, ErrorCatEnum.axes, ErrorCatEnum.plot)
         try:
             alert_categ = ErrorCatEnum.compile
             self._check_compile_and_exec()
@@ -536,7 +537,8 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
         preview() function of the script, or the plot() function if there is no preview.
         :param script: the script to use to generate the figure.
         """
-        preview_fig = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, dpi=self.dpi, facecolor=PlotPart.DEFAULT_FACE_COLOR, layout="tight")
+        preview_fig = pyplot.Figure(figsize=DEFAULT_FIG_SIZE, dpi=self.dpi,
+                                    facecolor=PlotPart.DEFAULT_FACE_COLOR, layout="constrained")
 
         script_namespace = self.get_py_namespace().copy()
         script_namespace['figure'] = preview_fig
@@ -752,5 +754,6 @@ class PlotPart(BasePart, PyScriptExec, IScriptedPart):
             self.MIN_CONTENT_SIZE = dict(width=26.0, height=26.0)
         elif dpi == 500:
             self.MIN_CONTENT_SIZE = dict(width=35.5, height=34.5)
+
 
 register_new_part_type(PlotPart, PpKeys.PART_TYPE_PLOT)
