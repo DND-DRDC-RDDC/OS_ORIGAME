@@ -45,6 +45,7 @@ from ..slow_tasks import get_progress_bar
 from .part_editors_registry import register_part_editor_class
 from .script_editing import ScriptEditor
 from .common import IPreviewWidget
+from .database_settings_dialog import DatabaseSettingsDialog, DatabaseTypeEnum
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -339,8 +340,15 @@ class SqlPartEditorPanel(ScriptEditor):
         # Add the preview panel
         self.sql_preview_panel = SqlPreviewWidget(part)
         self.sql_preview_panel.ui.update_button.clicked.connect(self.__slot_on_update_button_clicked)
-        self.ui.main_code_editor_layout.layout().addWidget(self.sql_preview_panel)
-
+        self.ui.main_code_editor_layout.layout().addWidget(self.sql_preview_panel)       
+        
+        # Initialize database settings with None values
+        types = list(DatabaseTypeEnum.__members__)
+        self.__database_settings = dict(zip(types, [None]*len(types)))
+        
+        # Add database settings button action
+        self.ui.settings_button.clicked.connect(self.__on_setting_button_clicked) 
+        
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
     @override(ScriptEditor)
@@ -385,6 +393,15 @@ class SqlPartEditorPanel(ScriptEditor):
         self.sql_preview_panel.script = self.ui.code_editor.text()
         self.sql_preview_panel.params = self.ui.part_params.text()
         self.sql_preview_panel.update()
+
+    def __on_setting_button_clicked(self):
+        """
+        Method is called when the Database Settings button is clicked within the SQL Part Editor.
+        """        
+        database_setting_dialog = DatabaseSettingsDialog()
+        answer = database_setting_dialog.exec()        
+        if answer:
+            self.__database_setting = (database_setting_dialog.get_database_settings())
 
     __slot_on_lang_changed = safe_slot(__on_lang_changed)
     __slot_on_update_button_clicked = safe_slot(__on_update_button_clicked)
