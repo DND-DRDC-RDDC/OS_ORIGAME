@@ -44,14 +44,13 @@ log = logging.getLogger('system')
 
 # -- Class Definitions --------------------------------------------------------------------------
 class DatabaseTypeEnum(Enum):
-    """Supported Database types"""
-    
-    (MS_ACCESS,
-     MS_SQL,
-     MYSQL,
-     POSTGRESQL,
-     SQLITE,
-     GENERIC) = range(6)
+    """Supported Database types"""    
+    MS_ACCESS =0,
+    MS_SQL = 1,
+    MYSQL = 2,
+    POSTGRESQL = 3,
+    SQLITE = 4,
+    GENERIC = 5
     
 class DatabaseSettingsDialog(EditorDialog):
     """
@@ -70,23 +69,22 @@ class DatabaseSettingsDialog(EditorDialog):
         self.ui.setupUi(self)        
         self.__val_wrapper = PyExpr()
         
-        # Initialize database settings with None values
-        types = list(DatabaseTypeEnum.__members__)
-        self.__database_settings = dict(zip(types, [None]*len(types)))
+        # Initialize database settings
+        self.__database_settings = {}
               
     @override(QDialog)
     def accept(self):
         """Override to get the database configuration values and set them in the backend before closing the dialog"""
-        self.__database_settings[DatabaseTypeEnum.MS_ACCESS] = self.ui.access_filepath.text()
-        self.__database_settings[DatabaseTypeEnum.MS_SQL] = self.ui.ms_sql_connection.text()
-        self.__database_settings[DatabaseTypeEnum.MYSQL] = self.ui.my_sql_connection.text()
-        self.__database_settings[DatabaseTypeEnum.POSTGRESQL] = self.ui.postgresql_connection.text()
-        self.__database_settings[DatabaseTypeEnum.SQLITE] = self.ui.sqliteFilePath.text()
-        self.__database_settings[DatabaseTypeEnum.GENERIC] = self.ui.generic_connection.text()
+        self.__database_settings[DatabaseTypeEnum.MS_ACCESS.value] = self.ui.access_filepath.text()
+        self.__database_settings[DatabaseTypeEnum.MS_SQL.value] = self.ui.ms_sql_connection.text()
+        self.__database_settings[DatabaseTypeEnum.MYSQL.value] = self.ui.my_sql_connection.text()
+        self.__database_settings[DatabaseTypeEnum.POSTGRESQL.value] = self.ui.postgresql_connection.text()
+        self.__database_settings[DatabaseTypeEnum.SQLITE.value] = self.ui.sqliteFilePath.text()
+        self.__database_settings[DatabaseTypeEnum.GENERIC.value] = self.ui.generic_connection.text()
         
         super().accept()
 
-    def get_database_settings(self) -> Dict[DatabaseTypeEnum, str]:
+    def get_database_settings(self) -> Dict[int, str]:
         """
         Get database settings from the dialog.
         :return: the database settings Dictinary

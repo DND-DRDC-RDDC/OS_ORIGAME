@@ -15,6 +15,7 @@ Version History: See SVN log.
 # -- Imports ------------------------------------------------------------------------------------
 
 # [1. standard library]
+from copy import deepcopy
 import logging
 from textwrap import dedent
 
@@ -329,6 +330,9 @@ class SqlPartEditorPanel(ScriptEditor):
     # --------------------------- instance (self) PUBLIC methods --------------------------------
 
     def __init__(self, part: SqlPart, parent: QWidget = None):
+        # Initialize database settings        
+        self.__database_settings = {}
+        
         super().__init__(part, parent=parent)
 
         self.__lang = 'sql'
@@ -340,14 +344,11 @@ class SqlPartEditorPanel(ScriptEditor):
         # Add the preview panel
         self.sql_preview_panel = SqlPreviewWidget(part)
         self.sql_preview_panel.ui.update_button.clicked.connect(self.__slot_on_update_button_clicked)
-        self.ui.main_code_editor_layout.layout().addWidget(self.sql_preview_panel)       
-        
-        # Initialize database settings with None values
-        types = list(DatabaseTypeEnum.__members__)
-        self.__database_settings = dict(zip(types, [None]*len(types)))
-        
-        # Add database settings button action
+        self.ui.main_code_editor_layout.layout().addWidget(self.sql_preview_panel)
+                
+        # Add database settings buttons action
         self.ui.settings_button.clicked.connect(self.__on_setting_button_clicked) 
+        self.ui.externalDatabaseEnabled.stateChanged.connect(self.__on_external_database_checkbox_changed)        
         
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
@@ -356,6 +357,9 @@ class SqlPartEditorPanel(ScriptEditor):
         data_dict = dict()
         data_dict['parameters'] = self.ui.part_params.text()
         data_dict['sql_script'] = self.ui.code_editor.text()
+        data_dict['database_settings'] = deepcopy(self.__database_settings)
+        data_dict['external_database_enabled'] = self.ui.externalDatabaseEnabled.isChecked()
+        data_dict['selected_database_type_index'] = self.ui.database_type_selecteor.currentIndex()      
 
         return data_dict
 
@@ -393,16 +397,39 @@ class SqlPartEditorPanel(ScriptEditor):
         self.sql_preview_panel.script = self.ui.code_editor.text()
         self.sql_preview_panel.params = self.ui.part_params.text()
         self.sql_preview_panel.update()
+        
+    def __on_external_database_checkbox_changed(self):
+        """
+        Method called with the Use of External Database Checkbox is clicked.
+        """        
+        checked = self.ui.externalDatabaseEnabled.isChecked()
+        if checked:  
+            # Enable the Database selection combo-box and Settings button 
+            self.ui.settings_button.setEnabled(True)
+            self.ui.database_type_selecteor.setEnabled(True)                
+        else:
+            # Disable the Database selection combo-box and Settings button 
+            self.ui.settings_button.setEnabled(False)  
+            self.ui.database_type_selecteor.setEnabled(False)           
 
     def __on_setting_button_clicked(self):
         """
         Method is called when the Database Settings button is clicked within the SQL Part Editor.
         """        
         database_setting_dialog = DatabaseSettingsDialog()
+        
+        database_setting_dialog.ui.access_filepath.setText(self.__database_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
+        database_setting_dialog.ui.ms_sql_connection.setText(self.__database_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
+        database_setting_dialog.ui.my_sql_connection.setText(self.__database_settings.get(DatabaseTypeEnum.MYSQL.value, ''))
+        database_setting_dialog.ui.postgresql_connection.setText(self.__database_settings.get(DatabaseTypeEnum.POSTGRESQL.value, ''))
+        database_setting_dialog.ui.sqliteFilePath.setText(self.__database_settings.get(DatabaseTypeEnum.SQLITE.value, ''))
+        database_setting_dialog.ui.generic_connection.setText(self.__database_settings.get(DatabaseTypeEnum.GENERIC.value, ''))
+        
         answer = database_setting_dialog.exec()        
         if answer:
-            self.__database_setting = (database_setting_dialog.get_database_settings())
-
+            self.__database_settings = database_setting_dialog.get_database_settings()
+            
+   
     __slot_on_lang_changed = safe_slot(__on_lang_changed)
     __slot_on_update_button_clicked = safe_slot(__on_update_button_clicked)
 
