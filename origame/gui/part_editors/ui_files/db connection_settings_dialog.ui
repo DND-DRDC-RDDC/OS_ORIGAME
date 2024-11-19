@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DatabaseSettingsDialog</class>
- <widget class="QDialog" name="DatabaseSettingsDialog">
+ <class>DbConnectionSettingsDialog</class>
+ <widget class="QDialog" name="DbConnectionSettingsDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Import Database</string>
+   <string>Database Connection Settings</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
@@ -47,7 +47,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="ms_access_tab">
       <property name="sizePolicy">
@@ -270,7 +270,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>accepted()</signal>
-   <receiver>DatabaseSettingsDialog</receiver>
+   <receiver>DbConnectionSettingsDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -286,7 +286,7 @@
   <connection>
    <sender>button_box</sender>
    <signal>rejected()</signal>
-   <receiver>DatabaseSettingsDialog</receiver>
+   <receiver>DbConnectionSettingsDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\Database Settings Dialog.ui'
+# Form implementation generated from reading ui file '.\db connection_settings_dialog.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -11,22 +11,22 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_DatabaseSettingsDialog(object):
-    def setupUi(self, DatabaseSettingsDialog):
-        DatabaseSettingsDialog.setObjectName("DatabaseSettingsDialog")
-        DatabaseSettingsDialog.resize(570, 241)
+class Ui_DbConnectionSettingsDialog(object):
+    def setupUi(self, DbConnectionSettingsDialog):
+        DbConnectionSettingsDialog.setObjectName("DbConnectionSettingsDialog")
+        DbConnectionSettingsDialog.resize(570, 241)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(DatabaseSettingsDialog.sizePolicy().hasHeightForWidth())
-        DatabaseSettingsDialog.setSizePolicy(sizePolicy)
-        DatabaseSettingsDialog.setMinimumSize(QtCore.QSize(400, 230))
-        DatabaseSettingsDialog.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        DatabaseSettingsDialog.setSizeGripEnabled(False)
-        DatabaseSettingsDialog.setModal(True)
-        self.verticalLayout = QtWidgets.QVBoxLayout(DatabaseSettingsDialog)
+        sizePolicy.setHeightForWidth(DbConnectionSettingsDialog.sizePolicy().hasHeightForWidth())
+        DbConnectionSettingsDialog.setSizePolicy(sizePolicy)
+        DbConnectionSettingsDialog.setMinimumSize(QtCore.QSize(400, 230))
+        DbConnectionSettingsDialog.setMaximumSize(QtCore.QSize(16777215, 16777215))
+        DbConnectionSettingsDialog.setSizeGripEnabled(False)
+        DbConnectionSettingsDialog.setModal(True)
+        self.verticalLayout = QtWidgets.QVBoxLayout(DbConnectionSettingsDialog)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.tabWidget = QtWidgets.QTabWidget(DatabaseSettingsDialog)
+        self.tabWidget = QtWidgets.QTabWidget(DbConnectionSettingsDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -160,38 +160,37 @@ class Ui_DatabaseSettingsDialog(object):
         self.verticalLayout.addWidget(self.tabWidget)
         self.horizontalLayout_1 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_1.setObjectName("horizontalLayout_1")
-        self.button_box = QtWidgets.QDialogButtonBox(DatabaseSettingsDialog)
+        self.button_box = QtWidgets.QDialogButtonBox(DbConnectionSettingsDialog)
         self.button_box.setOrientation(QtCore.Qt.Horizontal)
         self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.button_box.setObjectName("button_box")
         self.horizontalLayout_1.addWidget(self.button_box)
         self.verticalLayout.addLayout(self.horizontalLayout_1)
 
-        self.retranslateUi(DatabaseSettingsDialog)
-        self.tabWidget.setCurrentIndex(5)
-        self.button_box.accepted.connect(DatabaseSettingsDialog.accept) # type: ignore
-        self.button_box.rejected.connect(DatabaseSettingsDialog.reject) # type: ignore
-        QtCore.QMetaObject.connectSlotsByName(DatabaseSettingsDialog)
+        self.retranslateUi(DbConnectionSettingsDialog)
+        self.tabWidget.setCurrentIndex(0)
+        self.button_box.accepted.connect(DbConnectionSettingsDialog.accept) # type: ignore
+        self.button_box.rejected.connect(DbConnectionSettingsDialog.reject) # type: ignore
+        QtCore.QMetaObject.connectSlotsByName(DbConnectionSettingsDialog)
 
-    def retranslateUi(self, DatabaseSettingsDialog):
+    def retranslateUi(self, DbConnectionSettingsDialog):
         _translate = QtCore.QCoreApplication.translate
-        DatabaseSettingsDialog.setWindowTitle(_translate("DatabaseSettingsDialog", "Import Database"))
-        self.accessFilePathLabel.setText(_translate("DatabaseSettingsDialog", "File Path"))
-        self.access_filepath.setPlaceholderText(_translate("DatabaseSettingsDialog", "path/to/db"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.ms_access_tab), _translate("DatabaseSettingsDialog", "MS Access"))
-        self.msSqlCnctLabel.setText(_translate("DatabaseSettingsDialog", "Connection String"))
-        self.ms_sql_connection.setPlaceholderText(_translate("DatabaseSettingsDialog", "MS SQL connection string"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.ms_sql), _translate("DatabaseSettingsDialog", "MS SQL"))
-        self.mySqlCnctLabel.setText(_translate("DatabaseSettingsDialog", "Connection String"))
-        self.my_sql_connection.setPlaceholderText(_translate("DatabaseSettingsDialog", "MySQL connection string"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.my_sql_tab), _translate("DatabaseSettingsDialog", "MySQL"))
-        self.postgreSqlCnctLabel.setText(_translate("DatabaseSettingsDialog", "Connection String"))
-        self.postgresql_connection.setPlaceholderText(_translate("DatabaseSettingsDialog", "PostgreSQL connection string"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.postgresql), _translate("DatabaseSettingsDialog", "PostgreSQL"))
-        self.sqlLiteFilePathabel.setText(_translate("DatabaseSettingsDialog", "File Path"))
-        self.sqliteFilePath.setPlaceholderText(_translate("DatabaseSettingsDialog", "path/to/db"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.sqlite), _translate("DatabaseSettingsDialog", "SQLite"))
-        self.genericCnctLabel.setText(_translate("DatabaseSettingsDialog", "Connection String"))
-        self.generic_connection.setPlaceholderText(_translate("DatabaseSettingsDialog", "Generic ODBC connection string"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.generic), _translate("DatabaseSettingsDialog", "Generic"))
-
+        DbConnectionSettingsDialog.setWindowTitle(_translate("DbConnectionSettingsDialog", "Database Connection Settings"))
+        self.accessFilePathLabel.setText(_translate("DbConnectionSettingsDialog", "File Path"))
+        self.access_filepath.setPlaceholderText(_translate("DbConnectionSettingsDialog", "path/to/db"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.ms_access_tab), _translate("DbConnectionSettingsDialog", "MS Access"))
+        self.msSqlCnctLabel.setText(_translate("DbConnectionSettingsDialog", "Connection String"))
+        self.ms_sql_connection.setPlaceholderText(_translate("DbConnectionSettingsDialog", "MS SQL connection string"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.ms_sql), _translate("DbConnectionSettingsDialog", "MS SQL"))
+        self.mySqlCnctLabel.setText(_translate("DbConnectionSettingsDialog", "Connection String"))
+        self.my_sql_connection.setPlaceholderText(_translate("DbConnectionSettingsDialog", "MySQL connection string"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.my_sql_tab), _translate("DbConnectionSettingsDialog", "MySQL"))
+        self.postgreSqlCnctLabel.setText(_translate("DbConnectionSettingsDialog", "Connection String"))
+        self.postgresql_connection.setPlaceholderText(_translate("DbConnectionSettingsDialog", "PostgreSQL connection string"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.postgresql), _translate("DbConnectionSettingsDialog", "PostgreSQL"))
+        self.sqlLiteFilePathabel.setText(_translate("DbConnectionSettingsDialog", "File Path"))
+        self.sqliteFilePath.setPlaceholderText(_translate("DbConnectionSettingsDialog", "path/to/db"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.sqlite), _translate("DbConnectionSettingsDialog", "SQLite"))
+        self.genericCnctLabel.setText(_translate("DbConnectionSettingsDialog", "Connection String"))
+        self.generic_connection.setPlaceholderText(_translate("DbConnectionSettingsDialog", "Generic ODBC connection string"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.generic), _translate("DbConnectionSettingsDialog", "Generic"))

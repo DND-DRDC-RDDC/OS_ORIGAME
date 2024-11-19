@@ -263,10 +263,10 @@ class ScriptEditor(BaseContentEditor):
         else:
             self.ui.available_tabs.removeTab(2)
         
-        # Initialize database settings        
-        self.__database_settings = {}
+        # Initialize database connection settings        
+        self.db_connection_settings = {}
         
-        # Remove Database settings widget for Python script editor
+        # Remove Database connection settings widget for Python script editor
         if not self.ADD_DATABASE_WIDGET:
             self.ui.databae_settings_widget.setVisible(False)
 
@@ -386,23 +386,7 @@ class ScriptEditor(BaseContentEditor):
             self.ui.code_editor.setText(data['script'])
         if 'sql_script' in data.keys():
             self.ui.code_editor.setText(data['sql_script'])
-            
-                    # Set Database Settings content
-        if 'external_database_enabled' in data.keys():
-            db_is_enabled = data['external_database_enabled']
-            self.ui.externalDatabaseEnabled.setChecked(db_is_enabled)
         
-            # Disable the Database selection combo-box and Settings button if the checkbox is unchecked
-            self.ui.settings_button.setEnabled(not db_is_enabled)
-            self.ui.database_type_selecteor.setEnabled(not db_is_enabled)
-                
-        else:
-            self.ui.settings_button.setEnabled(False)  
-            self.ui.database_type_selecteor.setEnabled(False)
-        
-        if 'database_settings' in data.keys():
-            self.__database_settings = data['database_settings']
-
         self._update_undo_redo_button_status()  # Disable the Undo button
 
     def _enable_clipboard_buttons(self, enable: bool):

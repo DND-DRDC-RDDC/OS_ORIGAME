@@ -7,24 +7,24 @@
 # r4_coding_standards.html, in the project's docs/CodingStandards/html folder.
 
 """
-*Project - R4 HR TDP*: Dialog to configure databases.
+*Project - R4 HR TDP*: Dialog to configure databases connections.
 """
 
 # -- Imports ------------------------------------------------------------------------------------
 
 # [1. standard library]
 import logging
-from enum import Enum
 from PyQt5.QtWidgets import QWidget,  QDialog
 
 # [2. third-party]
 
 # [3. local]
 from ..gui_utils import PyExpr
-from .Ui_database_settings_dialog import Ui_DatabaseSettingsDialog
+from .Ui_db_connection_settings_dialog import Ui_DbConnectionSettingsDialog
 from ...core.typing import Dict
 from .common import EditorDialog
 from ...core import override
+from ...scenario.database_configs import DatabaseTypeEnum
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -43,18 +43,10 @@ log = logging.getLogger('system')
 # -- Function definitions -----------------------------------------------------------------------
 
 # -- Class Definitions --------------------------------------------------------------------------
-class DatabaseTypeEnum(Enum):
-    """Supported Database types"""    
-    MS_ACCESS =0,
-    MS_SQL = 1,
-    MYSQL = 2,
-    POSTGRESQL = 3,
-    SQLITE = 4,
-    GENERIC = 5
     
-class DatabaseSettingsDialog(EditorDialog):
+class DbConnectionSettingsDialog(EditorDialog):
     """
-    Represents the Database Settings dialog.
+    Represents the database connection settings dialog.
     """
 
     def __init__(self, parent: QWidget = None):
@@ -65,31 +57,31 @@ class DatabaseSettingsDialog(EditorDialog):
         :param parent: The parent, used to satisfy the Qt design pattern.
         """
         super().__init__(parent)
-        self.ui = Ui_DatabaseSettingsDialog()
+        self.ui = Ui_DbConnectionSettingsDialog()
         self.ui.setupUi(self)        
         self.__val_wrapper = PyExpr()
         
-        # Initialize database settings
-        self.__database_settings = {}
+        # Initialize database connection settings
+        self.__db_connection_settings = {}
               
     @override(QDialog)
     def accept(self):
-        """Override to get the database configuration values and set them in the backend before closing the dialog"""
-        self.__database_settings[DatabaseTypeEnum.MS_ACCESS.value] = self.ui.access_filepath.text()
-        self.__database_settings[DatabaseTypeEnum.MS_SQL.value] = self.ui.ms_sql_connection.text()
-        self.__database_settings[DatabaseTypeEnum.MYSQL.value] = self.ui.my_sql_connection.text()
-        self.__database_settings[DatabaseTypeEnum.POSTGRESQL.value] = self.ui.postgresql_connection.text()
-        self.__database_settings[DatabaseTypeEnum.SQLITE.value] = self.ui.sqliteFilePath.text()
-        self.__database_settings[DatabaseTypeEnum.GENERIC.value] = self.ui.generic_connection.text()
+        """Override to get the database connections configuration values and set them in the backend before closing the dialog"""
+        self.__db_connection_settings[DatabaseTypeEnum.MS_ACCESS.value] = self.ui.access_filepath.text()
+        self.__db_connection_settings[DatabaseTypeEnum.MS_SQL.value] = self.ui.ms_sql_connection.text()
+        self.__db_connection_settings[DatabaseTypeEnum.MYSQL.value] = self.ui.my_sql_connection.text()
+        self.__db_connection_settings[DatabaseTypeEnum.POSTGRESQL.value] = self.ui.postgresql_connection.text()
+        self.__db_connection_settings[DatabaseTypeEnum.SQLITE.value] = self.ui.sqliteFilePath.text()
+        self.__db_connection_settings[DatabaseTypeEnum.GENERIC.value] = self.ui.generic_connection.text()
         
         super().accept()
 
-    def get_database_settings(self) -> Dict[int, str]:
+    def get_db_connection_settings(self) -> Dict[int, str]:
         """
-        Get database settings from the dialog.
-        :return: the database settings Dictinary
+        Get database connection settings from the dialog.
+        :return: the database connection settings Dictinary
         """
-        return self.__database_settings
+        return self.__db_connection_settings
 
   
     #__slot_select_module_path = safe_slot(__select_module_path)

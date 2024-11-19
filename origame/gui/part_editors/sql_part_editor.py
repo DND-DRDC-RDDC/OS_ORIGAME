@@ -46,7 +46,7 @@ from ..slow_tasks import get_progress_bar
 from .part_editors_registry import register_part_editor_class
 from .script_editing import ScriptEditor
 from .common import IPreviewWidget
-from .database_settings_dialog import DatabaseSettingsDialog, DatabaseTypeEnum
+from .db_connection_settings_dialog import DbConnectionSettingsDialog, DatabaseTypeEnum
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -329,10 +329,7 @@ class SqlPartEditorPanel(ScriptEditor):
 
     # --------------------------- instance (self) PUBLIC methods --------------------------------
 
-    def __init__(self, part: SqlPart, parent: QWidget = None):
-        # Initialize database settings        
-        self.__database_settings = {}
-        
+    def __init__(self, part: SqlPart, parent: QWidget = None):        
         super().__init__(part, parent=parent)
 
         self.__lang = 'sql'
@@ -357,9 +354,9 @@ class SqlPartEditorPanel(ScriptEditor):
         data_dict = dict()
         data_dict['parameters'] = self.ui.part_params.text()
         data_dict['sql_script'] = self.ui.code_editor.text()
-        data_dict['database_settings'] = deepcopy(self.__database_settings)
-        data_dict['external_database_enabled'] = self.ui.externalDatabaseEnabled.isChecked()
-        data_dict['selected_database_type_index'] = self.ui.database_type_selecteor.currentIndex()      
+        data_dict['db_connection_settings'] = deepcopy(self.db_connection_settings)
+        data_dict['external_db_enabled'] = self.ui.externalDatabaseEnabled.isChecked()
+        data_dict['db_type_index'] = self.ui.database_type_selecteor.currentIndex()      
 
         return data_dict
 
@@ -369,6 +366,22 @@ class SqlPartEditorPanel(ScriptEditor):
         parameters = data['parameters']
         self.ui.part_params.setText(parameters)
         self.sql_preview_panel.init_preview_table()
+        
+        # Set Database Settings content
+        if 'external_db_enabled' in data.keys():
+            db_is_enabled = data['external_db_enabled']
+            self.ui.externalDatabaseEnabled.setChecked(db_is_enabled)
+        
+            # Disable the Database selection combo-box and Settings button if the checkbox is unchecked
+            self.ui.settings_button.setEnabled(not db_is_enabled)
+            self.ui.database_type_selecteor.setEnabled(not db_is_enabled)
+                
+        else:
+            self.ui.settings_button.setEnabled(False)  
+            self.ui.database_type_selecteor.setEnabled(False)
+        
+        if 'db_connection_settings' in data.keys():
+            self.db_connection_settings = data['db_connection_settings']
 
     # --------------------------- instance __PRIVATE members-------------------------------------
 
@@ -416,18 +429,18 @@ class SqlPartEditorPanel(ScriptEditor):
         """
         Method is called when the Database Settings button is clicked within the SQL Part Editor.
         """        
-        database_setting_dialog = DatabaseSettingsDialog()
+        db_connection_settings = DbConnectionSettingsDialog()
         
-        database_setting_dialog.ui.access_filepath.setText(self.__database_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
-        database_setting_dialog.ui.ms_sql_connection.setText(self.__database_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
-        database_setting_dialog.ui.my_sql_connection.setText(self.__database_settings.get(DatabaseTypeEnum.MYSQL.value, ''))
-        database_setting_dialog.ui.postgresql_connection.setText(self.__database_settings.get(DatabaseTypeEnum.POSTGRESQL.value, ''))
-        database_setting_dialog.ui.sqliteFilePath.setText(self.__database_settings.get(DatabaseTypeEnum.SQLITE.value, ''))
-        database_setting_dialog.ui.generic_connection.setText(self.__database_settings.get(DatabaseTypeEnum.GENERIC.value, ''))
+        db_connection_settings.ui.access_filepath.setText(self.db_connection_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
+        db_connection_settings.ui.ms_sql_connection.setText(self.db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
+        db_connection_settings.ui.my_sql_connection.setText(self.db_connection_settings.get(DatabaseTypeEnum.MYSQL.value, ''))
+        db_connection_settings.ui.postgresql_connection.setText(self.db_connection_settings.get(DatabaseTypeEnum.POSTGRESQL.value, ''))
+        db_connection_settings.ui.sqliteFilePath.setText(self.db_connection_settings.get(DatabaseTypeEnum.SQLITE.value, ''))
+        db_connection_settings.ui.generic_connection.setText(self.db_connection_settings.get(DatabaseTypeEnum.GENERIC.value, ''))
         
-        answer = database_setting_dialog.exec()        
+        answer = db_connection_settings.exec()        
         if answer:
-            self.__database_settings = database_setting_dialog.get_database_settings()
+            self.db_connection_settings = db_connection_settings.get_db_connection_settings()
             
    
     __slot_on_lang_changed = safe_slot(__on_lang_changed)
