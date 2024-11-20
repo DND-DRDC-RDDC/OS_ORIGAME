@@ -263,9 +263,6 @@ class ScriptEditor(BaseContentEditor):
         else:
             self.ui.available_tabs.removeTab(2)
         
-        # Initialize database connection settings        
-        self.db_connection_settings = {}
-        
         # Remove Database connection settings widget for Python script editor
         if not self.ADD_DATABASE_WIDGET:
             self.ui.databae_settings_widget.setVisible(False)

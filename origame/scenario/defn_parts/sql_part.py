@@ -16,6 +16,7 @@ Version History: See SVN log.
 
 # [1. standard library]
 import logging
+from enum import Enum
 
 # [2. third-party]
 
@@ -37,6 +38,7 @@ from .actor_part import ActorPart
 from .base_part import BasePart, PartLink
 from .part_link import TypeReferencingParts, TypeMissingLinkInfo
 from .scripted_part import IScriptedPart
+from ...scenario.database_configs import DatabaseConfig, DatabaseTypeEnum
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -95,6 +97,7 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
         self.signals = SqlPart.Signals()
 
         self._sql_script_str = ""
+        self.__db_config = DatabaseConfig(DatabaseTypeEnum.MS_ACCESS, {}, False)
 
     @override(BasePart)
     def update_temp_link_name(self, new_temp_name: str, link: PartLink):
@@ -127,6 +130,28 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
         self._sql_script_str = sql_str
         if self._anim_mode_shared:
             self.signals.sig_sql_script_changed.emit(sql_str)
+    
+    def get_db_config(self) -> DatabaseConfig:
+        """
+        Get the database configurations.
+
+        :returns: The database configuration object.
+        """
+        return self.__db_config
+
+    def set_db_config(self, db_config: DatabaseConfig):
+        """
+        Set the database configurations.
+
+        :param db_config: database configurations
+        """
+        self.__db_config = db_config    
+            
+        '''
+        TODO: Emit a signal that db config is changed        
+        if self._anim_mode_shared:
+            self.signals.sig_db_config_changed.emit(db_config)
+        '''
 
     @override(BasePart)
     def on_removing_from_scenario(self, scen_data: Dict[BasePart, Any], restorable: bool = False):
