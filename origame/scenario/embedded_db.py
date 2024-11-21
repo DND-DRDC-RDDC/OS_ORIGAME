@@ -28,7 +28,7 @@ import re
 from ..core import get_valid_python_name
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
 from ..core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
-from .sqlite_dataset import SqlDataSet
+from .sql_dataset import SqlDataSet
 
 # -- Meta-data ----------------------------------------------------------------------------------
 

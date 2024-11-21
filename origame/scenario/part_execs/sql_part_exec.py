@@ -29,7 +29,7 @@ from ...core.typing import AnnotationDeclarations
 
 from ..ori import OriSqlPartKeys as SqlKeys
 from ..ori import OriTablePartKeys as TblKeys
-from ..sqlite_dataset import SqlDataSet
+from ..sql_dataset import SqlDataSet
 from ..embedded_db import EmbeddedDbSqlNotStatementError
 
 from .iexecutable_part import IExecutablePart

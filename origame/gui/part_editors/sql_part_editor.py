@@ -32,7 +32,7 @@ from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 from ...core import override
 from ...scenario import ori
 from ...scenario.defn_parts import SqlPart
-from ...scenario.sqlite_dataset import SqlDataSet
+from ...scenario.sql_dataset import SqlDataSet
 from ...scenario.part_execs.scripting_utils import get_signature_from_str
 from ...scenario.part_execs import get_params_from_str
 
