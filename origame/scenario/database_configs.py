@@ -73,7 +73,7 @@ class DatabaseConfig():
         Returns:
             DatabaseTypeEnum: the database type.
         """
-        return self.__connection_config
+        return self.__db_type
     
     def is_external_db_enabled(self) -> bool:
         """Get the flag that indicated whether external databases is enabled.
@@ -81,5 +81,5 @@ class DatabaseConfig():
         Returns:
             bool: flag that indicated whether external databases is enabled.
         """
-        return self.__connection_config
+        return self.__external_db_enabled
         

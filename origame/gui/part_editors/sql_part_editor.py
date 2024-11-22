@@ -47,6 +47,7 @@ from .part_editors_registry import register_part_editor_class
 from .script_editing import ScriptEditor
 from .common import IPreviewWidget
 from .db_connection_settings_dialog import DbConnectionSettingsDialog, DatabaseTypeEnum
+from ...scenario.database_configs import DatabaseConfig
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -333,7 +334,7 @@ class SqlPartEditorPanel(ScriptEditor):
         # Initialize database connection settings        
         self.__db_connection_settings = {}
         self.__external_database_enabled = False
-        self.__db_type = 0
+        self.__db_type = DatabaseTypeEnum.GENERIC
             
         super().__init__(part, parent=parent)
         
@@ -426,6 +427,7 @@ class SqlPartEditorPanel(ScriptEditor):
         """Method is called when database type selector is changed.
         """
         self.__db_type = self.ui.database_type_selecteor.currentIndex()
+        self.__db_config_changed()
         
     def __on_external_database_checkbox_changed(self):
         """
@@ -433,6 +435,8 @@ class SqlPartEditorPanel(ScriptEditor):
         """        
         checked = self.ui.externalDatabaseEnabled.isChecked()
         self.__external_database_enabled = checked
+        self.__db_config_changed()
+        
         if checked:  
             # Enable the Database selection combo-box and Settings button 
             self.ui.settings_button.setEnabled(True)
@@ -458,10 +462,17 @@ class SqlPartEditorPanel(ScriptEditor):
         answer = db_connection_settings.exec()        
         if answer:
             self.__db_connection_settings = db_connection_settings.get_db_connection_settings()
+            self.__db_config_changed()
             
    
+    def __db_config_changed(self):
+        """One or more of the database configuration items is changed, Notify the SQL part about it.
+        """
+        db_config = DatabaseConfig(self.__db_type, self.__db_connection_settings, self.__external_database_enabled)
+        self.__sql_part.set_db_config(db_config)
+        
+    
     __slot_on_lang_changed = safe_slot(__on_lang_changed)
     __slot_on_update_button_clicked = safe_slot(__on_update_button_clicked)
-
 
 register_part_editor_class(ori.OriSqlPartKeys.PART_TYPE_SQL, SqlPartEditorPanel)

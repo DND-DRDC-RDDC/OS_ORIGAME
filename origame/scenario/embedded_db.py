@@ -313,15 +313,6 @@ class EmbeddedDatabase(BaseDatabase):
     # @override(BaseDatabase)
     def get_num_columns(self, table_name: str) -> int:
         return len(self.get_columns_schema(table_name))
-
-    # @override(BaseDatabase)
-    def get_last_record_id(self, table_name: str) -> int:
-        sql = "select max(rowid) from {}".format(table_name)
-        self.execute(sql)
-        # sqlite's fetchall always returns a list tuple, that is why it is necessary to index it like below to get
-        # the value we need. Also, it is always the first element (in this case) because there is only single record
-        # with the maximum unique id.
-        return self.fetch_all()[0][0]
     
     # @override(BaseDatabase)
     def get_hash_md5(self, table_name: str) -> int:
@@ -619,11 +610,13 @@ class EmbeddedDatabase(BaseDatabase):
 
         self.execute(sql)
         return self.fetch_all()
-
+        
     # @override(BaseDatabase)
     def select_as_sql_data_set(self, table_name: str, sql_statement: str) -> SqlDataSet:
-        return SqlDataSet(table_name, sql_statement, self.__conn)
-    
+        self.execute(sql_statement)
+        affected_rows, description = self.__fetch_all()
+        return self.__convertToSqlDataSet(table_name, sql_statement, description, affected_rows)
+        
     # @override(BaseDatabase)
     def dump_schema(self):
         # Right now, we dump the basic info. When needed, add more info in this function.
@@ -631,12 +624,6 @@ class EmbeddedDatabase(BaseDatabase):
         for row in self.__conn.execute("SELECT * FROM sqlite_master"):
             print(row)
         print("End:   dump_schema")
-        
-    # @override(BaseDatabase)
-    def select_as_sql_data_set(self, table_name: str, sql_statement: str) -> SqlDataSet:
-        self.execute(sql_statement)
-        affected_rows, description = self.__fetch_all()
-        return self.__convertToSqlDataSet(table_name, sql_statement, description, affected_rows)
 
     # --------------------------- instance __PRIVATE members-------------------------------------
 
@@ -743,6 +730,7 @@ class EmbeddedDatabase(BaseDatabase):
             # the table - as there is no way to create a Table without at least one defined column.
             sql = "DROP TABLE {}".format(table_name)
             self.execute(sql)
+
 
 class SQLiteMsAccessColumnMapper:
     """

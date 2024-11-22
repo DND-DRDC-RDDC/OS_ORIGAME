@@ -19,12 +19,15 @@ import logging
 
 # [2. third-party]
 import pypyodbc
+import pandas
+from sqlalchemy import CursorResult, create_engine, text
+from sqlalchemy.engine import Engine
 
 # [3. local]
-from .base_db import BaseDatabase, DbSqlExecError, DbSqlNotStatementError, create_select_statement, normalize_name
-from ..core.typing import Either
+from .base_db import BaseDatabase, DbSqlExecError, DbSqlNotStatementError, DbInvalidParameterError
 from ..core.typing import List, Tuple
 from .sql_dataset import SqlDataSet
+from .database_configs import DatabaseConfig
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -51,88 +54,167 @@ class OdbcDatabase(BaseDatabase):
     """ 
 
     # --------------------------- class-wide data and signals -----------------------------------
-    __conn: pypyodbc.Connection
-    __cursor: pypyodbc.Cursor
+    
+    # Connection pool size
+    POOL_SIZE = 5
+    
+    # Database engine 
+    __engine: Engine
+    
+    # Database Configurations
+    __db_config: DatabaseConfig
+    
+    # CursorResult object
+    __cursor: CursorResult
+    
+    # --------------------------- instance __PRIVATE members-------------------------------------
+   
+    def __init__(self, database_config: DatabaseConfig):
+        """Initialize an instance of this class using given database configurations.
+
+        Args:
+            database_config (DatabaseConfig): Database configurations.
+        
+        Raises:
+            DbInvalidParameterError: if connection string of the database configuration is invalid.
+        """        
+        self.__db_config = database_config
+        db_type = self.__db_config.get_db_type()
+        self.__connection_string = self.__db_config.get_connection_config().get[db_type]
+        if not self.__validate_connection_string():
+            raise DbInvalidParameterError("Invalid connection string {}.".format(self.__connection_string))
+        
+        self.__engine = None      
+        self.__cursor = None  
+
+    def __get_engine(self) -> Engine:
+        """Create an engine, if not already created. The engines is used to connect to the database represented by the given connection string.
+        
+        Returns:
+            Engine: Database Engine instance
+        """
+        if self.__engine is None:
+            self.__engine = create_engine(self.__connection_string, pool_size = self.POOL_SIZE)            
+        
+        return self.__engine    
+    
+    def __validate_connection_string(self) -> bool:
+        """Verfy if a valid connection could be made to a database using given connection string.
+
+        Args:
+            connection_string (str): connection string to be verified.
+
+        Returns:
+            bool: true if a valid connection could be made to a database using given connection string, false otherwise. 
+        """
+        if self.__connection_string is None or self.__connection_string.isspace():
+            return False
+               
+        try:
+            engine = create_engine(self.__connection_string) 
+            engine.connect()
+            log.info("The connection string '{}' is valid.", self.__connection_string)            
+            return True
+        except Exception as exc:
+            log.error("Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc))
+            return False    
 
     # --------------------------- instance (self) PUBLIC methods --------------------------------
-    def __init__(self, odbc_connection):
-        """Initialise the object"""
-        self.__conn = odbc_connection
-        self.__cursor = self.__conn.cursor()
-
-    # @override(BaseDatabase)
-    def shutdown(self):
-        """Close the connection, cleanup"""
-        if self.__conn is not None:
-            self.__conn.close()
-            self.__conn = None
-            self.__cursor = None
-
-    # @override(BaseDatabase)
+      # @override(BaseDatabase)
     def execute(self, sql_statement: str, params: Tuple = ()):
-        """
-        Execute the given sql statement.
-        :param sql_statement: A valid sql statement to execute.
-        :param params: Optional tuple of parameters.
-        """
+        if sql_statement is None or sql_statement.isspace():
+            raise DbInvalidParameterError("Invalid SQL statement {}.".format(sql_statement))
+          
+        engine:Engine = self.__get_engine(self.__connection_string)
+        
         try:
-            self.__cursor.execute(sql_statement, params)
-        except pypyodbc.OperationalError as exc:
-            err_msg = "ODBC SQL statement '{}' (with params={}) exec error: {}".format(sql_statement, params, exc)
-            log.error(err_msg)
-            raise DbSqlExecError(err_msg)
-        except pypyodbc.Warning as warn:
-            raise DbSqlNotStatementError(str(warn))
+            # Establish a connection and execute the SQL query
+            with engine.connect() as connection:
+                 # commits and closes automatically
+                self.__cursor = connection.execute(text(sql_statement))   
+        except Exception as exc:
+            error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
+            log.error(error_message)
+            raise DbSqlExecError(error_message)
 
     # @override(BaseDatabase)
     def execute_script(self, multiple_statements: str):
-        """
-        Uses the forward pattern to delegate the statements to the private __conn to run.
-        :param multiple_statements: Multiple SQL statements.
-        :returns: Forward the return from the executescript.
-        """
+        if multiple_statements is None or multiple_statements.isspace():
+            raise DbInvalidParameterError("Invalid SQL statement {}.".format(multiple_statements))
+        
+        engine:Engine = self.__get_engine(self.__connection_string)
+        
         try:
-            return self.__cursor.execute(multiple_statements)
+            # Establish a connection and start a transaction        
+            with engine.begin() as connection:
+                # Run statements of the script
+                for sql_statement in multiple_statements.split(';'):
+                    self.__cursor = connection.execute(text(sql_statement))
+            # commits and closes automatically
+        except Exception as exc:
+            error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
+            log.error(error_message)
+            raise DbSqlExecError(error_message)
+        
+    def __fetch_all(self) -> List[BaseDatabase.DbRawRecord]:
+        """Fetch all records from the cursor object. If cursor is None, it executes the SQL string.
 
-        except pypyodbc.SqlOperationalError as exc:
-            statements = multiple_statements.splitlines()
-            first_line = statements[0] if statements else '<empty>'
-            err_msg = "ODBC SQL script (starting with '{}') exec error: {}".format(first_line, exc)
-            log.error(err_msg)
-            raise DbSqlExecError(err_msg)
-
-    # @override(BaseDatabase)
-    def fetch_all(self) -> List[BaseDatabase.DbRawRecord]:
+        Returns:
+            List[BaseDatabase.DbRawRecord]: results of execution as list of Tuples.
         """
-        Get the rows matched from the last execution of the cursor.
-        :return: Rows from a result set.
-        """
-        data = self.__cursor.fetchall()
-        return data
-
+        if (self.__cursor is None):                        
+            self.execute(self.__connection_string)
+                        
+        result = self.__cursor.fetchall()   
+        
+        # Convert the result to a Pandas DataFrame
+        df = pandas.DataFrame(result, columns=result.keys())
+        
+        # Convert DataFrame to list of tuples
+        return list(df.itertuples(index=False, name=None))              
+        
     def __convertToTuple(self, records: List[BaseDatabase.DbRawRecord]) -> List[Tuple]:
+        """Convert List of DbRawRecord to List of Tuples.
+
+        Args:
+            records (List[BaseDatabase.DbRawRecord]): records to be converted.
+
+        Returns:
+            List[Tuple]: converted data as List of Tuples.
+        """
         convertedRecords = list[Tuple]()
         for record in records:
             convertedRecords.append(tuple(col for col in record))
         return convertedRecords
 
     def __convertToSqlDataSet(self, table_name: str, sql_statement: str, records: List[BaseDatabase.DbRawRecord]) -> SqlDataSet:
-        name2index = dict()
-        index2name = dict()
-        convertedRecords = list()
+        """Creates an instance of SqlDataSet using given parameters.
+
+        Args:
+            table_name (str): table name.
+            sql_statement (str): SQL statement.
+            records (List[BaseDatabase.DbRawRecord]): result of query execution.
+
+        Returns:
+            SqlDataSet: a SqlDataSet object.
+        """
+        col_name_index = dict()
+        col_index_name = dict()
+        data = list()
         if (len(records) > 0):
             # get the colum names
             record = records[0]
             index = 0
             for col in record.cursor_description:
                 name = col[0]
-                name2index[name]=index
-                index2name[index]=name
+                col_name_index[name]=index
+                col_index_name[index]=name
                 index = index + 1
+                
             #populate the records
-            convertedRecords = self.__convertToTuple(records)
+            data = self.__convertToTuple(records)
 
-        return SqlDataSet(table_name, sql_statement, convertedRecords, name2index, index2name)
+        return SqlDataSet(table_name, sql_statement, data, col_name_index, col_index_name)
 
     # @override(BaseDatabase)
     def select_as_sql_data_set(self, table_name: str, sql_statement: str) -> SqlDataSet:
@@ -144,5 +226,13 @@ class OdbcDatabase(BaseDatabase):
         :returns: SqlDataSet.
         """
         self.execute(sql_statement)
-        affected_rows = self.fetch_all()
+        affected_rows = self.__fetch_all()
         return self.__convertToSqlDataSet(table_name, sql_statement, affected_rows)   
+    
+      
+    # @override(BaseDatabase)
+    def shutdown(self):
+        """Dispose the engine and close all the connections."""
+        if self.__engine is not None:
+            self.__engine.dispose(close= True)
+        self.__cursor.close()

@@ -178,7 +178,7 @@ class BaseDatabase:
     @override_required
     def execute_script(self, multiple_statements: str):
         """
-        Uses the forward pattern to delegate the statements to the private __conn to run.
+        Executes the given multiple statements SQL script.
         :param multiple_statements: Multiple SQL statements.
         :returns: Forward the return from the executescript.
         """

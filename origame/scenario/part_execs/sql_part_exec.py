@@ -20,6 +20,8 @@ import re
 from inspect import Parameter, Signature
 import math
 
+from origame.scenario.database_configs import DatabaseConfig
+
 # [2. third-party]
 
 # [3. local]
@@ -92,6 +94,8 @@ class SqlPartExec(IExecutablePart):
         # of the planets of the solar system. In that case, we don't have to drop it and re-create it every time when
         # we access it.
         self._table_name = ""
+        
+        self.__db_config = None
 
     # @override(BasePart)
     def on_outgoing_link_removed(self, link: Decl.PartLink): # type: ignore
@@ -186,6 +190,22 @@ class SqlPartExec(IExecutablePart):
 
         return self.__run_sql_script(script, script_namespace, limit=preview_limit)
 
+    def get_db_config(self) -> DatabaseConfig:
+        """
+        Get the database configurations.
+
+        :returns: The database configuration object.
+        """
+        return self.__db_config
+
+    def set_db_config(self, db_config: DatabaseConfig):
+        """
+        Set the database configurations.
+
+        :param db_config: database configurations
+        """
+        self.__db_config = db_config    
+            
     def __run_sql_script(self, script: str, script_namespace: Dict[str, Any], limit: int = None) -> SqlDataSet:
         """
         Run the SQL script.
