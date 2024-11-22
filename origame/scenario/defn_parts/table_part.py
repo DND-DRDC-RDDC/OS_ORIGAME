@@ -434,7 +434,7 @@ class TablePart(BasePart):
 
         self.signals = TablePart.Signals()
         state = self.shared_scenario_state
-        self.__embedded_db = state.embedded_db
+        self.__embedded_db: EmbeddedDatabase = state.embedded_db
         self.__db_table_name = "{}_{}".format(self.PART_TYPE_NAME, self.SESSION_ID)
         self.__indices = {}
         self.__index_counter = 0
@@ -452,7 +452,7 @@ class TablePart(BasePart):
         self.__arranged_columns = None
 
     @override(BasePart)
-    def get_snapshot_for_edit(self) -> {}:
+    def get_snapshot_for_edit(self) -> {}: # type: ignore
         data = super().get_snapshot_for_edit()
         data['records'] = self.get_all_data(flag_omit_rec_id=True)
         data['col_names'] = self.get_column_names()

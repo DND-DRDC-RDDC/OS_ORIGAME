@@ -30,11 +30,12 @@ from ...core.typing import AnnotationDeclarations
 from ..ori import OriSqlPartKeys as SqlKeys
 from ..ori import OriTablePartKeys as TblKeys
 from ..sql_dataset import SqlDataSet
-from ..embedded_db import EmbeddedDbSqlNotStatementError
 
 from .iexecutable_part import IExecutablePart
 from .scripting_utils import LinkedPartsScriptingProxy, get_func_proxy_from_str, get_signature_from_str
 from .py_script_exec import LINKS_SCRIPT_OBJ_NAME
+
+from ..base_db import DbSqlNotStatementError
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -93,7 +94,7 @@ class SqlPartExec(IExecutablePart):
         self._table_name = ""
 
     # @override(BasePart)
-    def on_outgoing_link_removed(self, link: Decl.PartLink):
+    def on_outgoing_link_removed(self, link: Decl.PartLink): # type: ignore
         link_name = link.name
         self._script_namespace[LINKS_SCRIPT_OBJ_NAME].invalidate_link_cache(link_name)
 
@@ -102,7 +103,7 @@ class SqlPartExec(IExecutablePart):
         self._script_namespace[LINKS_SCRIPT_OBJ_NAME].invalidate_link_cache(old_name)
 
     # @override(BasePart)
-    def on_link_target_part_changed(self, link: Decl.PartLink):
+    def on_link_target_part_changed(self, link: Decl.PartLink): # type: ignore
         self._script_namespace[LINKS_SCRIPT_OBJ_NAME].invalidate_target_cache(link)
 
     def get_py_namespace(self) -> Dict[str, Any]:
@@ -236,7 +237,9 @@ class SqlPartExec(IExecutablePart):
         try:
             if self._is_select_stmt(sql_evaluated):
                 table_name = '{}_{}'.format(self.PART_TYPE_NAME, self.SESSION_ID)
-                db_singleton.drop_table(table_name)
+                drop_stmt = "DROP TABLE IF EXISTS {}".format(table_name)
+                db_singleton.execute(drop_stmt)
+                
                 create_stmt = 'CREATE TABLE %s as %s' % (table_name, sql_evaluated)
                 db_singleton.execute(create_stmt)
                 result = db_singleton.select_as_sql_data_set(table_name, sql_evaluated)
@@ -251,7 +254,7 @@ class SqlPartExec(IExecutablePart):
                 # not a SELECT statement, so nothing to fetch, and assume table modified:
                 db_singleton.execute(sql_evaluated)
 
-        except EmbeddedDbSqlNotStatementError as exc:
+        except DbSqlNotStatementError as exc:
             # the SQL code is a script, not a statement, so nothing to fetch, and assume table modified:
             db_singleton.execute_script(sql_evaluated)
 
@@ -259,7 +262,7 @@ class SqlPartExec(IExecutablePart):
 
         return None
 
-    def __table_changed(self, table_part: Decl.TablePart):
+    def __table_changed(self, table_part: Decl.TablePart): # type: ignore
         """
         Signals the table part if this sql part changes it.
         :param table_part: The table part that is updated.

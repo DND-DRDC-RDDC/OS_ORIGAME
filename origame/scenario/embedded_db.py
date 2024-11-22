@@ -18,16 +18,16 @@ Version History: See SVN log.
 import logging
 import sqlite3
 from sqlite3 import OperationalError as SqlOperationalError
-import hashlib
-import pickle
 import re
+
+from origame.core.utils import get_valid_python_name
 
 # [2. third-party]
 
 # [3. local]
-from ..core import get_valid_python_name
-from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
-from ..core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
+from .base_db import BaseDatabase, DbInvalidArrangeFieldError, DbInvalidParameterError, DbInvalidSqlError, DbSqlExecError, DbSqlNotStatementError, create_select_statement, normalize_name
+from ..core.typing import Any, Either
+from ..core.typing import List, Tuple
 from .sql_dataset import SqlDataSet
 
 # -- Meta-data ----------------------------------------------------------------------------------
@@ -42,11 +42,7 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 __all__ = [
     # public API of module: one line per string
-    'EmbeddedDatabase',
-    'EmbeddedDbSqlExecError',
-    'create_select_statement',
-    'normalize_name'
-]
+    'EmbeddedDatabase']
 
 log = logging.getLogger('system')
 
@@ -60,44 +56,6 @@ TableCellData = Either[str, int, float]
 
 
 # -- Function definitions -----------------------------------------------------------------------
-
-def normalize_name(name: str) -> str:
-    """
-    This function will surround the given name with [] if name doesn't already have []
-    :param name: The name of the column or table.
-    :return: A normalized string representation of the column name
-    """
-    if not name.startswith('[') and not name.endswith(']'):
-        name = '[' + name + ']'
-
-    return name
-
-
-def create_select_statement(table_name: str, fields: str = "*", where: str = None, limit: int = None):
-    """
-    This method is used to construct a select statement in string.
-    :param table_name: Name of the table to get rows from.
-    :param fields: Optional specification of the fields to select: a string consisting of a comma-separate list of
-        column names.  If no fields are specified, then all fields of the table are returned.
-    :param where: Optional SQL where statement restricting the matched results.
-    :param limit: Optional limit on the number of records returned.
-    """
-    select_stmt = ""
-
-    if fields is None or fields == "*":
-        select_stmt = "SELECT * FROM {}".format(table_name)
-    else:
-        # need to escape fields that have space in their name
-        select_stmt = "SELECT {} FROM {}".format(fields, table_name)
-
-    if where:
-        select_stmt += " WHERE {}".format(where)
-
-    if limit:
-        select_stmt += " LIMIT {}".format(limit)
-
-    return select_stmt
-
 
 def mock_sqlite_connect():
     from unittest.mock import patch
@@ -117,132 +75,61 @@ if USE_MOCK_SQLITE:
 
 
 # -- Class Definitions --------------------------------------------------------------------------
-
-class EmbeddedDbInvalidParameterError(Exception):
-    """
-    Custom error class used for raising EmbeddedDatabase exceptions. This exception represents an error condition where
-    an invalid parameter was passed to an EmbeddedDatabase method.
-    """
-    pass
-
-
-class EmbeddedDbInvalidArrangeFieldError(Exception):
-    """
-    Custom error class used for raising EmbeddedDatabase exceptions. This exception represents an error condition where
-    an invalid field name (ie doesn't exist in the table) was passed to the arrange_fields method.
-    """
-    pass
-
-
-class EmbeddedDbInvalidSqlError(Exception):
-    """
-    Custom error class used for raising EmbeddedDatabase exceptions. This exception represents an error condition where
-    an invalid sql is about to be passed the the EmbeddedDatabase's executed method.
-    """
-    pass
-
-
-class EmbeddedDbSqlExecError(Exception):
-    """
-    Custom error class used when executing a SQL statement in embedded DB failed
-    """
-
-    def __init__(self, msg: str, **kwargs):
-        super().__init__(msg)
-        self.sql_info = kwargs
-
-
-class EmbeddedDbSqlNotStatementError(Exception):
-    pass
-
-
-class EmbeddedDatabase:
-    """One instance of this class is shared by all scenario parts that need a SQL database engine."""
+class EmbeddedDatabase(BaseDatabase):
+    """One instance of this class is shared by all scenario parts that need a SQL database engine."""    
     # TODO build 3 performance: convert the many sql statements used to prepared statements
 
     # --------------------------- class-wide data and signals -----------------------------------
-
-    ColumnSchema = Tuple[int, str, str, bool, Any, bool]
-    DbRawRecord = Tuple  # size and contents will vary based on SQL query
-
-    COLUMN_ID = 0
-    COLUMN_NAME = 1
-    COLUMN_TYPE = 2
-    COLUMN_NULL = 3
-    COLUMN_DEFAULT = 4
-
-    INDEX_NAME_PREFIX = "Index_on_"
 
     # --------------------------- instance (self) PUBLIC methods --------------------------------
 
     def __init__(self):
         """Create the integrated database"""
-        self.__conn = sqlite3.connect(":memory:")
-        self.__cursor = self.__conn.cursor()
+        self.__conn: sqlite3.Connection = sqlite3.connect(":memory:")
+        self.__cursor: sqlite3.Cursor = self.__conn.cursor()
 
-    def reset(self):
-        """
-        This method is used to reset the connection that allows one to quickly determine whether or not
-        changes have occurred since an initial connection is made.
-        """
-        # TODO build 3: Once we go file based db, augment this method.
-        raise NotImplementedError
-
+    # @override(BaseDatabase)
     def shutdown(self):
-        """Close the connection, cleanup"""
         if self.__conn is not None:
             self.__conn.close()
             self.__conn = None
             self.__cursor = None
 
+    # @override(BaseDatabase)
     def execute(self, sql_statement: str, params: Tuple = ()):
-        """
-        Execute the given sql statement.
-        :param sql_statement: A valid sql statement to execute.
-        :param params: Optional tuple of parameters.
-        """
         try:
             self.__cursor.execute(sql_statement, params)
         except SqlOperationalError as exc:
-            err_msg = "SQL statement '{}' (with params={}) exec error: {}".format(sql_statement, params, exc)
+            err_msg = "Embedded SQL statement '{}' (with params={}) exec error: {}".format(sql_statement, params, exc)
             log.error(err_msg)
-            raise EmbeddedDbSqlExecError(err_msg)
+            raise DbSqlExecError(err_msg)
         except sqlite3.Warning as warn:
-            raise EmbeddedDbSqlNotStatementError(str(warn))
+            raise DbSqlNotStatementError(str(warn))
 
+    # @override(BaseDatabase)
     def execute_script(self, multiple_statements: str):
-        """
-        Uses the forward pattern to delegate the statements to the private __conn to run.
-        :param multiple_statements: Multiple SQL statements.
-        :returns: Forward the return from the executescript.
-        """
         try:
             return self.__conn.executescript(multiple_statements)
 
         except SqlOperationalError as exc:
             statements = multiple_statements.splitlines()
             first_line = statements[0] if statements else '<empty>'
-            err_msg = "SQL script (starting with '{}') exec error: {}".format(first_line, exc)
+            err_msg = "Embedded SQL script (starting with '{}') exec error: {}".format(first_line, exc)
             log.error(err_msg)
-            raise EmbeddedDbSqlExecError(err_msg)
+            raise DbSqlExecError(err_msg)
 
-    def fetch_all(self) -> List[DbRawRecord]:
-        """
-        Get the rows matched from the last execution of the cursor.
-        :return: Rows from a result set.
-        """
+    def __fetch_all(self) -> Tuple[List[BaseDatabase.DbRawRecord], Any]:
         data = self.__cursor.fetchall()
+        description = self.__cursor.description
+        return data, description
+
+    # @override(BaseDatabase)
+    def fetch_all(self) -> List[BaseDatabase.DbRawRecord]:
+        data, description = self.__fetch_all()
         return data
 
+    # @override(BaseDatabase)
     def table_data_matches(self, table_name: str, re_pattern: str, first_row: int = 0, num_rows: int = 100) -> str:
-        """
-        Return true if any data in the table matches a regular expression pattern (case insensitive)
-        :param table_name: name of table
-        :param re_pattern: the regular expression pattern to match
-        :param first_row: the first row to search.
-        :param num_rows: the number of rows to search.
-        :return: name of column in which match was found, or None if not match
-        """
         # register the REGEXP function that SQLITE3 supports (must be user-defined)
         # note that we pre-compile the regexp for efficiency; this means the first arg to REGEXP is not needed
         import re
@@ -263,23 +150,17 @@ class EmbeddedDatabase:
                 return column_name
 
         return None
-
+    
+    # @override(BaseDatabase)
     def add_column(self, table_name: str, column_name: str, column_type: str = None, column_size: int = None):
-        """
-        This method is used to add a new column to a table.
-        :param table_name: The name of the table to add a new column to.
-        :param column_name: The name of the new column.
-        :param column_type: The type of the new column.
-        :param column_size: The size of the column, if it is a varchar.
-        """
-        # SIZEABLE_TYPES is a list of columns in a SQLite database that can have a size attribute to them.
+        # SIZEABLE_TYPES is a list of columns in a database that can have a size attribute to them.
         SIZEABLE_TYPES = ["BLOB_TEXT", "CHAR", "DATETEXT", "MEMO", "NCHAR", "INTEGER",
                           "NTEXT", "NVARCHAR", "NVARCHAR2", "REAL", "TEXT", "VARCHAR", "VARCHAR2", "WORD", "BOOLEAN"]
 
         sql = ""
 
         if not column_name:
-            raise EmbeddedDbInvalidParameterError("Column name can not be empty/null.")
+            raise DbInvalidParameterError("Column name can not be empty/null.")
 
         assert not column_name.startswith(" ")
         assert not column_name.endswith(" ")
@@ -288,7 +169,7 @@ class EmbeddedDatabase:
         if not self.does_table_exist(table_name):
             # If a column is added via the TablePart API, it always checks to make sure that the table exists
             # prior to inserting a column.  However, we need to ensure that the table exists here in case
-            # a column is attempted to be added directly via the EmbeddedDb.
+            # a column is attempted to be added directly via the Odbc Db.
             self.create_table(table_name, "{} {}".format(safe_col_name, column_type))
             return
 
@@ -308,27 +189,17 @@ class EmbeddedDatabase:
             sql = "ALTER TABLE [{}] ADD {} {}".format(table_name, safe_col_name, column_type)
 
         if sql == "":
-            raise EmbeddedDbInvalidSqlError
+            raise DbInvalidSqlError
 
         self.execute(sql)
 
+    # @override(BaseDatabase)
     def add_columns(self, table_name: str, columns: List[Tuple[str, str, int]]):
-        """
-        This method is used to add more than one column into a given table.
-        :param table_name: The name of the table to add columns to.
-        :param columns: A dictionary containing key-value pairs of column_name-column_type.
-        """
         for col_name, col_type, col_size in columns:
             self.add_column(table_name, col_name, col_type, col_size)
 
+    # @override(BaseDatabase)
     def create_table(self, table_name: str, columns: str = None):
-        """
-        Create a table with the with the given table_name and columns.
-        :param table_name: The name of the table to create.
-        :param columns: The new columns to add to the table. This will be in the format
-        "col col_type, col2 col2_type..."
-        :return:
-        """
         if columns:
             sql = "CREATE TABLE {} ({})".format(table_name, columns)
         else:
@@ -336,22 +207,13 @@ class EmbeddedDatabase:
 
         self.execute(sql)
 
+    # @override(BaseDatabase)
     def drop_table(self, table_name: str):
-        """
-        Drop a table from the database. SQLite automatically drops associated indices as well.
-        :param table_name:  Name of table to reset.
-        """
         sql = "DROP TABLE IF EXISTS {}".format(table_name)
         self.execute(sql)
 
+    # @override(BaseDatabase)
     def set_table_fields(self, table_name, columns: str):
-        """
-        This method is used to remove all of the rows of a given table and re-create the table with the
-        given columns.
-        :param table_name: The table to remove all rows from.
-        :param columns: The new columns to add to the table. This will be in the format
-        "col col_type, col2 col2_type..."
-        """
         sql = "CREATE TABLE temp ({})".format(columns)
         self.execute(sql)
 
@@ -361,12 +223,8 @@ class EmbeddedDatabase:
         sql = "ALTER TABLE temp RENAME TO {}".format(table_name)
         self.execute(sql)
 
+    # @override(BaseDatabase)
     def arrange_columns(self, table_name, columns: str = None):
-        """
-        This method is used to arrange the given table in the order provided by columns.
-        :param table_name: The name of the table to arrange.
-        :param columns:  The order of the columns to arrange the table in.  The format will be "col1, col3, col5..."
-        """
         current_columns = [column[1] for column in self.get_columns_schema(table_name)]
 
         if columns is None:
@@ -376,18 +234,12 @@ class EmbeddedDatabase:
 
         if not set(arranged_columns).issubset(current_columns):
             msg = "One or more column(s) in the arrange_field method do not exist in this table."
-            raise EmbeddedDbInvalidArrangeFieldError(msg)
+            raise DbInvalidArrangeFieldError(msg)
 
         return arranged_columns
 
+    # @override(BaseDatabase)
     def drop_column(self, table_name: str, column_to_drop: str):
-        """
-        This method is used to remove a column from the given table.
-        SQLite does not provide a mechanism to drop a column, as such, a temporary table has to be created with
-        all of the data,  minus the column to be removed.
-        :param table_name: Table to remove a column from.
-        :param column_to_drop: Name of column to remove from table.
-        """
         columns_with_schema = self.get_columns_schema(table_name)
         columns_remaining = [(col_id, col_name, col_type, not_null, default_value, primary_key)
                              for col_id, col_name, col_type, not_null, default_value, primary_key in columns_with_schema
@@ -395,13 +247,8 @@ class EmbeddedDatabase:
 
         self.__generate_table_with_data(table_name, columns_remaining, dropped_column=column_to_drop)
 
+    # @override(BaseDatabase)
     def rename_column(self, table_name: str, column_to_rename: str, new_name: str):
-        """
-        This method is used to rename a column in a given table.
-        :param table_name: Table containing the column to rename.
-        :param column_to_rename: Name of the column to be renamed.
-        :param new_name: New name of the column.
-        """
         columns_with_schema = self.get_columns_schema(table_name)
         col_id_index = 0
         col_name_index = 1
@@ -414,36 +261,21 @@ class EmbeddedDatabase:
         self.__generate_table_with_data(table_name, columns_new_table_tuple, rename=True,
                                         column_to_rename=column_to_rename, new_name=new_name)
 
+    # @override(BaseDatabase)
     def column_exists(self, table_name: str, column_to_find: str) -> bool:
-        """
-        This method is used determine whether or not a column already exists within a given table.
-        :param table_name: The name of the table to find a column in.
-        :param column_to_find: The name of the column to find in the given table.
-        :return: Boolean indicating whether or not a column exists within a given table.
-        """
         columns_with_schema = self.get_columns_schema(table_name)
         return column_to_find in [column[1] for column in columns_with_schema]
 
+    # @override(BaseDatabase)
     def record_exists(self, table_name: str, where: str) -> bool:
-        """
-        This method is used to determine whether or not a record exists given the where clause.
-        :param table_name: The name of the table to search a record for.
-        :param where: The clause restricting the record to find.
-        :return: Boolean indicating whether or not a record exists given the where restriction.
-        """
         count = self.count(table_name, where)
         if count:
             return True
         else:
             return False
 
+    # @override(BaseDatabase)
     def get_column_type(self, table_name: str, column_name: str) -> Tuple[str, str]:
-        """
-        This method is used to obtain the type (and size if applicable) of a column in a given table.
-        :param table_name: The name of the table to look up the column information.
-        :param column_name: The name of the column.
-        :return: A string representation of the type of a column, and size of a column
-        """
         default_col_type = 'TEXT'
         column_type = None
         column_size = None
@@ -471,82 +303,65 @@ class EmbeddedDatabase:
 
         return column_type, column_size
 
-    def get_columns_schema(self, table_name: str) -> List[ColumnSchema]:
-        """
-        Get a list of all of the columns.  Each item in the list will be a tuple which represents
-        the cid, column_name, column_type, not_null, default_value, primary_key.
-        :param table_name:  The table to get the columns for.
-        :return:  A list of tuples.
-        """
+    # @override(BaseDatabase)
+    def get_columns_schema(self, table_name: str) -> List[BaseDatabase.ColumnSchema]:
         sql = "PRAGMA table_info({})".format(table_name)
         self.execute(sql)
 
         return self.fetch_all()
 
+    # @override(BaseDatabase)
     def get_num_columns(self, table_name: str) -> int:
-        """
-        This this method is used to get the number of columns in a given table.
-        :param table_name: Table name to get the number of columns.
-        :return: The number of columns.
-        """
         return len(self.get_columns_schema(table_name))
 
-    class MyMd5Sum:
-
-        def __init__(self):
-            # self.data = []
-            self.md5 = hashlib.md5()
-
-        def step(self, *values):
-            # self.data.append(values)
-            # self.md5.update(b''.join(bytes(str(v), 'utf-8') for v in values))
-            self.md5.update(pickle.dumps(values))
-
-        def finalize(self):
-            # return hashlib.md5(pickle.dumps(self.data)).digest()
-            return self.md5.hexdigest()
-
+    # @override(BaseDatabase)
+    def get_last_record_id(self, table_name: str) -> int:
+        sql = "select max(rowid) from {}".format(table_name)
+        self.execute(sql)
+        # sqlite's fetchall always returns a list tuple, that is why it is necessary to index it like below to get
+        # the value we need. Also, it is always the first element (in this case) because there is only single record
+        # with the maximum unique id.
+        return self.fetch_all()[0][0]
+    
+    # @override(BaseDatabase)
     def get_hash_md5(self, table_name: str) -> int:
         cols = ['"' + ci[1] + '"' for ci in self.get_columns_schema(table_name)]
-        self.__conn.create_aggregate('mysum', len(cols), self.MyMd5Sum)
-        sql = 'SELECT mysum({}) from {}'.format(','.join(cols), table_name)
+        sql = 'SELECT {} from {}'.format(','.join(cols), table_name)
         self.execute(sql)
-        return self.__cursor.fetchone()[0]
 
+        md5 = self.MyMd5Sum()
+
+        for values in self.__cursor.fetchall():
+            md5.step(values)
+
+        return md5.finalize()
+
+    def __convertToSqlDataSet(self, table_name: str, sql_statement: str, cursor_description, records: List[BaseDatabase.DbRawRecord]) -> SqlDataSet:
+        name2index = dict()
+        index2name = dict()
+        for col_idx, col_info in enumerate(cursor_description):
+            name2index[col_info[0]] = col_idx
+            index2name[col_idx] = col_info[0]
+
+        return SqlDataSet(table_name, sql_statement, records, name2index, index2name)
+
+    # @override(BaseDatabase)
     def select(self,
                table_name: str,
                fields: str = "*",
                where: str = None,
                limit: int = None,
-               select_raw: bool = False) -> Either[SqlDataSet, List[DbRawRecord]]:
-        """
-        This method is used to execute a select statement.
-        :param table_name: Name of the table to get rows from.
-        :param fields: Optional specification of the fields to select: a string consisting of a comma-separate list of
-            column names.  If no fields are specified, then all fields of the table are returned.
-        :param where: Optional SQL where statement restricting the matched results.
-        :param limit: Optional limit on the number of records returned.
-        :param select_raw: True to return a list of tuples; otherwise a SqlDataSet.
-        :return the result data set.
-        """
+               select_raw: bool = False) -> Either[SqlDataSet, List[BaseDatabase.DbRawRecord]]:
         sel_stmt = create_select_statement(table_name=table_name, fields=fields, where=where, limit=limit)
+        self.execute(sel_stmt)
+        affected_rows, description = self.__fetch_all()
         if select_raw:
-            self.execute(sel_stmt)
-            affected_rows = self.fetch_all()
             return affected_rows
         else:
-            return SqlDataSet(table_name, sel_stmt, self.__conn)
-
-    def get_all_data(self, table_name: str, table_filter: str = None, arranged_columns=None) -> List[DbRawRecord]:
-        """
-        Get all of the data (records) in the given table.
-        :param table_name: The name of the table to get all data.
-        :param table_filter: A filter to be applied on the table.
-        :param arranged_columns: A list of columns to arrange on.  Note that if a column exists in
-        get_all_cols_schema() but doesn't exist in the arranged_columns, then that column will not be returned
-        in the data set.
-        :return: A list of data.  The data is a tuple.  For example, [("a", "b"), ("c", "d")].
-        """
+            return self.__convertToSqlDataSet(table_name, sel_stmt, description, affected_rows)
+    
+    # @override(BaseDatabase)
+    def get_all_data(self, table_name: str, table_filter: str = None, arranged_columns=None) -> List[BaseDatabase.DbRawRecord]:
         if arranged_columns:
             # In case column names contain spaces, the names must be enclosed in quotes.
             sanitized_arranged_columns = "\",\"".join(arranged_columns)
@@ -560,22 +375,13 @@ class EmbeddedDatabase:
         self.execute(sql)
         return self.fetch_all()
 
+    # @override(BaseDatabase)
     def remove_all_data(self, table_name: str):
-        """
-        Method used to clear the data (ie all records).
-        :param table_name: The name of the table to remove all of teh records from.
-        """
         sql = "DELETE FROM {}".format(table_name)
         self.execute(sql)
-
-    def get_table_subset(self, table_name: str, col_subset: List[str], table_filter: str = None) -> List[DbRawRecord]:
-        """
-        Get the set of table data corresponding to the selected columns and table filter.
-        :param table_name: The name of the table to get all data.
-        :param col_subset: A subset of columns to select from the database.
-        :param table_filter: A filter to be applied on the table.
-        :return: A list of data.  The data is a tuple.  For example, [("a", "b"), ("c", "d")].
-        """
+    
+    # @override(BaseDatabase)
+    def get_table_subset(self, table_name: str, col_subset: List[str], table_filter: str = None) -> List[BaseDatabase.DbRawRecord]:
         selected_columns = ', '.join(normalize_name(col_name) for col_name in col_subset)
         sql = "SELECT {} FROM {}".format(selected_columns, table_name)
 
@@ -585,21 +391,12 @@ class EmbeddedDatabase:
         self.execute(sql)
         return self.fetch_all()
 
-    def filter_raw_data(self, raw_data: List[DbRawRecord],
+    # @override(BaseDatabase)
+    def filter_raw_data(self, raw_data: List[BaseDatabase.DbRawRecord],
                         raw_cols: List[str],
                         col_names_types_sizes: List[Tuple[str, str, int]],
                         select_cols: List[str],
-                        sql_filter: str = None) -> Tuple[List[DbRawRecord], List[str]]:
-        """
-        Filter the given data to include only the given columns and row values satisfying the SQL filter string.
-        :param raw_data: The raw table data to filter.
-        :param raw_cols: The raw table columns to filter.
-        :param col_names_types_sizes: A list of tuples containing the column name, type, and size for each column.
-        :param select_cols: The columns to keep.
-        :param sql_filter: The SQL filter to apply against the raw data.
-        :return: A filtered list of data where each row is a tuple, and a list of strings, each one encodes a column's 
-            type and size.
-        """
+                        sql_filter: str = None) -> Tuple[List[BaseDatabase.DbRawRecord], List[str]]:
         temp_table = 'temp_filter_raw_data_table'
 
         if self.does_table_exist(temp_table):
@@ -630,13 +427,8 @@ class EmbeddedDatabase:
 
         return filtered_data, col_types_and_sizes
 
+    # @override(BaseDatabase)
     def count(self, table_name: str, where: str = None) -> int:
-        """
-        This method is used to get the number of records that satisfy a select clause.
-        :param table_name: The name of the table to get count information.
-        :param where: A SQL select statement.
-        :return: The number of rows that matched the given where clause.
-        """
         sql = "SELECT COUNT(*) FROM {}".format(table_name)
 
         if where:
@@ -646,28 +438,8 @@ class EmbeddedDatabase:
 
         return self.fetch_all()[0][0]
 
-    def match_exists(self, table_name: str, where: str) -> bool:
-        """
-        Given a sql string, this method checks to see whether or not the query matches 1 or more records.
-        :param where: A SQL statement to match against.
-        :return: Boolean indicating whether or not a match exists.
-        """
-        if where:
-            if self.count(table_name, where):
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def delete_data(self, table_name: str, where: str = None) -> List[DbRawRecord]:
-        """
-        This method is used to delete rows that match the given select clause.
-        :param table_name: The table from which to delete record(s).
-        :param where: Optional where condition.
-        :return: A list of data remaining after the delete operation.
-        The data is a tuple.  For example, [("a", "b"), ("c", "d")].
-        """
+    # @override(BaseDatabase)
+    def delete_data(self, table_name: str, where: str = None) -> List[BaseDatabase.DbRawRecord]:
         sql = "DELETE from {} ".format(table_name)
 
         if where:
@@ -677,18 +449,9 @@ class EmbeddedDatabase:
 
         return self.fetch_all()
 
+    # @override(BaseDatabase)
     def create_index(self, table_name: str, index_name: str, columns: List[str] = None, unique: bool = False,
                      new_index: bool = True) -> str:
-        """
-        This method is used to created an index on a table.
-        :param table_name: Table to create an index on.
-        :param index_name: The name of the index.
-        :param columns: The columns to create an index.
-        :param unique: This flag determine whether or not a column can contain duplicated/identical values.  The default
-        here is set to False deliberately.  The responsibility is on the user to ensure that columns don't contain
-        duplicated data prior to creating an index using unique=True via the scripting API.
-        :param new_index: A flag to indicate if index created is new.
-        """
         if new_index:
             normalized_name = '_'.join(columns)
         else:
@@ -732,40 +495,24 @@ class EmbeddedDatabase:
 
         return index_name_in_db
 
+    # @override(BaseDatabase)
     def drop_index(self, index_name: str):
-        """
-        This method is used to drop an index from a given table.
-        :param index_name: The name of the index to drop from the table.
-        """
         sql = "DROP INDEX [{}]".format(index_name)
         self.execute(sql)
 
+    # @override(BaseDatabase)
     def remove_record(self, table_name: str, unique_id: int):
-        """
-        This method is used to remove a single record from the given table that has the given id.
-        :param table_name:  Name of table to remove a record from.
-        :param unique_id: The unique id of the record to remove.
-        """
         sql = "DELETE FROM {} WHERE rowid={}".format(table_name, unique_id)
         self.execute(sql)
 
+    # @override(BaseDatabase)
     def insert(self, table_name: str, record: Tuple[TableCellData]):
-        """
-        This method is used to insert a record into a table.
-        :param table_name: The name of the table to insert a record into.
-        :param record: The record to insert.
-        """
         num_of_user_fields = len(record)
         sql = 'INSERT INTO %s VALUES(%s)' % (table_name, ', '.join(['?' for _ in range(num_of_user_fields)]))
         self.execute(sql, record)
 
-    def insert_all(self, table_name: str, column_names: List[str], records: List[DbRawRecord]):
-        """
-        Accessory method to insert a list of records for specific column_names.
-        :param table_name: The table to insert the record into.
-        :param column_names: The column_names being affected.
-        :param records: The records written into the column_names.
-        """
+    # @override(BaseDatabase)
+    def insert_all(self, table_name: str, column_names: List[str], records: List[BaseDatabase.DbRawRecord]):
         formatted_col_names = ','.join(normalize_name(col_name) for col_name in column_names)
         wild_card = ', '.join(['?'] * len(column_names))
         sql = "INSERT INTO {} ({}) VALUES ({})".format(table_name, formatted_col_names, wild_card)
@@ -774,15 +521,10 @@ class EmbeddedDatabase:
         except SqlOperationalError as exc:
             err_msg = "SQL statement '{}' exec error: {}".format(sql, exc)
             log.error(err_msg)
-            raise EmbeddedDbSqlExecError(err_msg, statement=sql, sqlite_err=str(exc))
+            raise DbSqlExecError(err_msg, statement=sql, sqlite_err=str(exc))
 
+    # @override(BaseDatabase)
     def update(self, table_name: str, new_key_value_pair: str, where: str = None):
-        """
-        Update a particular record given a where clause.
-        :param table_name: The name of the table to perform the update on.
-        :param new_key_value_pair: Key value in the form key1=value1.
-        :param where: A where clause restricting the number of records affected.
-        """
         if where:
             sql = "UPDATE {} SET {} WHERE {}".format(table_name, new_key_value_pair, where)
         else:
@@ -790,24 +532,14 @@ class EmbeddedDatabase:
 
         self.execute(sql)
 
+    # @override(BaseDatabase)
     def update_field(self, table_name, unique_id: int, column: str, new_value: Any):
-        """
-        Update a particular record's column field value in a given table.
-        :param table_name: The table to perform the update on.
-        :param unique_id: The unique id of the row being updated.
-        :param column: The column who's field is being updated.
-        :param new_value: The new value for the intersection of row/column.
-        """
         safe_col_name = normalize_name(column)
         sql = "UPDATE {} SET {}='{}' WHERE rowid={}".format(table_name, safe_col_name, new_value, unique_id)
         self.execute(sql)
 
+    # @override(BaseDatabase)
     def index_exists(self, index_name: str) -> bool:
-        """
-        Determine whether or not a given index exists.
-        :param index_name: Index name.
-        :return: Boolean indicating whether or not a given index exists.
-        """
         sql = "PRAGMA index_info({})".format(index_name)
 
         self.execute(sql)
@@ -817,47 +549,29 @@ class EmbeddedDatabase:
         else:
             return False
 
+    # @override(BaseDatabase)
     def does_table_exist(self, table_name: str) -> bool:
-        """
-        This method is used to determine whether or not a table with the give name exists within the
-        Embedded Database Engine.
-        :param table_name: Name of table to find.
-        :return: Boolean indicating whether or not a table exists within the Embedded Database Engine.
-        """
         self.execute("PRAGMA table_info({})".format(table_name))
         if self.fetch_all():
             return True
         else:
             return False
 
+    # @override(BaseDatabase)
     def get_all_indices(self, table_name: str) -> List[Tuple]:
-        """
-        This method is used to prepare a select on all of the indices in a given table.
-        :param table_name: The name of the table to get the indices for.
-        :return: A list of data containing information about the indices.  The data is a tuple.
-            For example, [("a", "b"), ("c", "d")].
-        """
         sql = "SELECT * FROM sqlite_master WHERE type=='index' and tbl_name='{}'".format(table_name)
         self.execute(sql)
 
         return self.fetch_all()
-
+    
+    # @override(BaseDatabase)
     def get_unique_ids(self, table_name) -> List[int]:
-        """
-        Get a list of the unique ids in a given table.
-        :param table_name: The name of the table to get the unique ids' for.
-        :return: A list of unique ids.
-        """
         sql = "SELECT {} from {}".format("rowid", table_name)
         self.execute(sql)
         return self.fetch_all()
-
+    
+    # @override(BaseDatabase)
     def get_last_record_id(self, table_name: str) -> int:
-        """
-        Get the id of the last record in the given table.
-        :param table_name: Name of the table to get the max record id for.
-        :return: The highest id in this table.
-        """
         sql = "select max(rowid) from {}".format(table_name)
         self.execute(sql)
         # sqlite's fetchall always returns a list tuple, that is why it is necessary to index it like below to get
@@ -865,32 +579,15 @@ class EmbeddedDatabase:
         # with the maximum unique id.
         return self.fetch_all()[0][0]
 
+    # @override(BaseDatabase)
     def get_record_item(self, table_name: str, unique_id: int, column: str) -> object:
-        """
-        Get the field value of a particular record in a given column and table.
-        :param table_name: The name of the table to retrieve the field value for.
-        :param unique_id: The id of the record to retrieve the field value for.
-        :param column: The column of the record to retrieve the field value for.
-        :return: The field at the intersection of the row and column.  Could be any type.
-        """
         sql = "SELECT {} FROM {} WHERE rowid={}".format(column, table_name, unique_id)
         self.execute(sql)
         return self.fetch_all()[0][0]
 
+    # @override(BaseDatabase)
     def get_record_subset(self, table_name: str, row_id: int, limit: int,
-                          table_filter: str = None, arranged_columns: List[str] = None) -> List[DbRawRecord]:
-        """
-        Get the contiguous subset of records starting at the record ID from the table.
-        :param table_name: The name of the table to retrieve the record from.
-        :param row_id: The id of the first record to retrieve in the subset.
-        :param limit: the maximum number of records to return.
-        :param table_filter: A filter to be applied on the table.
-        :param arranged_columns: A list of columns (by name) to arrange on.  Note that if a column exists in
-            get_all_cols_schema() but doesn't exist in the arranged_columns, then that column will not be
-            returned in the data set.
-        :return: The record subset (a list of tuples).
-        """
-
+                          table_filter: str = None, arranged_columns: List[str] = None) -> List[BaseDatabase.DbRawRecord]:
         sql = "SELECT"
 
         if arranged_columns:
@@ -912,14 +609,9 @@ class EmbeddedDatabase:
 
         self.execute(sql)
         return self.fetch_all()
-
+    
+    # @override(BaseDatabase)
     def get_row_ids(self, table_name: str, table_filter: str = None) -> List[int]:
-        """
-        Gets the list of row IDs for records in the database. Apply filter if set.
-        :param table_name: The name of the table to retrieve the record from.
-        :param table_filter: A filter to be applied on the table.
-        :return: the list of record IDs.
-        """
         sql = "SELECT rowid FROM {}".format(table_name)
 
         if table_filter:
@@ -928,54 +620,25 @@ class EmbeddedDatabase:
         self.execute(sql)
         return self.fetch_all()
 
+    # @override(BaseDatabase)
     def select_as_sql_data_set(self, table_name: str, sql_statement: str) -> SqlDataSet:
-        """
-        Get a SqlDataSet instance.
-        :param table_name: The table name
-        :param sql_statement: The execution of this SQL statement returns the data that is the underlying data for the
-            SqlDataSet instance.
-        :returns: SqlDataSet.
-        """
         return SqlDataSet(table_name, sql_statement, self.__conn)
-
+    
+    # @override(BaseDatabase)
     def dump_schema(self):
-        """
-        Dumps the schema of this database. Used for debugging purposes only.
-        """
         # Right now, we dump the basic info. When needed, add more info in this function.
         print("Start: dump_schema")
         for row in self.__conn.execute("SELECT * FROM sqlite_master"):
             print(row)
         print("End:   dump_schema")
+        
+    # @override(BaseDatabase)
+    def select_as_sql_data_set(self, table_name: str, sql_statement: str) -> SqlDataSet:
+        self.execute(sql_statement)
+        affected_rows, description = self.__fetch_all()
+        return self.__convertToSqlDataSet(table_name, sql_statement, description, affected_rows)
 
     # --------------------------- instance __PRIVATE members-------------------------------------
-
-    def __has_index(self, table_name: str, column_spec: str) -> bool:
-        """
-        Queries the database to determine if an index on the columns specified by the column_spec in the table
-        identified by the table_name already exists.
-        :param table_name: The name of the table to be checked for existence of an index
-        :param column_spec: The column specification of the table to be checked for existence of an index, e.g.,
-        ('First Name', 'Last Name')
-        :return: True - an index exists.
-        """
-        for _, _, _, _, idx_stmt in self.get_all_indices(table_name):
-            # An index record looks like this:
-            # (
-            # 'index',
-            # 'Index_on_table1_RankID_StreamID',
-            # 'table_2',
-            # 3,
-            # "CREATE INDEX Index_on_table1_RankID_StreamID ON table_1('RankID', 'StreamID')"
-            # )"
-            #
-            # The column_spec looks like this: ('RankID', 'StreamID'), which uniquely identifies an existing index.
-
-            if idx_stmt.endswith(column_spec):
-                log.warning("The index on the column(s) {} will not be created because it already exists.", column_spec)
-                return True
-
-        return False
 
     def __generate_table_with_data(self, table_name: str, columns_remaining: List[str], rename: bool = False,
                                    column_to_rename: str = None, new_name: str = None, dropped_column: str = None):
@@ -1080,7 +743,6 @@ class EmbeddedDatabase:
             # the table - as there is no way to create a Table without at least one defined column.
             sql = "DROP TABLE {}".format(table_name)
             self.execute(sql)
-
 
 class SQLiteMsAccessColumnMapper:
     """
