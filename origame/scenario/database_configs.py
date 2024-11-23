@@ -39,15 +39,33 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 class DatabaseTypeEnum(Enum):
     """Supported Database types"""    
-    MS_ACCESS = 0,
-    MS_SQL = 1,
-    MYSQL = 2,
-    POSTGRESQL = 3,
-    SQLITE = 4,
+    MS_ACCESS = 0
+    MS_SQL = 1
+    MYSQL = 2
+    POSTGRESQL = 3
+    SQLITE = 4
     GENERIC = 5
     
+    @classmethod
+    def reverse_lookup(self, value: int):
+        """Returns an Enum for a given value.
+
+        Args:
+            value (int): the value to lookup. 
+
+        Raises:
+            LookupError: if the value is invalid for this Enum.
+
+        Returns:
+            int: the Enum represented by the given value.
+        """
+        for _, member in self.__members__.items():
+            if member.value == value:
+                return member
+        raise LookupError    
+    
 class DatabaseConfig():
-    def __init__(self, db_type: DatabaseTypeEnum, connection_config: Dict[int, str], external_db_enabled: bool):
+    def __init__(self, db_type: DatabaseTypeEnum, connection_config: Dict[DatabaseTypeEnum, str], external_db_enabled: bool):
         """Initialize an instance of DatabaseConfig.
 
         Args:
@@ -59,11 +77,11 @@ class DatabaseConfig():
         self.__connection_config = connection_config
         self.__external_db_enabled = external_db_enabled
         
-    def get_connection_config(self) -> Dict[int, str]:
+    def get_connection_config(self) -> Dict[DatabaseTypeEnum, str]:
         """Get the database connection configurations.
 
         Returns:
-            Dict[int, str]: the database connection configurations.
+            Dict[DatabaseTypeEnum, str]: the database connection configurations.
         """
         return self.__connection_config
     

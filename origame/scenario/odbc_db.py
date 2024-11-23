@@ -79,8 +79,9 @@ class OdbcDatabase(BaseDatabase):
             DbInvalidParameterError: if connection string of the database configuration is invalid.
         """        
         self.__db_config = database_config
-        db_type = self.__db_config.get_db_type()
-        self.__connection_string = self.__db_config.get_connection_config().get[db_type]
+        db_type = database_config.get_db_type()        
+        self.__connection_string = self.__db_config.get_connection_config().get(db_type)
+        
         if not self.__validate_connection_string():
             raise DbInvalidParameterError("Invalid connection string {}.".format(self.__connection_string))
         
@@ -125,7 +126,7 @@ class OdbcDatabase(BaseDatabase):
         if sql_statement is None or sql_statement.isspace():
             raise DbInvalidParameterError("Invalid SQL statement {}.".format(sql_statement))
           
-        engine:Engine = self.__get_engine(self.__connection_string)
+        engine:Engine = self.__get_engine()
         
         try:
             # Establish a connection and execute the SQL query
@@ -142,7 +143,7 @@ class OdbcDatabase(BaseDatabase):
         if multiple_statements is None or multiple_statements.isspace():
             raise DbInvalidParameterError("Invalid SQL statement {}.".format(multiple_statements))
         
-        engine:Engine = self.__get_engine(self.__connection_string)
+        engine:Engine = self.__get_engine()
         
         try:
             # Establish a connection and start a transaction        
@@ -168,7 +169,7 @@ class OdbcDatabase(BaseDatabase):
         result = self.__cursor.fetchall()   
         
         # Convert the result to a Pandas DataFrame
-        df = pandas.DataFrame(result, columns=result.keys())
+        df = pandas.DataFrame(result)
         
         # Convert DataFrame to list of tuples
         return list(df.itertuples(index=False, name=None))              

@@ -21,6 +21,7 @@ from inspect import Parameter, Signature
 import math
 
 from origame.scenario.database_configs import DatabaseConfig
+from origame.scenario.odbc_db import OdbcDatabase
 
 # [2. third-party]
 
@@ -37,7 +38,7 @@ from .iexecutable_part import IExecutablePart
 from .scripting_utils import LinkedPartsScriptingProxy, get_func_proxy_from_str, get_signature_from_str
 from .py_script_exec import LINKS_SCRIPT_OBJ_NAME
 
-from ..base_db import DbSqlNotStatementError
+from ..base_db import BaseDatabase, DbSqlNotStatementError
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -205,6 +206,20 @@ class SqlPartExec(IExecutablePart):
         :param db_config: database configurations
         """
         self.__db_config = db_config    
+        
+    def __get_database(self) -> BaseDatabase:
+        """Creates instance of internal or external database based on the database configurations.
+
+        Returns:
+            BaseDatabase: an instance of BaseDatabase object.
+        """
+        database = None
+        if not(self.__db_config is None) and self.__db_config.is_external_db_enabled():
+            database = OdbcDatabase(self.__db_config)            
+        else:
+            database = self.shared_scenario_state.embedded_db
+        
+        return database        
             
     def __run_sql_script(self, script: str, script_namespace: Dict[str, Any], limit: int = None) -> SqlDataSet:
         """
@@ -245,8 +260,8 @@ class SqlPartExec(IExecutablePart):
         if limit:
             sql_evaluated += " LIMIT {}".format(limit)
 
-        db_singleton = self.shared_scenario_state.embedded_db
-
+        db_singleton = self.__get_database()
+      
         # Design decisions:
         # The implementation strategy is to use try except twice to execute the sql as a standalone sql statement first,
         # then as a script. The first try is to test if the script can be executed as a standalone statement. If not,

@@ -426,7 +426,7 @@ class SqlPartEditorPanel(ScriptEditor):
     def __on_db_type_changed(self):
         """Method is called when database type selector is changed.
         """
-        self.__db_type = self.ui.database_type_selecteor.currentIndex()
+        self.__db_type = DatabaseTypeEnum.reverse_lookup(self.ui.database_type_selecteor.currentIndex())
         self.__db_config_changed()
         
     def __on_external_database_checkbox_changed(self):
@@ -450,18 +450,18 @@ class SqlPartEditorPanel(ScriptEditor):
         """
         Method is called when the Database Settings button is clicked within the SQL Part Editor.
         """        
-        db_connection_settings = DbConnectionSettingsDialog()
+        db_connection_settings_dialog = DbConnectionSettingsDialog()
         
-        db_connection_settings.ui.access_filepath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
-        db_connection_settings.ui.ms_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
-        db_connection_settings.ui.my_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MYSQL.value, ''))
-        db_connection_settings.ui.postgresql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.POSTGRESQL.value, ''))
-        db_connection_settings.ui.sqliteFilePath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.SQLITE.value, ''))
-        db_connection_settings.ui.generic_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.GENERIC.value, ''))
+        db_connection_settings_dialog.ui.access_filepath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_SQL, ''))
+        db_connection_settings_dialog.ui.ms_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS, ''))
+        db_connection_settings_dialog.ui.my_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MYSQL, ''))
+        db_connection_settings_dialog.ui.postgresql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.POSTGRESQL, ''))
+        db_connection_settings_dialog.ui.sqliteFilePath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.SQLITE, ''))
+        db_connection_settings_dialog.ui.generic_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.GENERIC, ''))
         
-        answer = db_connection_settings.exec()        
+        answer = db_connection_settings_dialog.exec()        
         if answer:
-            self.__db_connection_settings = db_connection_settings.get_db_connection_settings()
+            self.__db_connection_settings = db_connection_settings_dialog.get_db_connection_settings()
             self.__db_config_changed()
             
    

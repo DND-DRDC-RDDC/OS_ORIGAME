@@ -67,16 +67,16 @@ class DbConnectionSettingsDialog(EditorDialog):
     @override(QDialog)
     def accept(self):
         """Override to get the database connections configuration values and set them in the backend before closing the dialog"""
-        self.__db_connection_settings[DatabaseTypeEnum.MS_ACCESS.value] = self.ui.access_filepath.text()
-        self.__db_connection_settings[DatabaseTypeEnum.MS_SQL.value] = self.ui.ms_sql_connection.text()
-        self.__db_connection_settings[DatabaseTypeEnum.MYSQL.value] = self.ui.my_sql_connection.text()
-        self.__db_connection_settings[DatabaseTypeEnum.POSTGRESQL.value] = self.ui.postgresql_connection.text()
-        self.__db_connection_settings[DatabaseTypeEnum.SQLITE.value] = self.ui.sqliteFilePath.text()
-        self.__db_connection_settings[DatabaseTypeEnum.GENERIC.value] = self.ui.generic_connection.text()
+        self.__db_connection_settings[DatabaseTypeEnum.MS_ACCESS] = self.ui.access_filepath.text()
+        self.__db_connection_settings[DatabaseTypeEnum.MS_SQL] = self.ui.ms_sql_connection.text()
+        self.__db_connection_settings[DatabaseTypeEnum.MYSQL] = self.ui.my_sql_connection.text()
+        self.__db_connection_settings[DatabaseTypeEnum.POSTGRESQL] = self.ui.postgresql_connection.text()
+        self.__db_connection_settings[DatabaseTypeEnum.SQLITE] = self.ui.sqliteFilePath.text()
+        self.__db_connection_settings[DatabaseTypeEnum.GENERIC] = self.ui.generic_connection.text()
         
         super().accept()
 
-    def get_db_connection_settings(self) -> Dict[int, str]:
+    def get_db_connection_settings(self) -> Dict[DatabaseTypeEnum, str]:
         """
         Get database connection settings from the dialog.
         :return: the database connection settings Dictinary
