@@ -157,7 +157,7 @@ class OdbcDatabase(BaseDatabase):
             log.error(error_message)
             raise DbSqlExecError(error_message)
         
-    def __fetch_all(self) -> List[BaseDatabase.DbRawRecord]:
+    def __fetch_all(self) -> pandas.DataFrame:
         """Fetch all records from the cursor object. If cursor is None, it executes the SQL string.
 
         Returns:
@@ -169,26 +169,9 @@ class OdbcDatabase(BaseDatabase):
         result = self.__cursor.fetchall()   
         
         # Convert the result to a Pandas DataFrame
-        df = pandas.DataFrame(result)
-        
-        # Convert DataFrame to list of tuples
-        return list(df.itertuples(index=False, name=None))              
-        
-    def __convertToTuple(self, records: List[BaseDatabase.DbRawRecord]) -> List[Tuple]:
-        """Convert List of DbRawRecord to List of Tuples.
-
-        Args:
-            records (List[BaseDatabase.DbRawRecord]): records to be converted.
-
-        Returns:
-            List[Tuple]: converted data as List of Tuples.
-        """
-        convertedRecords = list[Tuple]()
-        for record in records:
-            convertedRecords.append(tuple(col for col in record))
-        return convertedRecords
-
-    def __convertToSqlDataSet(self, table_name: str, sql_statement: str, records: List[BaseDatabase.DbRawRecord]) -> SqlDataSet:
+        return pandas.DataFrame(result)                  
+   
+    def __convertToSqlDataSet(self, table_name: str, sql_statement: str, records: pandas.DataFrame) -> SqlDataSet:
         """Creates an instance of SqlDataSet using given parameters.
 
         Args:
@@ -199,21 +182,22 @@ class OdbcDatabase(BaseDatabase):
         Returns:
             SqlDataSet: a SqlDataSet object.
         """
+        
+        # Convert DataFrame to list of tuples
+        data = list(records.itertuples(index=False, name=None))  
+               
         col_name_index = dict()
         col_index_name = dict()
-        data = list()
         if (len(records) > 0):
             # get the colum names
-            record = records[0]
+            column_names = list(records.columns)
+                        
             index = 0
-            for col in record.cursor_description:
+            for col in column_names:
                 name = col[0]
                 col_name_index[name]=index
                 col_index_name[index]=name
                 index = index + 1
-                
-            #populate the records
-            data = self.__convertToTuple(records)
 
         return SqlDataSet(table_name, sql_statement, data, col_name_index, col_index_name)
 
