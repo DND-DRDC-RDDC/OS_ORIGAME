@@ -120,43 +120,6 @@ class OdbcDatabase(BaseDatabase):
             log.error("Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc))
             return False    
 
-    # --------------------------- instance (self) PUBLIC methods --------------------------------
-      # @override(BaseDatabase)
-    def execute(self, sql_statement: str, params: Tuple = ()):
-        if sql_statement is None or sql_statement.isspace():
-            raise DbInvalidParameterError("Invalid SQL statement {}.".format(sql_statement))
-          
-        engine:Engine = self.__get_engine()
-        
-        try:
-            # Establish a connection and execute the SQL query
-            with engine.connect() as connection:
-                 # commits and closes automatically
-                self.__cursor = connection.execute(text(sql_statement))   
-        except Exception as exc:
-            error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
-            log.error(error_message)
-            raise DbSqlExecError(error_message)
-
-    # @override(BaseDatabase)
-    def execute_script(self, multiple_statements: str):
-        if multiple_statements is None or multiple_statements.isspace():
-            raise DbInvalidParameterError("Invalid SQL statement {}.".format(multiple_statements))
-        
-        engine:Engine = self.__get_engine()
-        
-        try:
-            # Establish a connection and start a transaction        
-            with engine.begin() as connection:
-                # Run statements of the script
-                for sql_statement in multiple_statements.split(';'):
-                    self.__cursor = connection.execute(text(sql_statement))
-            # commits and closes automatically
-        except Exception as exc:
-            error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
-            log.error(error_message)
-            raise DbSqlExecError(error_message)
-        
     def __fetch_all(self) -> pandas.DataFrame:
         """Fetch all records from the cursor object. If cursor is None, it executes the SQL string.
 
@@ -200,7 +163,53 @@ class OdbcDatabase(BaseDatabase):
                 index = index + 1
 
         return SqlDataSet(table_name, sql_statement, data, col_name_index, col_index_name)
+    
+    # --------------------------- instance (self) PUBLIC methods --------------------------------
+    # @override(BaseDatabase)
+    def execute(self, sql_statement: str, params: Tuple = ()):
+        if sql_statement is None or sql_statement.isspace():
+            raise DbInvalidParameterError("Invalid SQL statement {}.".format(sql_statement))
+          
+        engine:Engine = self.__get_engine()
+        
+        try:
+            # Establish a connection and execute the SQL query
+            with engine.connect() as connection:
+                 # commits and closes automatically
+                self.__cursor = connection.execute(text(sql_statement))   
+        except Exception as exc:
+            error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
+            log.error(error_message)
+            raise DbSqlExecError(error_message)
+                
+    # @override(BaseDatabase)
+    def execute_script(self, multiple_statements: str):
+        if multiple_statements is None or multiple_statements.isspace():
+            raise DbInvalidParameterError("Invalid SQL statement {}.".format(multiple_statements))
+        
+        engine:Engine = self.__get_engine()
+        
+        try:
+            # Establish a connection and start a transaction        
+            with engine.begin() as connection:
+                # Run statements of the script
+                for sql_statement in multiple_statements.split(';'):
+                    self.__cursor = connection.execute(text(sql_statement))
+            # commits and closes automatically
+        except Exception as exc:
+            error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
+            log.error(error_message)
+            raise DbSqlExecError(error_message)
 
+    # @override(BaseDatabase)
+    def execute_and_fetch(self, sql_statement) -> pandas.DataFrame:
+        self.execute(sql_statement)
+        return self.__fetch_all()
+
+    # @override(BaseDatabase)
+    def datafrane_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
+        dataframe.to_sql(tabe_name, self.__get_engine(), if_exists='fail')
+        
     # @override(BaseDatabase)
     def select_as_sql_data_set(self, table_name: str, sql_statement: str) -> SqlDataSet:
         """

@@ -20,6 +20,8 @@ import hashlib
 import pickle
 import re
 
+import pandas
+
 # [2. third-party]
 
 # [3. local]
@@ -168,13 +170,41 @@ class BaseDatabase:
 
     @override_required
     def execute(self, sql_statement: str, params: Tuple = ()):
-        """
-        Execute the given sql statement.
-        :param sql_statement: A valid sql statement to execute.
-        :param params: Optional tuple of parameters.
+        """Execute the given SQL statement and return the result as Dataframe.
+
+        Args:
+            sql_statement (string): a valid SQL statement to execute.
+            param params (Tuple): Optional tuple of parameters. 
         """
         raise NotImplementedError
 
+    @override_optional
+    def execute_and_fetch(self, sql_statement:str) -> pandas.DataFrame:
+        
+        """Execute the given SQL statement and return the result as Dataframe.
+
+        Args:
+            sql_statement (string): SQL statement to execute.
+
+        Raises:
+            DbSqlExecError: if any error when executing the statement.
+            DbInvalidParameterError: if SQL statment is invalid.
+
+        Returns:
+            pandas.DataFrame: result as Dataframe.
+        """
+        raise NotImplementedError
+    
+    @override_required
+    def datafrane_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
+        """Write records stored in a DataFrame to a SQL database.
+
+        Args:
+            dataframe (pandas.DataFrame): dataframe to be stored.
+            tabe_name (str): database table name.
+        """
+        raise NotImplementedError
+    
     @override_required
     def execute_script(self, multiple_statements: str):
         """

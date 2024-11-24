@@ -20,6 +20,8 @@ import sqlite3
 from sqlite3 import OperationalError as SqlOperationalError
 import re
 
+import pandas
+
 from origame.core.utils import get_valid_python_name
 
 # [2. third-party]
@@ -117,6 +119,10 @@ class EmbeddedDatabase(BaseDatabase):
             err_msg = "Embedded SQL script (starting with '{}') exec error: {}".format(first_line, exc)
             log.error(err_msg)
             raise DbSqlExecError(err_msg)
+        
+    # @override(BaseDatabase)
+    def datafrane_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
+        dataframe.to_sql(tabe_name, self.__conn, if_exists='fail')        
 
     def __fetch_all(self) -> Tuple[List[BaseDatabase.DbRawRecord], Any]:
         data = self.__cursor.fetchall()

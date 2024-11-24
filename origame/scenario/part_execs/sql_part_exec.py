@@ -20,6 +20,8 @@ import re
 from inspect import Parameter, Signature
 import math
 
+from pandas import DataFrame
+
 from origame.scenario.database_configs import DatabaseConfig
 from origame.scenario.odbc_db import OdbcDatabase
 
@@ -214,8 +216,10 @@ class SqlPartExec(IExecutablePart):
             BaseDatabase: an instance of BaseDatabase object.
         """
         database = None
+        self.__external_db_enabled = False
         if not(self.__db_config is None) and self.__db_config.is_external_db_enabled():
-            database = OdbcDatabase(self.__db_config)            
+            database:OdbcDatabase = OdbcDatabase(self.__db_config)   
+            self.__external_db_enabled =True         
         else:
             database = self.shared_scenario_state.embedded_db
         
@@ -261,6 +265,8 @@ class SqlPartExec(IExecutablePart):
             sql_evaluated += " LIMIT {}".format(limit)
 
         db_singleton = self.__get_database()
+        # We still need embedded database to store result to be used by other linked parts that use embedded database.
+        db_embedded = self.shared_scenario_state.embedded_db
       
         # Design decisions:
         # The implementation strategy is to use try except twice to execute the sql as a standalone sql statement first,
@@ -272,11 +278,20 @@ class SqlPartExec(IExecutablePart):
         try:
             if self._is_select_stmt(sql_evaluated):
                 table_name = '{}_{}'.format(self.PART_TYPE_NAME, self.SESSION_ID)
-                drop_stmt = "DROP TABLE IF EXISTS {}".format(table_name)
-                db_singleton.execute(drop_stmt)
+                drop_stmt = "DROP TABLE IF EXISTS {}".format(table_name)                
+                db_embedded.execute(drop_stmt)
                 
-                create_stmt = 'CREATE TABLE %s as %s' % (table_name, sql_evaluated)
-                db_singleton.execute(create_stmt)
+                if self.__external_db_enabled:
+                    # This SQL pars  is using external database, but we need to store the results 
+                    # in embedded database for use by other linked parts                    
+                    result:DataFrame = db_singleton.execute_and_fetch(sql_evaluated)
+                                        
+                    # Insert results to embedded database
+                    db_embedded.datafrane_to_sql(result, table_name)
+                else:
+                    create_stmt = 'CREATE TABLE %s as %s' % (table_name, sql_evaluated)
+                    db_embedded.execute(create_stmt)
+                
                 result = db_singleton.select_as_sql_data_set(table_name, sql_evaluated)
                 if result:
                     num_fields = len(result[0])
