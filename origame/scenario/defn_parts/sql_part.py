@@ -281,7 +281,7 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
             SqlKeys.SQL_SCRIPT: self._sql_script_str,
             SqlKeys.DB_TYPE: db_config.get_db_type(),
             SqlKeys.EXTERNAL_DB_ENABLED: db_config.is_external_db_enabled(),
-            SqlKeys.DB_CONNECTIONS: db_config.get_connection_config
+            SqlKeys.DB_CONNECTIONS: db_config.get_connection_config()
         })
 
 
