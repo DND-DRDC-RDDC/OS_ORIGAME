@@ -45,31 +45,13 @@ class DatabaseTypeEnum(Enum):
     POSTGRESQL = 3
     SQLITE = 4
     GENERIC = 5
-    
-    @classmethod
-    def reverse_lookup(self, value: int):
-        """Returns an Enum for a given value.
-
-        Args:
-            value (int): the value to lookup. 
-
-        Raises:
-            LookupError: if the value is invalid for this Enum.
-
-        Returns:
-            int: the Enum represented by the given value.
-        """
-        for _, member in self.__members__.items():
-            if member.value == value:
-                return member
-        raise LookupError    
-    
+     
 class DatabaseConfig():
-    def __init__(self, db_type: DatabaseTypeEnum, connection_config: Dict[DatabaseTypeEnum, str], external_db_enabled: bool):
+    def __init__(self, db_type: int, connection_config: Dict[int, str], external_db_enabled: bool):
         """Initialize an instance of DatabaseConfig.
 
         Args:
-            db_type (DatabaseTypeEnum): selected Database type for this part.
+            db_type (int): selected Database type for this part.
             connection_config (Dict[int, str]): database connection string configurations.
             external_db_enabled (bool): indicates whether use of external database is enabled.
         """
@@ -85,11 +67,11 @@ class DatabaseConfig():
         """
         return self.__connection_config
     
-    def get_db_type(self) -> DatabaseTypeEnum:
+    def get_db_type(self) -> int:
         """Get the database type.
 
         Returns:
-            DatabaseTypeEnum: the database type.
+            int: the database type.
         """
         return self.__db_type
     

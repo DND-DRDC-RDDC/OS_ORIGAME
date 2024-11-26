@@ -17,6 +17,8 @@ Version History: See SVN log.
 # [1. standard library]
 import logging
 
+from origame.scenario.database_configs import DatabaseConfig, DatabaseTypeEnum
+
 # [2. third-party]
 
 # [3. local]
@@ -128,12 +130,22 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
         if self._anim_mode_shared:
             self.signals.sig_sql_script_changed.emit(sql_str)
     
-        '''
-        TODO: Emit a signal that db config is changed        
-        if self._anim_mode_shared:
-            self.signals.sig_db_config_changed.emit(db_config)
-        '''
+    def get_db_config(self) -> DatabaseConfig:
+        """
+        Get the database configurations.
 
+        :returns: The database configuration object.
+        """
+        return self.__db_config
+
+    def set_db_config(self, db_config: DatabaseConfig):
+        """
+        Set the database configurations.
+
+        :param db_config: database configurations
+        """
+        self.__db_config = db_config
+        
     @override(BasePart)
     def on_removing_from_scenario(self, scen_data: Dict[BasePart, Any], restorable: bool = False):
         BasePart.on_removing_from_scenario(self, scen_data, restorable=restorable)
@@ -229,15 +241,32 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
 
         self.parameters = part_content.get(SqlKeys.PARAMETERS, self._param_str) or ''
         sql_statement_pieces = part_content.get(SqlKeys.SQL_SCRIPT)
+        
+        external_db_enabled = False
+        if part_content.get(SqlKeys.EXTERNAL_DB_ENABLED):
+            external_db_enabled = part_content.get(SqlKeys.EXTERNAL_DB_ENABLED) 
+      
+        db_type: int = DatabaseTypeEnum.GENERIC.value
+        if part_content.get(SqlKeys.DB_TYPE):
+            db_type = part_content.get(SqlKeys.DB_TYPE)
+            
+        db_connections = {}
+        if part_content.get(SqlKeys.DB_CONNECTIONS):
+            db_connections = part_content.get(SqlKeys.DB_CONNECTIONS)
+        self.set_db_config(DatabaseConfig(db_type, db_connections, external_db_enabled))        
+        
         if sql_statement_pieces:
             self.sql_script = '\n'.join(sql_statement_pieces)
 
     @override(IOriSerializable)
     def _get_ori_def_impl(self, context: OriContextEnum, **kwargs) -> JsonObj:
-        ori_def = BasePart._get_ori_def_impl(self, context, **kwargs)
+        ori_def = BasePart._get_ori_def_impl(self, context, **kwargs)        
         sql_ori_def = {
             SqlKeys.PARAMETERS: self._param_str,
-            SqlKeys.SQL_SCRIPT: self._sql_script_str.split('\n')
+            SqlKeys.SQL_SCRIPT: self._sql_script_str.split('\n'),
+            SqlKeys.EXTERNAL_DB_ENABLED: self.get_db_config().is_external_db_enabled(),
+            SqlKeys.DB_CONNECTIONS: self.get_db_config().get_connection_config(),
+            SqlKeys.DB_TYPE: self.get_db_config().get_db_type()
         }
 
         ori_def[CpKeys.CONTENT].update(sql_ori_def)
@@ -246,9 +275,13 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
     @override(IOriSerializable)
     def _get_ori_snapshot_local(self, snapshot: JsonObj, snapshot_slow: JsonObj):
         BasePart._get_ori_snapshot_local(self, snapshot, snapshot_slow)
+        db_config = self.get_db_config()
         snapshot.update({
             SqlKeys.PARAMETERS: self._param_str,
-            SqlKeys.SQL_SCRIPT: self._sql_script_str
+            SqlKeys.SQL_SCRIPT: self._sql_script_str,
+            SqlKeys.DB_TYPE: db_config.get_db_type(),
+            SqlKeys.EXTERNAL_DB_ENABLED: db_config.is_external_db_enabled(),
+            SqlKeys.DB_CONNECTIONS: db_config.get_connection_config
         })
 
 

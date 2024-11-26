@@ -193,7 +193,7 @@ class OdbcDatabase(BaseDatabase):
             # Establish a connection and start a transaction        
             with engine.begin() as connection:
                 # Run statements of the script
-                for sql_statement in multiple_statements.split(';'):
+                for sql_statement in multiple_statements.split('\n'):
                     self.__cursor = connection.execute(text(sql_statement))
             # commits and closes automatically
         except Exception as exc:

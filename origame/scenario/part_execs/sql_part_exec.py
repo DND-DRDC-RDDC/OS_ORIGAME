@@ -193,22 +193,6 @@ class SqlPartExec(IExecutablePart):
 
         return self.__run_sql_script(script, script_namespace, limit=preview_limit)
 
-    def get_db_config(self) -> DatabaseConfig:
-        """
-        Get the database configurations.
-
-        :returns: The database configuration object.
-        """
-        return self.__db_config
-
-    def set_db_config(self, db_config: DatabaseConfig):
-        """
-        Set the database configurations.
-
-        :param db_config: database configurations
-        """
-        self.__db_config = db_config    
-        
     def __get_database(self) -> BaseDatabase:
         """Creates instance of internal or external database based on the database configurations.
 

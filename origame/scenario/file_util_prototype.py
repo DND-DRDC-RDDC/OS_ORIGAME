@@ -608,7 +608,10 @@ class ScenFileUtilPrototype(ScenarioReaderWriter):
             elif part[CpKeys.TYPE] == SqlKeys.PART_TYPE_SQL:
                 part_content[SqlKeys.PARAMETERS] = record["params"]
                 converted = self.sql_from_prototype_to_ori(record["query"], record["params"])
-                part_content[SqlKeys.SQL_SCRIPT] = converted.split('\n')
+                part_content[SqlKeys.SQL_SCRIPT] = converted.split('\n')                                
+                part_content[SqlKeys.EXTERNAL_DB_ENABLED] = record['external_db_enabled']
+                part_content[SqlKeys.DB_CONNECTIONS] = record['db_connection_settings']
+                part_content[SqlKeys.DB_TYPE] = record['db_type']
 
             elif part[CpKeys.TYPE] == TpKeys.PART_TYPE_TABLE:
                 column_names = [col[0] for col in record['tableFields']]

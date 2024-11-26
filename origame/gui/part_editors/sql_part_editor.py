@@ -15,7 +15,6 @@ Version History: See SVN log.
 # -- Imports ------------------------------------------------------------------------------------
 
 # [1. standard library]
-from copy import deepcopy
 import logging
 from textwrap import dedent
 
@@ -334,7 +333,7 @@ class SqlPartEditorPanel(ScriptEditor):
         # Initialize database connection settings        
         self.__db_connection_settings = {}
         self.__external_database_enabled = False
-        self.__db_type = DatabaseTypeEnum.GENERIC
+        self.__db_type = DatabaseTypeEnum.GENERIC.value
             
         super().__init__(part, parent=parent)
         
@@ -352,22 +351,17 @@ class SqlPartEditorPanel(ScriptEditor):
         self.ui.main_code_editor_layout.layout().addWidget(self.sql_preview_panel)
                 
         # Add database settings buttons action
-        self.ui.settings_button.clicked.connect(self.__on_setting_button_clicked) 
-        self.ui.externalDatabaseEnabled.stateChanged.connect(self.__on_external_database_checkbox_changed)        
-        self.ui.database_type_selecteor.currentTextChanged.connect(self.__on_db_type_changed)
+        self.ui.settings_button.clicked.connect(self.__slot_on_setting_button_clicked) 
+        self.ui.externalDatabaseEnabled.stateChanged.connect(self.__slot_on_external_db_state_changed)        
+        self.ui.database_type_selecteor.currentTextChanged.connect(self.__slot_on_db_type_changed)
         
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
     @override(ScriptEditor)
     def _get_data_for_submission(self) -> Dict[str, Any]:
         data_dict = dict()
-        data_dict['parameters'] = self.ui.part_params.text()
-        data_dict['sql_script'] = self.ui.code_editor.text()
-        data_dict['db_connection_settings'] = deepcopy(self.__db_connection_settings)
-        data_dict['external_db_enabled'] = self.__external_database_enabled
-        data_dict['db_type_index'] = self.__db_type
-
-        return data_dict
+        self.__fill_data_for_submission(data_dict)
+        return self._get_deepcopy(data_dict)    
 
     @override(ScriptEditor)
     def _on_data_arrived(self, data: Dict[str, Any]):
@@ -377,25 +371,38 @@ class SqlPartEditorPanel(ScriptEditor):
         self.sql_preview_panel.init_preview_table()
         
         # Set Database Settings content
+        db_is_enabled = False
         if 'external_db_enabled' in data.keys():
             db_is_enabled = data['external_db_enabled']
+            self.__external_database_enabled = db_is_enabled   
             self.ui.externalDatabaseEnabled.setChecked(db_is_enabled)
-            self.__external_database_enabled = db_is_enabled
-        
-            # Disable the Database selection combo-box and Settings button if the checkbox is unchecked
-            if (not db_is_enabled):
-                self.ui.settings_button.setEnabled(not db_is_enabled)
-                self.ui.database_type_selecteor.setEnabled(not db_is_enabled)
-                
-        else:
-            self.__external_database_enabled = False
-            self.ui.settings_button.setEnabled(False)  
-            self.ui.database_type_selecteor.setEnabled(False)
+            
+        # Disable/Enable the Database selection combo-box and Settings button based on the checkbox value 
+        self.ui.settings_button.setEnabled(db_is_enabled)  
+        self.ui.database_type_selecteor.setEnabled(db_is_enabled)     
         
         if 'db_connection_settings' in data.keys():
             self.__db_connection_settings = data['db_connection_settings']
-
+        
+        if 'db_type' in data.keys():
+            self.__db_type = data['db_type']
+            self.ui.database_type_selecteor.setCurrentIndex(data['db_type'])
+        
+        self.__db_config_changed()
+        
     # --------------------------- instance __PRIVATE members-------------------------------------
+
+    def __fill_data_for_submission(self, data: dict):
+        """Fills the the data dictionary with the SQL part data for submission.
+
+        Args:
+            data (dict): the data to submit.
+        """
+        data['parameters'] = self.ui.part_params.text()
+        data['sql_script'] = self.ui.code_editor.text()        
+        data['external_db_enabled'] = self.__external_database_enabled        
+        data['db_connection_settings'] = self.__db_connection_settings
+        data['db_type'] = self.__db_type
 
     @pyqtSlot(str)
     def __on_lang_changed(self, new_lang_key: str):
@@ -426,25 +433,22 @@ class SqlPartEditorPanel(ScriptEditor):
     def __on_db_type_changed(self):
         """Method is called when database type selector is changed.
         """
-        self.__db_type = DatabaseTypeEnum.reverse_lookup(self.ui.database_type_selecteor.currentIndex())
+        self.__db_type = self.ui.database_type_selecteor.currentIndex()
         self.__db_config_changed()
         
-    def __on_external_database_checkbox_changed(self):
+    def __on_external_db_state_changed(self):
         """
         Method is called when the Use of External Database Checkbox is clicked.
         """        
         checked = self.ui.externalDatabaseEnabled.isChecked()
-        self.__external_database_enabled = checked
+        self.__external_database_enabled = checked        
+        self.ui.settings_button.setEnabled(checked)
+        self.ui.database_type_selecteor.setEnabled(checked)         
         self.__db_config_changed()
         
-        if checked:  
-            # Enable the Database selection combo-box and Settings button 
-            self.ui.settings_button.setEnabled(True)
-            self.ui.database_type_selecteor.setEnabled(True) 
-        else:
-            # Disable the Database selection combo-box and Settings button 
-            self.ui.settings_button.setEnabled(False)  
-            self.ui.database_type_selecteor.setEnabled(False)           
+        if checked:
+            msg = 'When External Database is enabled, any reference to outgoing linked parts become invalid.'
+            exec_modal_dialog("SQL Part Warning", msg, QMessageBox.Warning)
 
     def __on_setting_button_clicked(self):
         """
@@ -452,27 +456,61 @@ class SqlPartEditorPanel(ScriptEditor):
         """        
         db_connection_settings_dialog = DbConnectionSettingsDialog()
         
-        db_connection_settings_dialog.ui.access_filepath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_SQL, ''))
-        db_connection_settings_dialog.ui.ms_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS, ''))
-        db_connection_settings_dialog.ui.my_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MYSQL, ''))
-        db_connection_settings_dialog.ui.postgresql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.POSTGRESQL, ''))
-        db_connection_settings_dialog.ui.sqliteFilePath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.SQLITE, ''))
-        db_connection_settings_dialog.ui.generic_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.GENERIC, ''))
+        db_connection_settings_dialog.ui.access_filepath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
+        db_connection_settings_dialog.ui.ms_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
+        db_connection_settings_dialog.ui.my_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MYSQL.value, ''))
+        db_connection_settings_dialog.ui.postgresql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.POSTGRESQL.value, ''))
+        db_connection_settings_dialog.ui.sqliteFilePath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.SQLITE.value, ''))
+        db_connection_settings_dialog.ui.generic_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.GENERIC.value, ''))
+        
+        # Set current tab based on the value of type selector
+        self.__set_db_type_tab(db_connection_settings_dialog)
         
         answer = db_connection_settings_dialog.exec()        
         if answer:
             self.__db_connection_settings = db_connection_settings_dialog.get_db_connection_settings()
             self.__db_config_changed()
             
-   
+            if all(value == '' for value in self.__db_connection_settings.values()):
+                msg = 'External database is enabled but no database connection has been yet configured.'
+                exec_modal_dialog("SQL Part Warning", msg, QMessageBox.Critical)
+            
+    def __set_db_type_tab(self, db_connection_settings_dialog: DbConnectionSettingsDialog):
+        """Selects the tab based on the value of database type selector.
+
+        Args:
+            db_connection_settings_dialog (DbConnectionSettingsDialog): Connection settings dialog.
+        """
+        selected_type = self.ui.database_type_selecteor.currentIndex()
+        
+        tab_name = None
+        match selected_type:
+            case 0:
+                tab_name = 'ms_access_tab'
+            case 1:
+                tab_name = 'ms_sql'
+            case 2:
+                tab_name = 'my_sql_tab'
+            case 3:
+                tab_name = 'postgresql'
+            case 4:
+                tab_name = 'sqlite'
+            case 5:
+                tab_name = 'generic'
+        
+        tab_widget = db_connection_settings_dialog.ui.tabWidget
+        tab_widget.setCurrentWidget(tab_widget.findChild(QWidget, tab_name))
+       
     def __db_config_changed(self):
         """One or more of the database configuration items is changed, Notify the SQL part about it.
         """
         db_config = DatabaseConfig(self.__db_type, self.__db_connection_settings, self.__external_database_enabled)
-        self.__sql_part.set_db_config(db_config)
-        
+        self.__sql_part.set_db_config(db_config)        
     
     __slot_on_lang_changed = safe_slot(__on_lang_changed)
     __slot_on_update_button_clicked = safe_slot(__on_update_button_clicked)
+    __slot_on_external_db_state_changed = safe_slot(__on_external_db_state_changed)
+    __slot_on_db_type_changed = safe_slot(__on_db_type_changed)
+    __slot_on_setting_button_clicked = safe_slot(__on_setting_button_clicked)
 
 register_part_editor_class(ori.OriSqlPartKeys.PART_TYPE_SQL, SqlPartEditorPanel)
