@@ -166,6 +166,8 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
     set_params = prototype_compat_method_alias(IExecutablePart.set_parameters, 'set_params')
     set_query = prototype_compat_method_alias(set_sql_script, 'set_query')
     edit_query = prototype_compat_method_alias(set_sql_script, 'edit_query')
+    edit_db_config = prototype_compat_method_alias(SqlPartExec.set_db_config, 'edit_db_config')
+    retrieve_db_config = prototype_compat_method_alias(SqlPartExec.set_db_config, 'retrieve_db_config')
     edit_params = prototype_compat_method_alias(IExecutablePart.set_parameters, 'edit_params')
 
     # --------------------------- instance PUBLIC properties ----------------------------
@@ -268,6 +270,33 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
             SqlKeys.DB_CONNECTIONS: db_config.get_connection_config()
         })
 
+    @override(BasePart)
+    def get_snapshot_for_edit(self) -> {}: # type: ignore
+        data = super().get_snapshot_for_edit()
+        
+        db_config = self.get_db_config()
+        data['external_db_enabled'] = db_config.is_external_db_enabled()     
+        data['db_connection_settings'] = db_config.get_connection_config()
+        data['db_type'] = db_config.get_db_type()
+        
+        return data
 
+    @override(BasePart)
+    def _receive_edited_snapshot(self, submitted_data: Dict[str, Any], order: List[str] = None):
+        super()._receive_edited_snapshot(submitted_data, order=order)
+        
+        db_is_enabled = False
+        db_connection_settings = {}
+        db_type = DatabaseTypeEnum.GENERIC.value
+        if 'external_db_enabled' in submitted_data.keys():
+            db_is_enabled = submitted_data['external_db_enabled']
+        if 'db_connection_settings' in submitted_data.keys():
+            db_connection_settings = submitted_data['db_connection_settings']
+        if 'db_type' in submitted_data.keys():
+            db_type = submitted_data['db_type']
+        
+        db_config = DatabaseConfig(db_type, db_connection_settings, db_is_enabled)        
+        self.set_db_config(db_config)
+            
 # Add this part to the global part type/class lookup dictionary
 register_new_part_type(SqlPart, SqlKeys.PART_TYPE_SQL)

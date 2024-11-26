@@ -448,6 +448,7 @@ class SqlPartEditorPanel(ScriptEditor):
         
         if checked:
             msg = 'When External Database is enabled, any reference to outgoing linked parts become invalid.'
+            log.warning(msg)
             exec_modal_dialog("SQL Part Warning", msg, QMessageBox.Warning)
 
     def __on_setting_button_clicked(self):
@@ -466,6 +467,7 @@ class SqlPartEditorPanel(ScriptEditor):
         # Set current tab based on the value of type selector
         self.__set_db_type_tab(db_connection_settings_dialog)
         
+        log.info(self.__db_connection_settings)
         answer = db_connection_settings_dialog.exec()        
         if answer:
             self.__db_connection_settings = db_connection_settings_dialog.get_db_connection_settings()
@@ -473,7 +475,10 @@ class SqlPartEditorPanel(ScriptEditor):
             
             if all(value == '' for value in self.__db_connection_settings.values()):
                 msg = 'External database is enabled but no database connection has been yet configured.'
+                log.warning(msg)
                 exec_modal_dialog("SQL Part Warning", msg, QMessageBox.Critical)
+            
+            db_connection_settings_dialog = None
             
     def __set_db_type_tab(self, db_connection_settings_dialog: DbConnectionSettingsDialog):
         """Selects the tab based on the value of database type selector.

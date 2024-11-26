@@ -870,6 +870,7 @@ PART_MEMBER_MAP_PROTO_ORI = dict(
     edit_query='set_sql_script',
     edit_params='set_parameters',
     Query='sql_script',
+    edit_db_config = 'set_db_config',
 
     # sheet
     NumCols='num_cols',

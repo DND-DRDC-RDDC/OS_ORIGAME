@@ -22,7 +22,7 @@ import math
 
 from pandas import DataFrame
 
-from origame.scenario.database_configs import DatabaseConfig
+from origame.scenario.database_configs import DatabaseConfig, DatabaseTypeEnum
 from origame.scenario.odbc_db import OdbcDatabase
 
 # [2. third-party]
@@ -98,8 +98,7 @@ class SqlPartExec(IExecutablePart):
         # we access it.
         self._table_name = ""
         
-        self.__db_config = None
-
+        self.__db_config = DatabaseConfig(DatabaseTypeEnum.GENERIC.value, {}, False)
     # @override(BasePart)
     def on_outgoing_link_removed(self, link: Decl.PartLink): # type: ignore
         link_name = link.name
