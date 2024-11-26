@@ -193,6 +193,22 @@ class SqlPartExec(IExecutablePart):
 
         return self.__run_sql_script(script, script_namespace, limit=preview_limit)
 
+    def get_db_config(self) -> DatabaseConfig:
+        """
+        Get the database configurations.
+
+        :returns: The database configuration object.
+        """
+        return self.__db_config
+
+    def set_db_config(self, db_config: DatabaseConfig):
+        """
+        Set the database configurations.
+
+        :param db_config: database configurations
+        """
+        self.__db_config = db_config
+        
     def __get_database(self) -> BaseDatabase:
         """Creates instance of internal or external database based on the database configurations.
 
@@ -201,11 +217,12 @@ class SqlPartExec(IExecutablePart):
         """
         database = None
         self.__external_db_enabled = False
-        if not(self.__db_config is None) and self.__db_config.is_external_db_enabled():
+        db_config = self.get_db_config()
+        if not(db_config is None) and db_config.is_external_db_enabled():
             database:OdbcDatabase = OdbcDatabase(self.__db_config)   
             self.__external_db_enabled =True         
         else:
-            database = self.shared_scenario_state.embedded_db
+            database = self.shared_scenario_state.embedded_db            
         
         return database        
             

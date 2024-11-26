@@ -129,22 +129,6 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
         self._sql_script_str = sql_str
         if self._anim_mode_shared:
             self.signals.sig_sql_script_changed.emit(sql_str)
-    
-    def get_db_config(self) -> DatabaseConfig:
-        """
-        Get the database configurations.
-
-        :returns: The database configuration object.
-        """
-        return self.__db_config
-
-    def set_db_config(self, db_config: DatabaseConfig):
-        """
-        Set the database configurations.
-
-        :param db_config: database configurations
-        """
-        self.__db_config = db_config
         
     @override(BasePart)
     def on_removing_from_scenario(self, scen_data: Dict[BasePart, Any], restorable: bool = False):
