@@ -19,7 +19,6 @@ from PyQt5.QtWidgets import QWidget,  QDialog
 # [2. third-party]
 
 # [3. local]
-from ..gui_utils import PyExpr
 from .Ui_db_connection_settings_dialog import Ui_DbConnectionSettingsDialog
 from ...core.typing import Dict
 from .common import EditorDialog
@@ -66,8 +65,8 @@ class DbConnectionSettingsDialog(EditorDialog):
         # Initialize database connection settings
         self.__db_connection_settings = db_connection_settings
         
-        self.ui.access_filepath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
-        self.ui.ms_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
+        self.ui.access_filepath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
+        self.ui.ms_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
         self.ui.my_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MYSQL.value, ''))
         self.ui.postgresql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.POSTGRESQL.value, ''))
         self.ui.sqliteFilePath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.SQLITE.value, ''))
