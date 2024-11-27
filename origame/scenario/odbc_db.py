@@ -82,8 +82,9 @@ class OdbcDatabase(BaseDatabase):
         db_type = database_config.get_db_type()        
         self.__connection_string = self.__db_config.get_connection_config().get(db_type)
         
-        if not self.__validate_connection_string():
-            raise DbInvalidParameterError("Invalid connection string {}.".format(self.__connection_string))
+        success, message = self.__validate_connection_string()
+        if not success:
+            raise DbInvalidParameterError("Invalid connection string {}. Reason: {}".format(self.__connection_string, message))
         
         self.__engine = None      
         self.__cursor = None  
@@ -99,26 +100,26 @@ class OdbcDatabase(BaseDatabase):
         
         return self.__engine    
     
-    def __validate_connection_string(self) -> bool:
+    def __validate_connection_string(self) -> tuple[bool, str]:
         """Verfy if a valid connection could be made to a database using given connection string.
 
         Args:
             connection_string (str): connection string to be verified.
 
         Returns:
-            bool: true if a valid connection could be made to a database using given connection string, false otherwise. 
+            tuple[bool, str]: true if a valid connection could be made to a database using given connection string, error/success message. 
         """
         if self.__connection_string is None or self.__connection_string.isspace():
-            return False
+            return False, 'Invalid or empty connection string.'
                
         try:
             engine = create_engine(self.__connection_string) 
             engine.connect()
-            log.info("The connection string '{}' is valid.", self.__connection_string)            
-            return True
+            return True, "Valid connection string."
         except Exception as exc:
-            log.error("Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc))
-            return False    
+            msg = "Could not connect to the database specified by the database due to '{}'".format(exc)
+            log.error(msg)
+            return False, msg     
 
     def __fetch_all(self) -> pandas.DataFrame:
         """Fetch all records from the cursor object. If cursor is None, it executes the SQL string.

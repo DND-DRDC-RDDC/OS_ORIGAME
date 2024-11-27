@@ -49,21 +49,59 @@ class DbConnectionSettingsDialog(EditorDialog):
     Represents the database connection settings dialog.
     """
 
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, db_connection_settings: Dict[int, str], db_type: int, parent: QWidget = None):
         """
-        Initializes this panel with a back end Sql Part Editor and a parent QWidget.
+        Initializes this panel using the given connection string settings and database type..
 
-        :param part: The Sql Part Editor parent.
-        :param parent: The parent, used to satisfy the Qt design pattern.
+        Args:
+            db_connection_settings (Dict[int, str]): database connection settings.
+            db_type (int): database type.
+            parent (QWidget, optional): The Sql Part Editor parent.
         """
+                
         super().__init__(parent)
         self.ui = Ui_DbConnectionSettingsDialog()
-        self.ui.setupUi(self)        
-        self.__val_wrapper = PyExpr()
+        self.ui.setupUi(self)  
         
         # Initialize database connection settings
-        self.__db_connection_settings = {}
-              
+        self.__db_connection_settings = db_connection_settings
+        
+        self.ui.access_filepath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
+        self.ui.ms_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
+        self.ui.my_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MYSQL.value, ''))
+        self.ui.postgresql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.POSTGRESQL.value, ''))
+        self.ui.sqliteFilePath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.SQLITE.value, ''))
+        self.ui.generic_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.GENERIC.value, ''))
+        
+        # Set current tab based on the value of type selector
+        self.__set_db_type_tab(db_type)
+
+    def __set_db_type_tab(self, db_type: int):
+        """Selects the tab based on the value of database type selector.
+        
+        Args:
+            db_type (int): database type.
+        """
+        selected_type = db_type
+        
+        tab_name = None
+        match selected_type:
+            case 0:
+                tab_name = 'ms_access_tab'
+            case 1:
+                tab_name = 'ms_sql'
+            case 2:
+                tab_name = 'my_sql_tab'
+            case 3:
+                tab_name = 'postgresql'
+            case 4:
+                tab_name = 'sqlite'
+            case 5:
+                tab_name = 'generic'
+        
+        tab_widget = self.ui.tabWidget
+        tab_widget.setCurrentWidget(tab_widget.findChild(QWidget, tab_name))
+                      
     @override(QDialog)
     def accept(self):
         """Override to get the database connections configuration values and set them in the backend before closing the dialog"""

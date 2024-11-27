@@ -24,11 +24,11 @@ from textwrap import dedent
 from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtGui import QIcon, QGuiApplication
 from PyQt5.QtWidgets import QWidget, qApp, QListWidgetItem, QAbstractItemView, QListWidget, QMessageBox
-from PyQt5.QtWidgets import QTableWidgetItem, QSizePolicy
+from PyQt5.QtWidgets import QTableWidgetItem
 
 # [3. local]
-from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
-from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
+from ...core.typing import Any 
+from ...core.typing import List, Tuple, Dict
 
 from ...core import override
 from ...core.utils import validate_python_name

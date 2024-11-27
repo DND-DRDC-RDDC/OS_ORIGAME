@@ -238,12 +238,31 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
             
         db_connections = {}
         if part_content.get(SqlKeys.DB_CONNECTIONS):
-            db_connections = part_content.get(SqlKeys.DB_CONNECTIONS)
+            db_connections = self.__fix_dict_keys(part_content.get(SqlKeys.DB_CONNECTIONS))
         self.set_db_config(DatabaseConfig(db_type, db_connections, external_db_enabled))        
         
         if sql_statement_pieces:
             self.sql_script = '\n'.join(sql_statement_pieces)
 
+    def __fix_dict_keys(self, db_connections: Dict[str, str]) -> Dict[int, str]:
+        """In Python when a Dictionary with integer keys is serialized to JSON, keys are stored as string. This is 
+        to cast them back to integer.
+        
+        Args:
+            db_connections (Dict[str, str]): database connection settings.
+        
+        Returns:
+            Dict[int, str]: fixed database connection settings with integer keys.
+        """
+        fixed_dict = {}
+        if db_connections:
+            for key in db_connections.keys():
+                new_key = int(key)
+                fixed_dict[new_key] = db_connections[key]
+        
+        return fixed_dict
+    
+    
     @override(IOriSerializable)
     def _get_ori_def_impl(self, context: OriContextEnum, **kwargs) -> JsonObj:
         ori_def = BasePart._get_ori_def_impl(self, context, **kwargs)        
