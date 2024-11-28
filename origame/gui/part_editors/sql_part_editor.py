@@ -340,9 +340,6 @@ class SqlPartEditorPanel(ScriptEditor):
              
         super().__init__(part, parent=parent)
         
-        self.ui.externalDatabaseEnabled.setChecked(False)
-        self.ui.database_type_selecteor.setCurrentIndex(self.__db_type)
-        
         self.__sql_part = part
                 
         self.__lang = 'sql'
@@ -359,7 +356,7 @@ class SqlPartEditorPanel(ScriptEditor):
         # Add database settings buttons action
         self.ui.settings_button.clicked.connect(self.__slot_on_setting_button_clicked) 
         self.ui.externalDatabaseEnabled.stateChanged.connect(self.__slot_on_external_db_state_changed)        
-        self.ui.database_type_selecteor.currentTextChanged.connect(self.__slot_on_db_type_changed)
+        self.ui.database_type_selecteor.currentIndexChanged.connect(self.__slot_on_db_type_changed)
         
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
@@ -388,7 +385,7 @@ class SqlPartEditorPanel(ScriptEditor):
         
         if 'db_type' in data.keys():
             db_type = data['db_type']
-            if db_type > 0:
+            if db_type > 0 and db_type != self.__db_type:
                 self.__db_type = db_type
                 self.ui.database_type_selecteor.setCurrentIndex(db_type)
 
@@ -442,7 +439,7 @@ class SqlPartEditorPanel(ScriptEditor):
         """Method is called when database type selector is changed.
         """
         db_type = self.ui.database_type_selecteor.currentIndex()
-        if db_type > 0:
+        if db_type > 0 and db_type != self.__db_type:
             self.__db_type = db_type
             self.__on_db_config_changed()
         
