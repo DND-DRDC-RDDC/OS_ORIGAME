@@ -261,10 +261,12 @@ class SqlPartExec(IExecutablePart):
                     return "'" + str(obj) + "'"
 
         sql_evaluated = re.sub(r'{{.+?}}', eval_expr, script)
-        if limit:
-            sql_evaluated += " LIMIT {}".format(limit)
-
+        
         db_singleton = self.__get_database()
+
+        if limit and not self.__external_db_enabled:
+            sql_evaluated += " LIMIT {}".format(limit)
+        
         # We still need embedded database to store result to be used by other linked parts that use embedded database.
         db_embedded = self.shared_scenario_state.embedded_db
       
@@ -276,9 +278,9 @@ class SqlPartExec(IExecutablePart):
         # A simple parsing "_is_select_stmt" is used to determine if a standalone SELECT statement exists.
         # If the determination turns out to be false positive, we run it as multiple statements.
         try:
-            if self._is_select_stmt(sql_evaluated):
-                table_name = '{}_{}'.format(self.PART_TYPE_NAME, self.SESSION_ID)
-                drop_stmt = "DROP TABLE IF EXISTS {}".format(table_name)                
+            table_name = '{}_{}'.format(self.PART_TYPE_NAME, self.SESSION_ID)
+            drop_stmt = "DROP TABLE IF EXISTS {}".format(table_name)  
+            if self._is_select_stmt(sql_evaluated):                              
                 db_embedded.execute(drop_stmt)
                 
                 if self.__external_db_enabled:
@@ -287,7 +289,7 @@ class SqlPartExec(IExecutablePart):
                     result:DataFrame = db_singleton.execute_and_fetch(sql_evaluated)
                                         
                     # Insert results to embedded database
-                    db_embedded.datafrane_to_sql(result, table_name)
+                    db_embedded.dataframe_to_sql(result, table_name)
                 else:
                     create_stmt = 'CREATE TABLE %s as %s' % (table_name, sql_evaluated)
                     db_embedded.execute(create_stmt)
@@ -301,8 +303,25 @@ class SqlPartExec(IExecutablePart):
                 return result
 
             else:
-                # not a SELECT statement, so nothing to fetch, and assume table modified:
-                db_singleton.execute(sql_evaluated)
+                # If external DB is used, we return the last statement's result
+                if self.__external_db_enabled:             
+                    db_embedded.execute(drop_stmt)
+                    
+                    result:DataFrame = db_singleton.execute_and_fetch(sql_evaluated)
+                     
+                    # Insert results to embedded database
+                    db_embedded.dataframe_to_sql(result, table_name)
+                    
+                    result = db_singleton.select_as_sql_data_set(table_name, sql_evaluated)
+                    if result:
+                        num_fields = len(result[0])
+                        log.info("SQL part '{}' SELECT result: {} records, {} fields", self, len(result), num_fields)
+                    else:
+                        log.info("SQL part '{}' SELECT yielded no result", self)
+                    return result
+                else:
+                    # not a SELECT statement, so nothing to fetch, and assume table modified:
+                    db_singleton.execute(sql_evaluated)
 
         except DbSqlNotStatementError as exc:
             # the SQL code is a script, not a statement, so nothing to fetch, and assume table modified:

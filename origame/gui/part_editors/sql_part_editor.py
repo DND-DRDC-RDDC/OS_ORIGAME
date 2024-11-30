@@ -385,7 +385,7 @@ class SqlPartEditorPanel(ScriptEditor):
         
         if 'db_type' in data.keys():
             db_type = data['db_type']
-            if db_type > 0 and db_type != self.__db_type:
+            if db_type >= 0 and db_type != self.__db_type:
                 self.__db_type = db_type
                 self.ui.database_type_selecteor.setCurrentIndex(db_type)
 
@@ -439,7 +439,7 @@ class SqlPartEditorPanel(ScriptEditor):
         """Method is called when database type selector is changed.
         """
         db_type = self.ui.database_type_selecteor.currentIndex()
-        if db_type > 0 and db_type != self.__db_type:
+        if db_type >= 0 and db_type != self.__db_type:
             self.__db_type = db_type
             self.__on_db_config_changed()
         

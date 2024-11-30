@@ -76,10 +76,13 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
     DEFAULT_VISUAL_SIZE = dict(width=10.0, height=5.1)
     PART_TYPE_NAME = "sql"
     DESCRIPTION = """\
-        Use this part to create SQL queries.
+        Use this part to create SQL queries to internal or external databases.
 
-        Link this part to table parts to execute queries on the tables.  Refer to the tables using dot notation
-        within the SQL, e.g. 'select * from {{link.table}}'.
+        If using internal database, link this part to table parts to execute queries on the tables.  Refer to the tables 
+        using dot notationwithin the SQL, e.g. 'select * from {{link.table}}'.
+        
+        When external database is enabled, select a desired database type and enter a valid connection string needed 
+        to connect to external database.
     """
 
     # --------------------------- instance (self) PUBLIC methods --------------------------------

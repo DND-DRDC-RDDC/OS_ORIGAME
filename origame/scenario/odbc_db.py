@@ -18,16 +18,15 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-import pypyodbc
 import pandas
 from sqlalchemy import CursorResult, create_engine, text
 from sqlalchemy.engine import Engine
 
 # [3. local]
-from .base_db import BaseDatabase, DbSqlExecError, DbSqlNotStatementError, DbInvalidParameterError
-from ..core.typing import List, Tuple
+from .base_db import BaseDatabase, DbSqlExecError, DbInvalidParameterError
+from ..core.typing import Tuple
 from .sql_dataset import SqlDataSet
-from .database_configs import DatabaseConfig
+from .database_configs import DatabaseConfig, DatabaseTypeEnum
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -96,7 +95,11 @@ class OdbcDatabase(BaseDatabase):
             Engine: Database Engine instance
         """
         if self.__engine is None:
-            self.__engine = create_engine(self.__connection_string, pool_size = self.POOL_SIZE)            
+            if self.__db_config.get_db_type() == DatabaseTypeEnum.MS_ACCESS.value:
+                # Microsoft access does not accept pool size parameter
+                self.__engine = create_engine(self.__connection_string)
+            else:
+                self.__engine = create_engine(self.__connection_string, pool_size = self.POOL_SIZE)            
         
         return self.__engine    
     
@@ -169,33 +172,39 @@ class OdbcDatabase(BaseDatabase):
     # @override(BaseDatabase)
     def execute(self, sql_statement: str, params: Tuple = ()):
         if sql_statement is None or sql_statement.isspace():
-            raise DbInvalidParameterError("Invalid SQL statement {}.".format(sql_statement))
-          
+            raise DbInvalidParameterError("Invalid SQL statement or script {}.".format(sql_statement))
+        
+        # Check if this is SQL script.
+        if len(sql_statement.split(';')) > 1:
+            self.__execute_script(sql_statement)
+        else:    
+            engine:Engine = self.__get_engine()
+            
+            try:
+                # Establish a connection and execute the SQL query
+                with engine.connect() as connection:
+                    # commits and closes automatically
+                    self.__cursor = connection.execute(text(sql_statement))   
+            except Exception as exc:
+                error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
+                log.error(error_message)
+                raise DbSqlExecError(error_message)
+    
+    def __execute_script(self, sql_script: str):
+        """Run a SQL script whose statements are separated by ';' in one session. It then returns the result of last statement.
+
+        Args:
+            sql_script (str): SQL script consisting of multiple SQL statements.
+        """      
         engine:Engine = self.__get_engine()
-        
-        try:
-            # Establish a connection and execute the SQL query
-            with engine.connect() as connection:
-                 # commits and closes automatically
-                self.__cursor = connection.execute(text(sql_statement))   
-        except Exception as exc:
-            error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
-            log.error(error_message)
-            raise DbSqlExecError(error_message)
-                
-    # @override(BaseDatabase)
-    def execute_script(self, multiple_statements: str):
-        if multiple_statements is None or multiple_statements.isspace():
-            raise DbInvalidParameterError("Invalid SQL statement {}.".format(multiple_statements))
-        
-        engine:Engine = self.__get_engine()
-        
         try:
             # Establish a connection and start a transaction        
             with engine.begin() as connection:
-                # Run statements of the script
-                for sql_statement in multiple_statements.split('\n'):
-                    self.__cursor = connection.execute(text(sql_statement))
+                # Run statements of the script. Statements are separated by ;
+                for sql_statement in sql_script.split(';'):
+                    # Execute the statement only if not empty string
+                    if not sql_statement.isspace():
+                        self.__cursor = connection.execute(text(sql_statement))
             # commits and closes automatically
         except Exception as exc:
             error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
@@ -208,7 +217,7 @@ class OdbcDatabase(BaseDatabase):
         return self.__fetch_all()
 
     # @override(BaseDatabase)
-    def datafrane_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
+    def dataframe_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
         dataframe.to_sql(tabe_name, self.__get_engine(), if_exists='fail')
         
     # @override(BaseDatabase)

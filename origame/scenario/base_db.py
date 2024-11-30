@@ -196,7 +196,7 @@ class BaseDatabase:
         raise NotImplementedError
     
     @override_required
-    def datafrane_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
+    def dataframe_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
         """Write records stored in a DataFrame to a SQL database.
 
         Args:
@@ -205,7 +205,7 @@ class BaseDatabase:
         """
         raise NotImplementedError
     
-    @override_required
+    @override_optional
     def execute_script(self, multiple_statements: str):
         """
         Executes the given multiple statements SQL script.

@@ -121,7 +121,7 @@ class EmbeddedDatabase(BaseDatabase):
             raise DbSqlExecError(err_msg)
         
     # @override(BaseDatabase)
-    def datafrane_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
+    def dataframe_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
         dataframe.to_sql(tabe_name, self.__conn, if_exists='fail')        
 
     def __fetch_all(self) -> Tuple[List[BaseDatabase.DbRawRecord], Any]:
