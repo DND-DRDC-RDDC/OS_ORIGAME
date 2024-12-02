@@ -235,7 +235,7 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
         if part_content.get(SqlKeys.EXTERNAL_DB_ENABLED):
             external_db_enabled = part_content.get(SqlKeys.EXTERNAL_DB_ENABLED) 
       
-        db_type: int = DatabaseTypeEnum.GENERIC.value
+        db_type: int = DatabaseTypeEnum.MS_ACCESS.value
         if part_content.get(SqlKeys.DB_TYPE):
             db_type = part_content.get(SqlKeys.DB_TYPE)
             
@@ -309,7 +309,7 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
         
         db_is_enabled = False
         db_connection_settings = {}
-        db_type = DatabaseTypeEnum.GENERIC.value
+        db_type = DatabaseTypeEnum.MS_ACCESS.value
         if 'external_db_enabled' in submitted_data.keys():
             db_is_enabled = submitted_data['external_db_enabled']
         if 'db_connection_settings' in submitted_data.keys():

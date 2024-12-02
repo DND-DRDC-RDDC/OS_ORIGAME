@@ -98,7 +98,7 @@ class SqlPartExec(IExecutablePart):
         # we access it.
         self._table_name = ""
         
-        self.__db_config = DatabaseConfig(DatabaseTypeEnum.GENERIC.value, {}, False)
+        self.__db_config = DatabaseConfig(DatabaseTypeEnum.MS_ACCESS.value, {}, False)
     # @override(BasePart)
     def on_outgoing_link_removed(self, link: Decl.PartLink): # type: ignore
         link_name = link.name

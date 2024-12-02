@@ -340,6 +340,11 @@
                <string>SQLIte</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>Generic</string>
+              </property>
+             </item>
             </widget>
            </item>
            <item>

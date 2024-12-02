@@ -120,7 +120,7 @@ class OdbcDatabase(BaseDatabase):
             engine.connect()
             return True, "Valid connection string."
         except Exception as exc:
-            msg = "Could not connect to the database specified by the database due to '{}'".format(exc)
+            msg = "Cannot connect to the database specified by the connection string '{}'. Reason: '{}'".format(self.__connection_string, exc)
             log.error(msg)
             return False, msg     
 
@@ -130,10 +130,11 @@ class OdbcDatabase(BaseDatabase):
         Returns:
             List[BaseDatabase.DbRawRecord]: results of execution as list of Tuples.
         """
-        if (self.__cursor is None):                        
+        if self.__cursor is None or self.__cursor.closed:                        
             self.execute(self.__connection_string)
                         
         result = self.__cursor.fetchall()   
+        self.__cursor.close()
         
         # Convert the result to a Pandas DataFrame
         return pandas.DataFrame(result)                  
@@ -184,9 +185,9 @@ class OdbcDatabase(BaseDatabase):
                 # Establish a connection and execute the SQL query
                 with engine.connect() as connection:
                     # commits and closes automatically
-                    self.__cursor = connection.execute(text(sql_statement))   
+                    self.__cursor = connection.execute(text(sql_statement))
             except Exception as exc:
-                error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
+                error_message = "Failed to execute query on the database. Reason: '{}'".format(exc)
                 log.error(error_message)
                 raise DbSqlExecError(error_message)
     
@@ -207,14 +208,23 @@ class OdbcDatabase(BaseDatabase):
                         self.__cursor = connection.execute(text(sql_statement))
             # commits and closes automatically
         except Exception as exc:
-            error_message = "Could not connect to the database specified by the connection string '{}' due to '{}'".format(self.__connection_string, exc)
+            error_message = "Failed to execute SQL script on the database. Reason: '{}'".format(exc)
             log.error(error_message)
             raise DbSqlExecError(error_message)
 
     # @override(BaseDatabase)
     def execute_and_fetch(self, sql_statement) -> pandas.DataFrame:
         self.execute(sql_statement)
-        return self.__fetch_all()
+        
+        result = pandas.DataFrame()
+        try:
+            result = self.__fetch_all()
+        except:
+            # Return and empty Dataframe if for any reason no results is fetched.
+            pass
+        
+        return result
+            
 
     # @override(BaseDatabase)
     def dataframe_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
@@ -229,10 +239,9 @@ class OdbcDatabase(BaseDatabase):
             SqlDataSet instance.
         :returns: SqlDataSet.
         """
-        self.execute(sql_statement)
-        affected_rows = self.__fetch_all()
-        return self.__convertToSqlDataSet(table_name, sql_statement, affected_rows)   
-    
+        results = self.execute_and_fetch(sql_statement)
+        
+        return self.__convertToSqlDataSet(table_name, sql_statement, results)    
       
     # @override(BaseDatabase)
     def shutdown(self):

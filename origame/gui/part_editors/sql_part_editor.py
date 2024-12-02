@@ -336,7 +336,7 @@ class SqlPartEditorPanel(ScriptEditor):
         # Initialize database connection settings        
         self.__db_connection_settings = {}
         self.__external_database_enabled = False
-        self.__db_type = DatabaseTypeEnum.GENERIC.value        
+        self.__db_type = DatabaseTypeEnum.MS_ACCESS.value        
              
         super().__init__(part, parent=parent)
         
