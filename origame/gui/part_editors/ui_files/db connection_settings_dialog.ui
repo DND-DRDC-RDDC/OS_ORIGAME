@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>570</width>
-    <height>241</height>
+    <width>659</width>
+    <height>288</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -78,7 +78,7 @@
             </sizepolicy>
            </property>
            <property name="placeholderText">
-            <string>path/to/db</string>
+            <string>access+pyodbc:///?odbc_connect=Driver=Microsoft Access Driver (*.mdb, *.accdb);DBQ=C:/path/to the/database-name.accdb</string>
            </property>
           </widget>
          </item>
@@ -109,7 +109,7 @@
             </sizepolicy>
            </property>
            <property name="placeholderText">
-            <string>MS SQL connection string</string>
+            <string>mssql+pyodbc://{{user}}:{{password}}@{{server adderss}}\{{instance_name}}/{{db-name}}?driver=ODBC Driver 17 for SQL Server</string>
            </property>
           </widget>
          </item>
@@ -146,7 +146,7 @@
             </sizepolicy>
            </property>
            <property name="placeholderText">
-            <string>MySQL connection string</string>
+            <string>mysql+pymysql://{{user}}:{{password}}@{{host}}/{{db_name}}</string>
            </property>
           </widget>
          </item>
@@ -177,7 +177,7 @@
             </sizepolicy>
            </property>
            <property name="placeholderText">
-            <string>PostgreSQL connection string</string>
+            <string>postgresql+psycopg2://{{user}}:{{password}}@{{host}}:{{port}}/{{db_name}}</string>
            </property>
           </widget>
          </item>
@@ -208,7 +208,7 @@
             </sizepolicy>
            </property>
            <property name="placeholderText">
-            <string>path/to/db</string>
+            <string>sqlite:///DRIVE:\absolute\path\to\sqlite_file</string>
            </property>
           </widget>
          </item>

@@ -201,10 +201,11 @@ class OdbcDatabase(BaseDatabase):
         try:
             # Establish a connection and start a transaction        
             with engine.begin() as connection:
-                # Run statements of the script. Statements are separated by ;
-                for sql_statement in sql_script.split(';'):
+                # Run statements of the script. Statements must be separated by ;
+                sqlStatements = sql_script.split(';')
+                for sql_statement in sqlStatements[:-1]:
                     # Execute the statement only if not empty string
-                    if not sql_statement.isspace():
+                    if not sql_statement.isspace() and sql_statement.strip() != "":
                         self.__cursor = connection.execute(text(sql_statement))
             # commits and closes automatically
         except Exception as exc:
