@@ -168,7 +168,7 @@ class BaseDatabase:
         """Close the connection, cleanup"""
         raise NotImplementedError
 
-    @override_required
+    @override_optional
     def execute(self, sql_statement: str, params: Tuple = ()):
         """Execute the given SQL statement and return the result as Dataframe.
 

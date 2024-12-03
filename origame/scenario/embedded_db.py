@@ -22,6 +22,7 @@ import re
 
 import pandas
 
+from origame.core.decorators import override
 from origame.core.utils import get_valid_python_name
 
 # [2. third-party]
@@ -90,14 +91,14 @@ class EmbeddedDatabase(BaseDatabase):
         self.__conn: sqlite3.Connection = sqlite3.connect(":memory:")
         self.__cursor: sqlite3.Cursor = self.__conn.cursor()
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def shutdown(self):
         if self.__conn is not None:
             self.__conn.close()
             self.__conn = None
             self.__cursor = None
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def execute(self, sql_statement: str, params: Tuple = ()):
         try:
             self.__cursor.execute(sql_statement, params)
@@ -108,7 +109,7 @@ class EmbeddedDatabase(BaseDatabase):
         except sqlite3.Warning as warn:
             raise DbSqlNotStatementError(str(warn))
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def execute_script(self, multiple_statements: str):
         try:
             return self.__conn.executescript(multiple_statements)
@@ -120,7 +121,7 @@ class EmbeddedDatabase(BaseDatabase):
             log.error(err_msg)
             raise DbSqlExecError(err_msg)
         
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def dataframe_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
         dataframe.to_sql(tabe_name, self.__conn, if_exists='fail')        
 
@@ -129,12 +130,12 @@ class EmbeddedDatabase(BaseDatabase):
         description = self.__cursor.description
         return data, description
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def fetch_all(self) -> List[BaseDatabase.DbRawRecord]:
         data, description = self.__fetch_all()
         return data
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def table_data_matches(self, table_name: str, re_pattern: str, first_row: int = 0, num_rows: int = 100) -> str:
         # register the REGEXP function that SQLITE3 supports (must be user-defined)
         # note that we pre-compile the regexp for efficiency; this means the first arg to REGEXP is not needed
@@ -157,7 +158,7 @@ class EmbeddedDatabase(BaseDatabase):
 
         return None
     
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def add_column(self, table_name: str, column_name: str, column_type: str = None, column_size: int = None):
         # SIZEABLE_TYPES is a list of columns in a database that can have a size attribute to them.
         SIZEABLE_TYPES = ["BLOB_TEXT", "CHAR", "DATETEXT", "MEMO", "NCHAR", "INTEGER",
@@ -199,12 +200,12 @@ class EmbeddedDatabase(BaseDatabase):
 
         self.execute(sql)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def add_columns(self, table_name: str, columns: List[Tuple[str, str, int]]):
         for col_name, col_type, col_size in columns:
             self.add_column(table_name, col_name, col_type, col_size)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def create_table(self, table_name: str, columns: str = None):
         if columns:
             sql = "CREATE TABLE {} ({})".format(table_name, columns)
@@ -213,12 +214,12 @@ class EmbeddedDatabase(BaseDatabase):
 
         self.execute(sql)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def drop_table(self, table_name: str):
         sql = "DROP TABLE IF EXISTS {}".format(table_name)
         self.execute(sql)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def set_table_fields(self, table_name, columns: str):
         sql = "CREATE TABLE temp ({})".format(columns)
         self.execute(sql)
@@ -229,7 +230,7 @@ class EmbeddedDatabase(BaseDatabase):
         sql = "ALTER TABLE temp RENAME TO {}".format(table_name)
         self.execute(sql)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def arrange_columns(self, table_name, columns: str = None):
         current_columns = [column[1] for column in self.get_columns_schema(table_name)]
 
@@ -244,7 +245,7 @@ class EmbeddedDatabase(BaseDatabase):
 
         return arranged_columns
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def drop_column(self, table_name: str, column_to_drop: str):
         columns_with_schema = self.get_columns_schema(table_name)
         columns_remaining = [(col_id, col_name, col_type, not_null, default_value, primary_key)
@@ -253,7 +254,7 @@ class EmbeddedDatabase(BaseDatabase):
 
         self.__generate_table_with_data(table_name, columns_remaining, dropped_column=column_to_drop)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def rename_column(self, table_name: str, column_to_rename: str, new_name: str):
         columns_with_schema = self.get_columns_schema(table_name)
         col_id_index = 0
@@ -267,12 +268,12 @@ class EmbeddedDatabase(BaseDatabase):
         self.__generate_table_with_data(table_name, columns_new_table_tuple, rename=True,
                                         column_to_rename=column_to_rename, new_name=new_name)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def column_exists(self, table_name: str, column_to_find: str) -> bool:
         columns_with_schema = self.get_columns_schema(table_name)
         return column_to_find in [column[1] for column in columns_with_schema]
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def record_exists(self, table_name: str, where: str) -> bool:
         count = self.count(table_name, where)
         if count:
@@ -280,7 +281,7 @@ class EmbeddedDatabase(BaseDatabase):
         else:
             return False
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_column_type(self, table_name: str, column_name: str) -> Tuple[str, str]:
         default_col_type = 'TEXT'
         column_type = None
@@ -309,18 +310,18 @@ class EmbeddedDatabase(BaseDatabase):
 
         return column_type, column_size
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_columns_schema(self, table_name: str) -> List[BaseDatabase.ColumnSchema]:
         sql = "PRAGMA table_info({})".format(table_name)
         self.execute(sql)
 
         return self.fetch_all()
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_num_columns(self, table_name: str) -> int:
         return len(self.get_columns_schema(table_name))
     
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_hash_md5(self, table_name: str) -> int:
         cols = ['"' + ci[1] + '"' for ci in self.get_columns_schema(table_name)]
         sql = 'SELECT {} from {}'.format(','.join(cols), table_name)
@@ -342,7 +343,7 @@ class EmbeddedDatabase(BaseDatabase):
 
         return SqlDataSet(table_name, sql_statement, records, name2index, index2name)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def select(self,
                table_name: str,
                fields: str = "*",
@@ -357,7 +358,7 @@ class EmbeddedDatabase(BaseDatabase):
         else:
             return self.__convertToSqlDataSet(table_name, sel_stmt, description, affected_rows)
     
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_all_data(self, table_name: str, table_filter: str = None, arranged_columns=None) -> List[BaseDatabase.DbRawRecord]:
         if arranged_columns:
             # In case column names contain spaces, the names must be enclosed in quotes.
@@ -372,12 +373,12 @@ class EmbeddedDatabase(BaseDatabase):
         self.execute(sql)
         return self.fetch_all()
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def remove_all_data(self, table_name: str):
         sql = "DELETE FROM {}".format(table_name)
         self.execute(sql)
     
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_table_subset(self, table_name: str, col_subset: List[str], table_filter: str = None) -> List[BaseDatabase.DbRawRecord]:
         selected_columns = ', '.join(normalize_name(col_name) for col_name in col_subset)
         sql = "SELECT {} FROM {}".format(selected_columns, table_name)
@@ -388,7 +389,7 @@ class EmbeddedDatabase(BaseDatabase):
         self.execute(sql)
         return self.fetch_all()
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def filter_raw_data(self, raw_data: List[BaseDatabase.DbRawRecord],
                         raw_cols: List[str],
                         col_names_types_sizes: List[Tuple[str, str, int]],
@@ -424,7 +425,7 @@ class EmbeddedDatabase(BaseDatabase):
 
         return filtered_data, col_types_and_sizes
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def count(self, table_name: str, where: str = None) -> int:
         sql = "SELECT COUNT(*) FROM {}".format(table_name)
 
@@ -435,7 +436,7 @@ class EmbeddedDatabase(BaseDatabase):
 
         return self.fetch_all()[0][0]
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def delete_data(self, table_name: str, where: str = None) -> List[BaseDatabase.DbRawRecord]:
         sql = "DELETE from {} ".format(table_name)
 
@@ -446,7 +447,7 @@ class EmbeddedDatabase(BaseDatabase):
 
         return self.fetch_all()
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def create_index(self, table_name: str, index_name: str, columns: List[str] = None, unique: bool = False,
                      new_index: bool = True) -> str:
         if new_index:
@@ -492,23 +493,23 @@ class EmbeddedDatabase(BaseDatabase):
 
         return index_name_in_db
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def drop_index(self, index_name: str):
         sql = "DROP INDEX [{}]".format(index_name)
         self.execute(sql)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def remove_record(self, table_name: str, unique_id: int):
         sql = "DELETE FROM {} WHERE rowid={}".format(table_name, unique_id)
         self.execute(sql)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def insert(self, table_name: str, record: Tuple[TableCellData]):
         num_of_user_fields = len(record)
         sql = 'INSERT INTO %s VALUES(%s)' % (table_name, ', '.join(['?' for _ in range(num_of_user_fields)]))
         self.execute(sql, record)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def insert_all(self, table_name: str, column_names: List[str], records: List[BaseDatabase.DbRawRecord]):
         formatted_col_names = ','.join(normalize_name(col_name) for col_name in column_names)
         wild_card = ', '.join(['?'] * len(column_names))
@@ -520,7 +521,7 @@ class EmbeddedDatabase(BaseDatabase):
             log.error(err_msg)
             raise DbSqlExecError(err_msg, statement=sql, sqlite_err=str(exc))
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def update(self, table_name: str, new_key_value_pair: str, where: str = None):
         if where:
             sql = "UPDATE {} SET {} WHERE {}".format(table_name, new_key_value_pair, where)
@@ -529,13 +530,13 @@ class EmbeddedDatabase(BaseDatabase):
 
         self.execute(sql)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def update_field(self, table_name, unique_id: int, column: str, new_value: Any):
         safe_col_name = normalize_name(column)
         sql = "UPDATE {} SET {}='{}' WHERE rowid={}".format(table_name, safe_col_name, new_value, unique_id)
         self.execute(sql)
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def index_exists(self, index_name: str) -> bool:
         sql = "PRAGMA index_info({})".format(index_name)
 
@@ -546,7 +547,7 @@ class EmbeddedDatabase(BaseDatabase):
         else:
             return False
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def does_table_exist(self, table_name: str) -> bool:
         self.execute("PRAGMA table_info({})".format(table_name))
         if self.fetch_all():
@@ -561,13 +562,13 @@ class EmbeddedDatabase(BaseDatabase):
 
         return self.fetch_all()
     
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_unique_ids(self, table_name) -> List[int]:
         sql = "SELECT {} from {}".format("rowid", table_name)
         self.execute(sql)
         return self.fetch_all()
     
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_last_record_id(self, table_name: str) -> int:
         sql = "select max(rowid) from {}".format(table_name)
         self.execute(sql)
@@ -576,13 +577,12 @@ class EmbeddedDatabase(BaseDatabase):
         # with the maximum unique id.
         return self.fetch_all()[0][0]
 
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_record_item(self, table_name: str, unique_id: int, column: str) -> object:
         sql = "SELECT {} FROM {} WHERE rowid={}".format(column, table_name, unique_id)
         self.execute(sql)
         return self.fetch_all()[0][0]
 
-    # @override(BaseDatabase)
     def get_record_subset(self, table_name: str, row_id: int, limit: int,
                           table_filter: str = None, arranged_columns: List[str] = None) -> List[BaseDatabase.DbRawRecord]:
         sql = "SELECT"
@@ -607,7 +607,7 @@ class EmbeddedDatabase(BaseDatabase):
         self.execute(sql)
         return self.fetch_all()
     
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def get_row_ids(self, table_name: str, table_filter: str = None) -> List[int]:
         sql = "SELECT rowid FROM {}".format(table_name)
 
@@ -617,13 +617,13 @@ class EmbeddedDatabase(BaseDatabase):
         self.execute(sql)
         return self.fetch_all()
         
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def select_as_sql_data_set(self, table_name: str, sql_statement: str) -> SqlDataSet:
         self.execute(sql_statement)
         affected_rows, description = self.__fetch_all()
         return self.__convertToSqlDataSet(table_name, sql_statement, description, affected_rows)
         
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def dump_schema(self):
         # Right now, we dump the basic info. When needed, add more info in this function.
         print("Start: dump_schema")
