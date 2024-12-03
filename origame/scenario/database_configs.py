@@ -59,11 +59,11 @@ class DatabaseConfig():
         self.__connection_config = connection_config
         self.__external_db_enabled = external_db_enabled
         
-    def get_connection_config(self) -> Dict[DatabaseTypeEnum, str]:
+    def get_connection_config(self) -> Dict[int, str]:
         """Get the database connection configurations.
 
         Returns:
-            Dict[DatabaseTypeEnum, str]: the database connection configurations.
+            Dict[int, str]: the database connection configurations.
         """
         return self.__connection_config
     
