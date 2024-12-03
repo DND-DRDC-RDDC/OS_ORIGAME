@@ -18,13 +18,14 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-import pandas
-from sqlalchemy import CursorResult, create_engine, text
+import pandas as pd
+
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 
 # [3. local]
+from origame.core.decorators import override
 from .base_db import BaseDatabase, DbSqlExecError, DbInvalidParameterError
-from ..core.typing import Tuple
 from .sql_dataset import SqlDataSet
 from .database_configs import DatabaseConfig, DatabaseTypeEnum
 
@@ -62,10 +63,7 @@ class OdbcDatabase(BaseDatabase):
     
     # Database Configurations
     __db_config: DatabaseConfig
-    
-    # CursorResult object
-    __cursor: CursorResult
-    
+        
     # --------------------------- instance __PRIVATE members-------------------------------------
    
     def __init__(self, database_config: DatabaseConfig):
@@ -86,8 +84,7 @@ class OdbcDatabase(BaseDatabase):
             raise DbInvalidParameterError("Invalid connection string {}. Reason: {}".format(self.__connection_string, message))
         
         self.__engine = None      
-        self.__cursor = None  
-
+        
     def __get_engine(self) -> Engine:
         """Create an engine, if not already created. The engines is used to connect to the database represented by the given connection string.
         
@@ -124,22 +121,7 @@ class OdbcDatabase(BaseDatabase):
             log.error(msg)
             return False, msg     
 
-    def __fetch_all(self) -> pandas.DataFrame:
-        """Fetch all records from the cursor object. If cursor is None, it executes the SQL string.
-
-        Returns:
-            List[BaseDatabase.DbRawRecord]: results of execution as list of Tuples.
-        """
-        if self.__cursor is None or self.__cursor.closed:                        
-            self.execute(self.__connection_string)
-                        
-        result = self.__cursor.fetchall()   
-        self.__cursor.close()
-        
-        # Convert the result to a Pandas DataFrame
-        return pandas.DataFrame(result)                  
-   
-    def __convertToSqlDataSet(self, table_name: str, sql_statement: str, records: pandas.DataFrame) -> SqlDataSet:
+    def __convertToSqlDataSet(self, table_name: str, sql_statement: str, records: pd.DataFrame) -> SqlDataSet:
         """Creates an instance of SqlDataSet using given parameters.
 
         Args:
@@ -168,70 +150,61 @@ class OdbcDatabase(BaseDatabase):
                 index = index + 1
 
         return SqlDataSet(table_name, sql_statement, data, col_name_index, col_index_name)
-    
-    # --------------------------- instance (self) PUBLIC methods --------------------------------
-    # @override(BaseDatabase)
-    def execute(self, sql_statement: str, params: Tuple = ()):
-        if sql_statement is None or sql_statement.isspace():
-            raise DbInvalidParameterError("Invalid SQL statement or script {}.".format(sql_statement))
-        
-        # Check if this is SQL script.
-        if len(sql_statement.split(';')) > 1:
-            self.__execute_script(sql_statement)
-        else:    
-            engine:Engine = self.__get_engine()
-            
-            try:
-                # Establish a connection and execute the SQL query
-                with engine.connect() as connection:
-                    # commits and closes automatically
-                    self.__cursor = connection.execute(text(sql_statement))
-            except Exception as exc:
-                error_message = "Failed to execute query on the database. Reason: '{}'".format(exc)
-                log.error(error_message)
-                raise DbSqlExecError(error_message)
-    
-    def __execute_script(self, sql_script: str):
-        """Run a SQL script whose statements are separated by ';' in one session. It then returns the result of last statement.
 
-        Args:
-            sql_script (str): SQL script consisting of multiple SQL statements.
-        """      
-        engine:Engine = self.__get_engine()
+    def __execute_queries(self, queries: list) -> pd.DataFrame:                
+        df = pd.DataFrame()
+        
         try:
-            # Establish a connection and start a transaction        
-            with engine.begin() as connection:
-                # Run statements of the script. Statements must be separated by ;
-                sqlStatements = sql_script.split(';')
-                for sql_statement in sqlStatements[:-1]:
-                    # Execute the statement only if not empty string
-                    if not sql_statement.isspace() and sql_statement.strip() != "":
-                        self.__cursor = connection.execute(text(sql_statement))
-            # commits and closes automatically
+            # Start a transaction and execute all queries
+            with self.__get_engine().begin() as connection:
+                # Execute each query
+                for query in queries:                
+                    connection.execute(text(query))
+        
+                # Fetch the result of the last statement if it is a SELECT statement
+                is_select_statement = queries[-1].strip().lower()[:7] == "select "  
+                if is_select_statement:                     
+                    result = connection.execute(text(queries[-1]))
+                    columns = result.keys()
+                    data = result.fetchall()
+    
+                    # Convert the result to a Pandas DataFrame
+                    df = pd.DataFrame(data, columns=columns)
         except Exception as exc:
-            error_message = "Failed to execute SQL script on the database. Reason: '{}'".format(exc)
-            log.error(error_message)
-            raise DbSqlExecError(error_message)
+                error_message = "Failed to execute query script on the database. Reason: '{}'".format(exc)
+                log.error(error_message)
+                raise DbSqlExecError(error_message)            
+    
+        return df
 
-    # @override(BaseDatabase)
-    def execute_and_fetch(self, sql_statement) -> pandas.DataFrame:
-        self.execute(sql_statement)
+    # --------------------------- instance (self) PUBLIC methods --------------------------------
+
+    @override(BaseDatabase)
+    def execute_and_fetch(self, sql_statement) -> pd.DataFrame:   
+        if sql_statement is None or sql_statement.isspace():
+            raise DbInvalidParameterError("Invalid SQL statement or script {}.".format(sql_statement))     
+
+        result = pd.DataFrame()
         
-        result = pandas.DataFrame()
+        # Split if it contains multiple statements. Ignore empty lines.
+        split_queries = sql_statement.split(';')        
+        queries = []
+        for query in split_queries:
+            if query != '':
+                queries.append(query)            
         try:
-            result = self.__fetch_all()
-        except:
+            result = self.__execute_queries(queries)            
+        except Exception as ex:
             # Return and empty Dataframe if for any reason no results is fetched.
-            pass
+            log.info("No results fetched. Reason: {}", ex)
         
         return result
-            
 
-    # @override(BaseDatabase)
-    def dataframe_to_sql(self, dataframe: pandas.DataFrame, tabe_name: str):
+    @override(BaseDatabase)
+    def dataframe_to_sql(self, dataframe: pd.DataFrame, tabe_name: str):
         dataframe.to_sql(tabe_name, self.__get_engine(), if_exists='fail')
         
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def select_as_sql_data_set(self, table_name: str, sql_statement: str) -> SqlDataSet:
         """
         Get a SqlDataSet instance.
@@ -239,14 +212,13 @@ class OdbcDatabase(BaseDatabase):
         :param sql_statement: The execution of this SQL statement returns the data that is the underlying data for the
             SqlDataSet instance.
         :returns: SqlDataSet.
-        """
+        """    
         results = self.execute_and_fetch(sql_statement)
         
         return self.__convertToSqlDataSet(table_name, sql_statement, results)    
       
-    # @override(BaseDatabase)
+    @override(BaseDatabase)
     def shutdown(self):
         """Dispose the engine and close all the connections."""
         if self.__engine is not None:
             self.__engine.dispose(close= True)
-        self.__cursor.close()
