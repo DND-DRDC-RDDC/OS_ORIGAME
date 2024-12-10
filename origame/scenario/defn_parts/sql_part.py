@@ -18,27 +18,24 @@ Version History: See SVN log.
 import logging
 
 from origame.scenario.database_configs import DatabaseConfig, DatabaseTypeEnum
-
-# [2. third-party]
-
-# [3. local]
-from ...core import override, BridgeSignal, BridgeEmitter
-from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
-from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
-
+from .actor_part import ActorPart
+from .base_part import BasePart, PartLink
+from .common import Position
+from .part_link import TypeReferencingParts, TypeMissingLinkInfo
+from .part_types_info import register_new_part_type
+from .scripted_part import IScriptedPart
+from ..alerts import IScenAlertSource
 from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj
 from ..ori import OriCommonPartKeys as CpKeys
 from ..ori import OriSqlPartKeys as SqlKeys
 from ..part_execs import SqlPartExec, IExecutablePart
 from ..proto_compat_warn import prototype_compat_method_alias, prototype_compat_property_alias
-from ..alerts import IScenAlertSource
+# [3. local]
+from ...core import override, BridgeSignal, BridgeEmitter
+from ...core.typing import Any
+from ...core.typing import List, Dict
 
-from .common import Position
-from .part_types_info import register_new_part_type
-from .actor_part import ActorPart
-from .base_part import BasePart, PartLink
-from .part_link import TypeReferencingParts, TypeMissingLinkInfo
-from .scripted_part import IScriptedPart
+# [2. third-party]
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -176,14 +173,17 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
     # --------------------------- instance PUBLIC properties ----------------------------
 
     sql_script = property(get_sql_script, set_sql_script)
+    db_config = property(SqlPartExec.get_db_config, SqlPartExec.set_db_config)
 
     Query = prototype_compat_property_alias(sql_script, 'Query')
+    DatabaseConfig = prototype_compat_property_alias(db_config, 'DatabaseConfig')
+    
 
     # --------------------------- CLASS META data for public API ------------------------
 
-    META_AUTO_EDITING_API_EXTEND = (sql_script,)
+    META_AUTO_EDITING_API_EXTEND = (sql_script,db_config,)
     META_AUTO_SCRIPTING_API_EXTEND = (
-        sql_script, get_sql_script, set_sql_script,
+        sql_script, get_sql_script, set_sql_script, db_config, SqlPartExec.get_db_config, SqlPartExec.set_db_config,
     )
 
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------

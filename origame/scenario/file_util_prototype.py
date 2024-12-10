@@ -17,49 +17,46 @@ Version History: See SVN log.
 # [1. standard library]
 import logging
 import pickle
-import base64
 import re
+import sqlite3 as sqlite
+import sys
 from collections import OrderedDict
 from lib2to3 import refactor
-from textwrap import dedent
-import sys
-import sqlite3 as sqlite
 from pathlib import Path
+from textwrap import dedent
 
 # [2. third-party]
 from . import pyor_pickling
-
-# [3. local]
-from ..core import override
-from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
-from ..core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
-
-from .part_execs import LINKS_SCRIPT_OBJ_NAME
 from .file_util_base import ScenarioReaderWriter
+from .ori import OriActorPartKeys as ApKeys
 from .ori import OriClockPartKeys as ClkKeys, OriScenData, pickle_to_str
 from .ori import OriCommonPartKeys as CpKeys
-from .ori import OriScenarioKeys as SKeys
-from .ori import OriScenarioDefKeys as SdKeys
-from .ori import OriPartFrameKeys as PfKeys
-from .ori import OriPositionKeys as PosKeys
-from .ori import OriSizeKeys as SzKeys
-from .ori import OriActorPartKeys as ApKeys
+from .ori import OriDataPartKeys as DpKeys
+from .ori import OriFunctionPartKeys as FpKeys
 from .ori import OriHubPartKeys as HpKeys
+from .ori import OriInfoPartKeys as InfoKeys
+from .ori import OriLibraryPartKeys as LibKeys
 from .ori import OriMultiplierPartKeys as MpKeys
 from .ori import OriNodePartKeys as NpKeys
-from .ori import OriPlotPartKeys as PpKeys
-from .ori import OriRotation3dKeys as R3dKeys
-from .ori import OriFunctionPartKeys as FpKeys
-from .ori import OriSocketPartKeys as SopKeys
-from .ori import OriVariablePartKeys as VpKeys
-from .ori import OriInfoPartKeys as InfoKeys
-from .ori import OriDataPartKeys as DpKeys
-from .ori import OriLibraryPartKeys as LibKeys
-from .ori import OriSheetPartKeys as SpKeys
-from .ori import OriSqlPartKeys as SqlKeys
+from .ori import OriPartFrameKeys as PfKeys
 from .ori import OriPartLinkKeys as PwKeys
-from .ori import OriTablePartKeys as TpKeys
+from .ori import OriPlotPartKeys as PpKeys
+from .ori import OriPositionKeys as PosKeys
+from .ori import OriRotation3dKeys as R3dKeys
+from .ori import OriScenarioDefKeys as SdKeys
+from .ori import OriScenarioKeys as SKeys
 from .ori import OriSchemaEnum
+from .ori import OriSheetPartKeys as SpKeys
+from .ori import OriSizeKeys as SzKeys
+from .ori import OriSocketPartKeys as SopKeys
+from .ori import OriSqlPartKeys as SqlKeys
+from .ori import OriTablePartKeys as TpKeys
+from .ori import OriVariablePartKeys as VpKeys
+from .part_execs import LINKS_SCRIPT_OBJ_NAME
+# [3. local]
+from ..core import override
+from ..core.typing import Any
+from ..core.typing import List, Dict
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -870,7 +867,9 @@ PART_MEMBER_MAP_PROTO_ORI = dict(
     edit_query='set_sql_script',
     edit_params='set_parameters',
     Query='sql_script',
+    DatabaseConfig = 'db_config',
     edit_db_config = 'set_db_config',
+    retrieve_db_config = 'get_db_config',
 
     # sheet
     NumCols='num_cols',

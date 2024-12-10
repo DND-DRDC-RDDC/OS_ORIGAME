@@ -31,6 +31,13 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 # -- Module-level objects -----------------------------------------------------------------------
 
+
+__all__ = [
+    # public API of module: one line per string
+    'DatabaseTypeEnum',
+    'DatabaseConfig'
+]
+
 # -- Function definitions -----------------------------------------------------------------------
 
 # -- Class Definitions --------------------------------------------------------------------------
@@ -55,7 +62,7 @@ class DatabaseConfig():
             connection_config (Dict[int, str]): database connection string configurations.
             external_db_enabled (bool): indicates whether use of external database is enabled.
         """
-        self.__db_type = db_type;
+        self.__db_type = db_type
         self.__connection_config = connection_config
         self.__external_db_enabled = external_db_enabled
         
