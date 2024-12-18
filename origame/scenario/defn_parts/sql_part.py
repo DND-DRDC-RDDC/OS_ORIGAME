@@ -17,26 +17,25 @@ Version History: See SVN log.
 # [1. standard library]
 import logging
 
-# [2. third-party]
-
-# [3. local]
-from ...core import override, BridgeSignal, BridgeEmitter
-from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
-from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
-
+from origame.scenario.database_configs import DatabaseConfig, DatabaseTypeEnum
+from .actor_part import ActorPart
+from .base_part import BasePart, PartLink
+from .common import Position
+from .part_link import TypeReferencingParts, TypeMissingLinkInfo
+from .part_types_info import register_new_part_type
+from .scripted_part import IScriptedPart
+from ..alerts import IScenAlertSource
 from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj
 from ..ori import OriCommonPartKeys as CpKeys
 from ..ori import OriSqlPartKeys as SqlKeys
 from ..part_execs import SqlPartExec, IExecutablePart
 from ..proto_compat_warn import prototype_compat_method_alias, prototype_compat_property_alias
-from ..alerts import IScenAlertSource
+# [3. local]
+from ...core import override, BridgeSignal, BridgeEmitter
+from ...core.typing import Any
+from ...core.typing import List, Dict
 
-from .common import Position
-from .part_types_info import register_new_part_type
-from .actor_part import ActorPart
-from .base_part import BasePart, PartLink
-from .part_link import TypeReferencingParts, TypeMissingLinkInfo
-from .scripted_part import IScriptedPart
+# [2. third-party]
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -74,10 +73,13 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
     DEFAULT_VISUAL_SIZE = dict(width=10.0, height=5.1)
     PART_TYPE_NAME = "sql"
     DESCRIPTION = """\
-        Use this part to create SQL queries.
+        Use this part to create SQL queries to internal or external databases.
 
-        Link this part to table parts to execute queries on the tables.  Refer to the tables using dot notation
-        within the SQL, e.g. 'select * from {{link.table}}'.
+        If using internal database, link this part to table parts to execute queries on the tables.  Refer to the tables 
+        using dot notationwithin the SQL, e.g. 'select * from {{link.table}}'.
+        
+        When external database is enabled, select a desired database type and enter a valid connection string needed 
+        to connect to external database.
     """
 
     # --------------------------- instance (self) PUBLIC methods --------------------------------
@@ -94,7 +96,7 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
 
         self.signals = SqlPart.Signals()
 
-        self._sql_script_str = ""
+        self._sql_script_str = ""        
 
     @override(BasePart)
     def update_temp_link_name(self, new_temp_name: str, link: PartLink):
@@ -127,7 +129,7 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
         self._sql_script_str = sql_str
         if self._anim_mode_shared:
             self.signals.sig_sql_script_changed.emit(sql_str)
-
+        
     @override(BasePart)
     def on_removing_from_scenario(self, scen_data: Dict[BasePart, Any], restorable: bool = False):
         BasePart.on_removing_from_scenario(self, scen_data, restorable=restorable)
@@ -164,19 +166,24 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
     set_params = prototype_compat_method_alias(IExecutablePart.set_parameters, 'set_params')
     set_query = prototype_compat_method_alias(set_sql_script, 'set_query')
     edit_query = prototype_compat_method_alias(set_sql_script, 'edit_query')
+    edit_db_config = prototype_compat_method_alias(SqlPartExec.set_db_config, 'edit_db_config')
+    retrieve_db_config = prototype_compat_method_alias(SqlPartExec.set_db_config, 'retrieve_db_config')
     edit_params = prototype_compat_method_alias(IExecutablePart.set_parameters, 'edit_params')
 
     # --------------------------- instance PUBLIC properties ----------------------------
 
     sql_script = property(get_sql_script, set_sql_script)
+    db_config = property(SqlPartExec.get_db_config, SqlPartExec.set_db_config)
 
     Query = prototype_compat_property_alias(sql_script, 'Query')
+    DatabaseConfig = prototype_compat_property_alias(db_config, 'DatabaseConfig')
+    
 
     # --------------------------- CLASS META data for public API ------------------------
 
-    META_AUTO_EDITING_API_EXTEND = (sql_script,)
+    META_AUTO_EDITING_API_EXTEND = (sql_script,db_config,)
     META_AUTO_SCRIPTING_API_EXTEND = (
-        sql_script, get_sql_script, set_sql_script,
+        sql_script, get_sql_script, set_sql_script, db_config, SqlPartExec.get_db_config, SqlPartExec.set_db_config,
     )
 
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
@@ -223,15 +230,51 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
 
         self.parameters = part_content.get(SqlKeys.PARAMETERS, self._param_str) or ''
         sql_statement_pieces = part_content.get(SqlKeys.SQL_SCRIPT)
+        
+        external_db_enabled = False
+        if part_content.get(SqlKeys.EXTERNAL_DB_ENABLED):
+            external_db_enabled = part_content.get(SqlKeys.EXTERNAL_DB_ENABLED) 
+      
+        db_type: int = DatabaseTypeEnum.MS_ACCESS.value
+        if part_content.get(SqlKeys.DB_TYPE):
+            db_type = part_content.get(SqlKeys.DB_TYPE)
+            
+        db_connections = {}
+        if part_content.get(SqlKeys.DB_CONNECTIONS):
+            db_connections = self.__fix_dict_keys(part_content.get(SqlKeys.DB_CONNECTIONS))
+        self.set_db_config(DatabaseConfig(db_type, db_connections, external_db_enabled))        
+        
         if sql_statement_pieces:
             self.sql_script = '\n'.join(sql_statement_pieces)
 
+    def __fix_dict_keys(self, db_connections: Dict[str, str]) -> Dict[int, str]:
+        """In Python when a Dictionary with integer keys is serialized to JSON, keys are stored as string. This is 
+        to cast them back to integer.
+        
+        Args:
+            db_connections (Dict[str, str]): database connection settings.
+        
+        Returns:
+            Dict[int, str]: fixed database connection settings with integer keys.
+        """
+        fixed_dict = {}
+        if db_connections:
+            for key in db_connections.keys():
+                new_key = int(key)
+                fixed_dict[new_key] = db_connections[key]
+        
+        return fixed_dict
+    
+    
     @override(IOriSerializable)
     def _get_ori_def_impl(self, context: OriContextEnum, **kwargs) -> JsonObj:
-        ori_def = BasePart._get_ori_def_impl(self, context, **kwargs)
+        ori_def = BasePart._get_ori_def_impl(self, context, **kwargs)        
         sql_ori_def = {
             SqlKeys.PARAMETERS: self._param_str,
-            SqlKeys.SQL_SCRIPT: self._sql_script_str.split('\n')
+            SqlKeys.SQL_SCRIPT: self._sql_script_str.split('\n'),
+            SqlKeys.EXTERNAL_DB_ENABLED: self.get_db_config().is_external_db_enabled(),
+            SqlKeys.DB_CONNECTIONS: self.get_db_config().get_connection_config(),
+            SqlKeys.DB_TYPE: self.get_db_config().get_db_type()
         }
 
         ori_def[CpKeys.CONTENT].update(sql_ori_def)
@@ -240,11 +283,42 @@ class SqlPart(BasePart, SqlPartExec, IScriptedPart):
     @override(IOriSerializable)
     def _get_ori_snapshot_local(self, snapshot: JsonObj, snapshot_slow: JsonObj):
         BasePart._get_ori_snapshot_local(self, snapshot, snapshot_slow)
+        db_config = self.get_db_config()
         snapshot.update({
             SqlKeys.PARAMETERS: self._param_str,
-            SqlKeys.SQL_SCRIPT: self._sql_script_str
+            SqlKeys.SQL_SCRIPT: self._sql_script_str,
+            SqlKeys.DB_TYPE: db_config.get_db_type(),
+            SqlKeys.EXTERNAL_DB_ENABLED: db_config.is_external_db_enabled(),
+            SqlKeys.DB_CONNECTIONS: db_config.get_connection_config()
         })
 
+    @override(BasePart)
+    def get_snapshot_for_edit(self) -> {}: # type: ignore
+        data = super().get_snapshot_for_edit()
+        
+        db_config = self.get_db_config()
+        data['external_db_enabled'] = db_config.is_external_db_enabled()     
+        data['db_connection_settings'] = db_config.get_connection_config()
+        data['db_type'] = db_config.get_db_type()
+        
+        return data
 
+    @override(BasePart)
+    def _receive_edited_snapshot(self, submitted_data: Dict[str, Any], order: List[str] = None):
+        super()._receive_edited_snapshot(submitted_data, order=order)
+        
+        db_is_enabled = False
+        db_connection_settings = {}
+        db_type = DatabaseTypeEnum.MS_ACCESS.value
+        if 'external_db_enabled' in submitted_data.keys():
+            db_is_enabled = submitted_data['external_db_enabled']
+        if 'db_connection_settings' in submitted_data.keys():
+            db_connection_settings = submitted_data['db_connection_settings']
+        if 'db_type' in submitted_data.keys():
+            db_type = submitted_data['db_type']
+        
+        db_config = DatabaseConfig(db_type, db_connection_settings, db_is_enabled)        
+        self.set_db_config(db_config)
+            
 # Add this part to the global part type/class lookup dictionary
 register_new_part_type(SqlPart, SqlKeys.PART_TYPE_SQL)

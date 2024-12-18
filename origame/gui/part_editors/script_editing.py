@@ -24,11 +24,11 @@ from textwrap import dedent
 from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtGui import QIcon, QGuiApplication
 from PyQt5.QtWidgets import QWidget, qApp, QListWidgetItem, QAbstractItemView, QListWidget, QMessageBox
-from PyQt5.QtWidgets import QTableWidgetItem, QSizePolicy
+from PyQt5.QtWidgets import QTableWidgetItem
 
 # [3. local]
-from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
-from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
+from ...core.typing import Any 
+from ...core.typing import List, Tuple, Dict
 
 from ...core import override
 from ...core.utils import validate_python_name
@@ -135,6 +135,7 @@ class ScriptEditor(BaseContentEditor):
     USE_MODULE_LIST = False
     USE_CALL_PARAMS = False
     USE_IMPORTS_TAB = False
+    ADD_DATABASE_WIDGET = True
     HUB_LINK_NAME_WARNING = 'Cannot change the name(s) linked from a hub. '
     INDICATOR_NUM_HIGHLIGHTING = 31
     SYMBOLS_COL_INDEX = 0
@@ -261,6 +262,10 @@ class ScriptEditor(BaseContentEditor):
             self.ui.symbol_table.itemDoubleClicked.connect(self.__slot_add_imported_symbol_to_code)
         else:
             self.ui.available_tabs.removeTab(2)
+        
+        # Remove Database connection settings widget for Python script editor
+        if not self.ADD_DATABASE_WIDGET:
+            self.ui.databae_settings_widget.setVisible(False)
 
         self.code_editor.enable_breakpoint_marking(True)
 
@@ -378,7 +383,7 @@ class ScriptEditor(BaseContentEditor):
             self.ui.code_editor.setText(data['script'])
         if 'sql_script' in data.keys():
             self.ui.code_editor.setText(data['sql_script'])
-
+        
         self._update_undo_redo_button_status()  # Disable the Undo button
 
     def _enable_clipboard_buttons(self, enable: bool):
@@ -869,6 +874,7 @@ class PythonScriptEditor(ScriptEditor):
     """
 
     USE_IMPORTS_TAB = True
+    ADD_DATABASE_WIDGET = False
 
     # For all classes that involve python code, the script must be set before the breakpoints in case some
     # breakpoints are at lines larger than the previous script. So redefine the submission order to be

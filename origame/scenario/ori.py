@@ -279,12 +279,12 @@ class OriScenData(JsonObj):
         """Get the scenario ORI schema version of this OriScenData"""
         return self.__schema_version
 
-    def get_sub_ori(self, key: str, default: Any = None) -> Decl.OriScenData:
+    def get_sub_ori(self, key: str, default: Any = None) -> Decl.OriScenData: # type: ignore
         """Get the sub OriScenData for the given key of self"""
         child_ori = self.get(key, default) or default  # support None child instead of dict child
         return OriScenData(child_ori, schema_version=self.__schema_version)
 
-    def get_sub_ori_list(self, list_key: str) -> List[Decl.OriScenData]:
+    def get_sub_ori_list(self, list_key: str) -> List[Decl.OriScenData]: # type: ignore
         """Get the value for given key, transformed from a list of JsonObj to a list of OriScenData"""
         return [OriScenData(child_ori, schema_version=self.__schema_version)
                 for child_ori in self.get(list_key, [])]
@@ -458,7 +458,7 @@ class IOriSerializable:
         if self._ORI_HAS_CHILDREN:
             self._set_ori_snapshot_baseline_children(baseline_id)
 
-    def get_ori_diffs(self, other_ori: Decl.IOriSerializable, tol_float=0.00001) -> Dict[str, Any]:
+    def get_ori_diffs(self, other_ori: Decl.IOriSerializable, tol_float=0.00001) -> Dict[str, Any]: # type: ignore
         """
         Get the ORI differences between this object and another. This delegates to the overridable _check_ori_diffs()
         method to compute the diff based on derived class behavior.
@@ -574,7 +574,7 @@ class IOriSerializable:
         return str(self)
 
     @override_optional
-    def _check_ori_diffs(self, other_ori: Decl.IOriSerializable, diffs: Dict[str, Any], tol_float: float):
+    def _check_ori_diffs(self, other_ori: Decl.IOriSerializable, diffs: Dict[str, Any], tol_float: float): # type: ignore
         """
         Override this put differences between other_ori and self into diffs. By default, no diffs are added.
 
@@ -819,9 +819,11 @@ class OriSqlPartKeys:
     """
     PART_TYPE_SQL = "sql"
     PARAMETERS = "parameters"
-    SQL_SCRIPT = "sql_script"
-
-
+    SQL_SCRIPT = "sql_script"    
+    DB_TYPE = "db_type"
+    EXTERNAL_DB_ENABLED = 'external_db_enabled'    
+    DB_CONNECTIONS ='db_connection_settings'    
+    
 class OriTablePartKeys:
     """
     This class defines string constants representing ori data object keys relevant to the Origame TablePart class.

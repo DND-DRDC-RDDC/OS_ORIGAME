@@ -20,6 +20,12 @@ import re
 from inspect import Parameter, Signature
 import math
 
+from pandas import DataFrame
+
+from origame.scenario.database_configs import DatabaseConfig, DatabaseTypeEnum
+from origame.scenario.defn_parts.base_part import BasePart
+from origame.scenario.odbc_db import OdbcDatabase
+
 # [2. third-party]
 
 # [3. local]
@@ -29,12 +35,13 @@ from ...core.typing import AnnotationDeclarations
 
 from ..ori import OriSqlPartKeys as SqlKeys
 from ..ori import OriTablePartKeys as TblKeys
-from ..sqlite_dataset import SqlDataSet
-from ..embedded_db import EmbeddedDbSqlNotStatementError
+from ..sql_dataset import SqlDataSet
 
 from .iexecutable_part import IExecutablePart
 from .scripting_utils import LinkedPartsScriptingProxy, get_func_proxy_from_str, get_signature_from_str
 from .py_script_exec import LINKS_SCRIPT_OBJ_NAME
+
+from ..base_db import BaseDatabase, DbSqlNotStatementError
 
 # -- Meta-data ----------------------------------------------------------------------------------
 
@@ -91,18 +98,20 @@ class SqlPartExec(IExecutablePart):
         # of the planets of the solar system. In that case, we don't have to drop it and re-create it every time when
         # we access it.
         self._table_name = ""
-
-    # @override(BasePart)
-    def on_outgoing_link_removed(self, link: Decl.PartLink):
+        
+        self.__db_config = DatabaseConfig(DatabaseTypeEnum.MS_ACCESS.value, {}, False)
+    
+    @override(BasePart)
+    def on_outgoing_link_removed(self, link: Decl.PartLink): # type: ignore
         link_name = link.name
         self._script_namespace[LINKS_SCRIPT_OBJ_NAME].invalidate_link_cache(link_name)
 
-    # @override(BasePart)
+    @override(BasePart)
     def on_outgoing_link_renamed(self, old_name: str, _: str):
         self._script_namespace[LINKS_SCRIPT_OBJ_NAME].invalidate_link_cache(old_name)
 
-    # @override(BasePart)
-    def on_link_target_part_changed(self, link: Decl.PartLink):
+    @override(BasePart)
+    def on_link_target_part_changed(self, link: Decl.PartLink): # type: ignore
         self._script_namespace[LINKS_SCRIPT_OBJ_NAME].invalidate_target_cache(link)
 
     def get_py_namespace(self) -> Dict[str, Any]:
@@ -185,6 +194,39 @@ class SqlPartExec(IExecutablePart):
 
         return self.__run_sql_script(script, script_namespace, limit=preview_limit)
 
+    def get_db_config(self) -> DatabaseConfig:
+        """
+        Get the database configurations.
+
+        :returns: The database configuration object.
+        """
+        return self.__db_config
+
+    def set_db_config(self, db_config: DatabaseConfig):
+        """
+        Set the database configurations.
+
+        :param db_config: database configurations
+        """
+        self.__db_config = db_config
+        
+    def __get_database(self) -> BaseDatabase:
+        """Creates instance of internal or external database based on the database configurations.
+
+        Returns:
+            BaseDatabase: an instance of BaseDatabase object.
+        """
+        database = None
+        self.__external_db_enabled = False
+        db_config = self.get_db_config()
+        if not(db_config is None) and db_config.is_external_db_enabled():
+            database:OdbcDatabase = OdbcDatabase(self.__db_config)   
+            self.__external_db_enabled =True         
+        else:
+            database = self.shared_scenario_state.embedded_db            
+        
+        return database        
+            
     def __run_sql_script(self, script: str, script_namespace: Dict[str, Any], limit: int = None) -> SqlDataSet:
         """
         Run the SQL script.
@@ -221,12 +263,16 @@ class SqlPartExec(IExecutablePart):
                     return "'" + str(obj) + "'"
 
         sql_evaluated = re.sub(r'{{.+?}}', eval_expr, script)
-        if limit:
+        
+        db_singleton = self.__get_database()
+
+        if limit and not self.__external_db_enabled:
             sql_evaluated += " LIMIT {}".format(limit)
-
-        db_singleton = self.shared_scenario_state.embedded_db
-
-        # Design decisions:
+        
+        # We still need embedded database to store result to be used by other linked parts that use embedded database.
+        db_embedded = self.shared_scenario_state.embedded_db
+      
+        # Design decisions (only applies for embedded database):
         # The implementation strategy is to use try except twice to execute the sql as a standalone sql statement first,
         # then as a script. The first try is to test if the script can be executed as a standalone statement. If not,
         # the second try will assume multiple sql statements exist in the script.
@@ -234,24 +280,40 @@ class SqlPartExec(IExecutablePart):
         # A simple parsing "_is_select_stmt" is used to determine if a standalone SELECT statement exists.
         # If the determination turns out to be false positive, we run it as multiple statements.
         try:
-            if self._is_select_stmt(sql_evaluated):
-                table_name = '{}_{}'.format(self.PART_TYPE_NAME, self.SESSION_ID)
-                db_singleton.drop_table(table_name)
-                create_stmt = 'CREATE TABLE %s as %s' % (table_name, sql_evaluated)
-                db_singleton.execute(create_stmt)
-                result = db_singleton.select_as_sql_data_set(table_name, sql_evaluated)
-                if result:
-                    num_fields = len(result[0])
-                    log.info("SQL part '{}' SELECT result: {} records, {} fields", self, len(result), num_fields)
-                else:
-                    log.info("SQL part '{}' SELECT yielded no result", self)
-                return result
-
+            table_name = '{}_{}'.format(self.PART_TYPE_NAME, self.SESSION_ID)
+            drop_stmt = "DROP TABLE IF EXISTS {}".format(table_name)  
+            result:SqlDataSet = None
+            
+            if self.__external_db_enabled:                
+                # This SQL pars  is using external database, but we need to store the results 
+                # in embedded database for use by other linked parts    
+                df_result:DataFrame = db_singleton.execute_and_fetch(sql_evaluated)
+                
+                if df_result.empty == False:
+                    db_embedded.execute(drop_stmt)
+                    
+                    # Insert results to embedded database
+                    db_embedded.dataframe_to_sql(df_result, table_name)
+                    
+                    result = db_singleton.select_as_sql_data_set(table_name, sql_evaluated)
             else:
-                # not a SELECT statement, so nothing to fetch, and assume table modified:
-                db_singleton.execute(sql_evaluated)
-
-        except EmbeddedDbSqlNotStatementError as exc:
+                if self._is_select_stmt(sql_evaluated):  
+                     db_embedded.execute(drop_stmt) 
+                     create_stmt = 'CREATE TABLE %s as %s' % (table_name, sql_evaluated)
+                     db_embedded.execute(create_stmt)
+                     result = db_singleton.select_as_sql_data_set(table_name, sql_evaluated)          
+                else:
+                    # not a SELECT statement, so nothing to fetch, and assume table modified:
+                    db_embedded.execute(sql_evaluated)
+                    
+            if result is not None:
+                num_fields = len(result[0])
+                log.info("SQL part '{}' SELECT result: {} records, {} fields", self, len(result), num_fields)
+            else:
+                log.info("SQL part '{}' SELECT yielded no result", self)
+            
+            return result
+        except DbSqlNotStatementError as exc:
             # the SQL code is a script, not a statement, so nothing to fetch, and assume table modified:
             db_singleton.execute_script(sql_evaluated)
 
@@ -259,7 +321,7 @@ class SqlPartExec(IExecutablePart):
 
         return None
 
-    def __table_changed(self, table_part: Decl.TablePart):
+    def __table_changed(self, table_part: Decl.TablePart): # type: ignore
         """
         Signals the table part if this sql part changes it.
         :param table_part: The table part that is updated.
