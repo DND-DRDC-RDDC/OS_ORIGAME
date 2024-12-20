@@ -13,6 +13,7 @@
 # -- Imports ------------------------------------------------------------------------------------
 
 # [1. standard library]
+import faulthandler
 import logging
 from logging.handlers import MemoryHandler as LogMemHandler
 import sys
@@ -451,6 +452,7 @@ class GuiMain(QObject):
 
 
 if __name__ == '__main__':
+    faulthandler.enable()
     sys.excepthook = exception_hook
     gui = GuiMain()
     exit_code = gui.exec()
@@ -458,3 +460,5 @@ if __name__ == '__main__':
     #     perhaps because the SystemExit exception raised by sys.exit causes cleanup of objects in a different order
     #     than if just run off the end of the script
     # sys.exit(exit_code)
+    faulthandler.dump_traceback()
+
