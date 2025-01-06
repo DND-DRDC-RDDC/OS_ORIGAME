@@ -68,7 +68,6 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 __all__ = [
     # defines module members that are public; one line per string
-    'Actor2dPanel'
 ]
 
 log = logging.getLogger('system')
@@ -1047,7 +1046,9 @@ class Actor2dScene(IFsmOwner, QGraphicsScene):
         part_box_item.xChanged.disconnect()
         part_box_item.yChanged.disconnect()
         part_box_item.zChanged.disconnect()
+        self.get_main_view().setUpdatesEnabled(False)
         part_box_item.dispose()
+        self.get_main_view().setUpdatesEnabled(True)
 
     def __on_destroyed_grobj(self, qobject: QGraphicsObject):
         log.debug("Qt destroying QGraphicsObject with id={} called '{}'", id(qobject), qobject.objectName())

@@ -400,8 +400,7 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         """
         This object does manage other QObjects however, so we must clean them up.
         """
-        log.debug('DeleteLater of PartBoxItem for part {}', self.__part)
-        super().deleteLater()
+        log.debug('Delete PartBoxItem for part {}', self.__part)
         self._disconnect_all_slots()
         self.__part_item._disconnect_all_slots()
         disconnect_all_slots_children(self)
