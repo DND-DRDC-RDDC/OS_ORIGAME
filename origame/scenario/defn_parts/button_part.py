@@ -23,8 +23,8 @@ from enum import IntEnum, unique
 
 # [3. local]
 from ...core import override, BridgeSignal, BridgeEmitter
-from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
-from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
+from ...core.typing import Any, Either
+from ...core.typing import Dict
 
 from ..ori import IOriSerializable, OriContextEnum, OriScenData, JsonObj
 from ..ori import OriCommonPartKeys as CpKeys, OriButtonPartKeys as BtnKeys
@@ -513,7 +513,13 @@ class ButtonPart(BasePart):
         # pressed and released are optional; the current state will be used if not specified
         self.rotation_2d_pressed = part_content.get(BtnKeys.ROTATION_2D_PRESSED, self.__rotation_2d_pressed)
         self.rotation_2d_released = part_content.get(BtnKeys.ROTATION_2D_RELEASED, self.__rotation_2d_released)
-        self.state = ButtonStateEnum[part_content[BtnKeys.BUTTON_STATE].lower()]
+
+        # Add this to allow backward compatibility for scenarios that do not have state.
+        button_state = part_content.get(BtnKeys.BUTTON_STATE)
+        if button_state is not None:
+            self.state = ButtonStateEnum[button_state.lower()]
+        else:
+            self.state = ButtonStateEnum.released
 
         image_dict = self._shared_scenario_state.image_dictionary
 
