@@ -1050,6 +1050,7 @@ class Actor2dScene(IFsmOwner, QGraphicsScene):
         """ Disable updating the scene until delete process is completed."""
         self.get_main_view().setUpdatesEnabled(False)
         part_box_item.dispose()
+        self.removeItem(part_box_item)
         """ Enable updating the scene."""
         self.get_main_view().setUpdatesEnabled(True)
 
