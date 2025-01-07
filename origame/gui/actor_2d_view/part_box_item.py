@@ -400,7 +400,17 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         """
         This object does manage other QObjects however, so we must clean them up.
         """
-        log.debug('Delete PartBoxItem for part {}', self.__part)
+        log.debug('DeleteLater of PartBoxItem for part {}', self.__part)
+
+        """ 
+        Commented the following line to avoid an Access Violation Error when deleting items from
+        the scene. The main cause of this crash is that deleting a QObject while it is handling 
+        an event delivered to it can cause a crash. This may introduce a memory leak.
+        The PartBoxItem is explicitly removed from the scene which reduces chance of memory leak, 
+        but we leave this comment here as a reference for any future detected memory leak to be fixed. 
+        """
+        # super().deleteLater()
+
         self._disconnect_all_slots()
         self.__part_item._disconnect_all_slots()
         disconnect_all_slots_children(self)
