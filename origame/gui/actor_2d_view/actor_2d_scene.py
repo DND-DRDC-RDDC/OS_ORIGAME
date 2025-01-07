@@ -1046,8 +1046,11 @@ class Actor2dScene(IFsmOwner, QGraphicsScene):
         part_box_item.xChanged.disconnect()
         part_box_item.yChanged.disconnect()
         part_box_item.zChanged.disconnect()
+
+        """ Disable updating the scene until delete process is completed."""
         self.get_main_view().setUpdatesEnabled(False)
         part_box_item.dispose()
+        """ Enable updating the scene."""
         self.get_main_view().setUpdatesEnabled(True)
 
     def __on_destroyed_grobj(self, qobject: QGraphicsObject):
