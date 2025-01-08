@@ -23,7 +23,7 @@ import argparse
 from PyQt5.QtCore import QCoreApplication, QSettings, QRect, QByteArray, QPoint, QSize, pyqtSignal, QThread
 from PyQt5.QtWidgets import QMainWindow, qApp, QApplication, QMessageBox, QAction
 from PyQt5.QtWidgets import QFileDialog, QWidget, QDockWidget, QStyle
-from PyQt5.QtGui import QMoveEvent, QResizeEvent, QCloseEvent, QCursor
+from PyQt5.QtGui import QMoveEvent, QResizeEvent, QCloseEvent, QCursor, QGuiApplication
 from PyQt5.Qt import Qt
 
 # [3. local]
@@ -78,6 +78,7 @@ try:
     windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
 except ImportError:
     pass
+
 
 class Decl(AnnotationDeclarations):
     GuiLogCacher = 'GuiLogCacher'
@@ -388,25 +389,35 @@ class MainWindow(QMainWindow):
         """
         part_editor = self.__open_editors.get(part.SESSION_ID)
         if part_editor is None:
-            log.info("Opening new editor for {}", part)
             part_editor = ScenarioPartEditorDlg(part)
+            if part.editor_geometry is not None:
+                # This sets the position and size of the editor based on its previous location, if it was opened before.
+                # The geometry is remembered individually, and is NOT shared between members of the same part type.
+                part_editor.restoreGeometry(part.editor_geometry)
+                log.info("Opening new editor for {} with remembered geometry", part)
+            else:
+                log.info("Opening new editor for {}", part)
             part_editor.sig_editor_dialog_closed.connect(self.__slot_on_editor_closed)
             part_editor.sig_go_to_part.connect(self.__2d_panel.slot_show_part_in_parent_actor)
             self.__open_editors[part.SESSION_ID] = part_editor
         else:
             log.info("Activating existing editor for {}", part)
 
-        # The following calculations are performed in order to be able to move part editors into the main monitor
-        # when going from a two monitor setup to a single monitor setup.  Otherwise, the part editor(s) will open in
-        # non-existent monitor.
-        desk_rect = QApplication.desktop().screenGeometry(QApplication.desktop().screenNumber(QCursor().pos()))
-        desk_width = desk_rect.width()
-        desk_height = desk_rect.height()
-        editor_width = part_editor.width()
-        editor_height = part_editor.height()
+        editor_screen = QGuiApplication.screenAt(part_editor.geometry().center())
+        # If editor_screen is None, that means its center was off-screen, or the screen was disconnected.
+        if editor_screen is None:
+            # The following calculations are performed in order to be able to move part editors into the main monitor
+            # when going from a two monitor setup to a single monitor setup.  Otherwise, the part editor(s) will open in
+            # non-existent monitor.
 
-        part_editor.move(int(desk_width / 2 - editor_width / 2 + desk_rect.left()),
-                         int(desk_height / 2 - editor_height / 2 + desk_rect.top()))
+            # Determine the primary screen based on the center of the main window.
+            main_window_center = QMainWindow.frameGeometry(self).center()
+            # We want the center of the screen, not the main window, because it works better in windowed mode.
+            primary_screen_center = QGuiApplication.screenAt(main_window_center).availableGeometry().center()
+            # rect() is used because we only care about the editor's width/height; we don't need to know its actual coordinates.
+            editor_center = part_editor.rect().center()
+            # Move the editor so that its center is aligned with the center of the screen containing the primary window.
+            part_editor.move(primary_screen_center - editor_center)
 
         part_editor.show()
         part_editor.activateWindow()
@@ -775,7 +786,7 @@ class MainWindow(QMainWindow):
     def __on_toggle_dock_widgets(self, dock_area: int):
         """
         Slot of the sig_expansion_change.
-        
+
         Toggles the given dock area. Does nothing if the dock area is empty.
         :param dock_area: The area where the dock widgets are toggled. The dock_area is defined in 
         enum Qt::DockWidgetArea in C++, but in PyQt, it is just one of the plain int definitions in the Qt class.

@@ -460,6 +460,9 @@ class ScenarioPartEditorDlg(EditorDialog):
                     return
             self.__force_close = False  # reset force-close flag
 
+        # Remember the size/position of the editor upon closing
+        # It's stored on the base part because the editor is destroyed/recreated each time it's closed/opened
+        self.__part.editor_geometry = self.saveGeometry()
         self.content_editor.disconnect_all_slots()
         self.sig_editor_dialog_closed.emit(self.__part.SESSION_ID)
         super().done(result)
