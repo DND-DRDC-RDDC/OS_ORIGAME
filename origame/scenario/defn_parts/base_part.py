@@ -1325,6 +1325,7 @@ class PastablePartOri(IOriSerializable):
         IOriSerializable.__init__(self)
         self.SESSION_ID = part.SESSION_ID
         self.part_frame = self.PartFrame()
+        self.editor_geometry = part.editor_geometry
         self.__parent_actor_part = part.parent_actor_part
         self.__path = part.get_path(with_root=True)
         self.__name = part.name
