@@ -43,6 +43,16 @@ Visit this [this page](https://packaging.python.org/en/latest/guides/installing-
 
 The ORIGAME User Manual and ORIGAME Tutorial documents are located in the /origame/docs folder.
 
+## BACKWARDS COMPATIBILITY
+
+The current version of ORIGAME requires Pandas 2.0 or higher, which can cause older scenarios to fail to load
+if they require Pandas 1.x. The load error associated with this problem can be seen in the following image:
+
+![Pandas 1 Required](wiki_images\pandas_1_required.png)
+
+To resolve this issue, run the following command in your virtual environment before launching ORIGAME:  
+`pip install pandas==1.5.3`
+
 ## TESTING
 
 A number of test scenarios and run procedures are provided in the /testing folder.
@@ -50,9 +60,8 @@ A number of test scenarios and run procedures are provided in the /testing folde
 These test scenarios constitute Government Supplied Material 2 (GSM 2), referred to in the task Statement of Work.
 
 Note: **Pandas 1.5.3** is required for loading and running Scenario 2 that is provided in the /testing folder, so make sure
-it is installed in the python virtual environment before launching ORIGAME, by running the following command:
-
-`pip install pandas==1.5.3`
+it is installed in the python virtual environment before launching ORIGAME, by running the command in the
+Backwards Compatibility section of this document.
 
 ## CONTACT
 
