@@ -252,6 +252,9 @@ class BasePart(IOriSerializable, IScenAlertSource, ScenarioObject, metaclass=Att
         if self._parent_actor_part is None:
             log.debug('Scenario part {} is a root part', self)
 
+        # Used with QWidget.saveGeometry() and .restoreGeometry() to remember the size/position of a part's editor
+        self.editor_geometry = None
+
         # Used to facilitate the editing activities such as link management.
         self.__has_unapplied_edits = False
 
@@ -671,7 +674,7 @@ class BasePart(IOriSerializable, IScenAlertSource, ScenarioObject, metaclass=Att
         return matches
 
     @override_optional
-    def can_add_outgoing_link(self, part_type_str: str=None) -> bool:
+    def can_add_outgoing_link(self, part_type_str: str = None) -> bool:
         """
         By default, if a part can be a link source, it can have any number of links from its frame. Override
         this if the number of links allowed can change in other ways.
@@ -720,9 +723,9 @@ class BasePart(IOriSerializable, IScenAlertSource, ScenarioObject, metaclass=Att
         """
         The names of outgoing links can be temporary. For example, a name is being edited and is not applied yet.
         We need to know the relationship between a temporary name and its real name. 
-        
+
         This function does nothing by default
-        
+
         :param new_temp_name: A temporary link name for the real link name
         :param link: The real link
         """
@@ -914,10 +917,10 @@ class BasePart(IOriSerializable, IScenAlertSource, ScenarioObject, metaclass=Att
         chained link name and the last part link tuples, i.e., the link names beyond a target hub part and the part
         link before the leaf target. For example, if this part has a link pointing to a hub that links to a function
         part and another hub part that links to another function part. The chained names would look like this:
-    
+
         hub.a_function_part
         hub.another_hub.another_function_part
-    
+
         :return: The outgoing list and the list of the chained names
         """
         part_links = []
@@ -1322,6 +1325,7 @@ class PastablePartOri(IOriSerializable):
         IOriSerializable.__init__(self)
         self.SESSION_ID = part.SESSION_ID
         self.part_frame = self.PartFrame()
+        self.editor_geometry = part.editor_geometry
         self.__parent_actor_part = part.parent_actor_part
         self.__path = part.get_path(with_root=True)
         self.__name = part.name

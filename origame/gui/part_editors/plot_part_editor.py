@@ -263,6 +263,9 @@ class PlotPreviewWidget(IPreviewWidget):
             self.add_display_widget(self.__canvas)
             # Set the size of the new plot to the size of the previous one
             self.get_display_widget().setFixedSize(size.width(), size.height())
+            # Restore the update button's original appearance when the update is finished processing
+            self.ui.update_button.setEnabled(True)
+            self.ui.update_button.setText("Update")
 
         self._set_wait_mode_callback(True)
         AsyncRequest.call(self.__part.get_preview_fig, self.script, response_cb=on_figure_received)
@@ -332,8 +335,10 @@ class PlotPartEditorPanel(PythonScriptEditor):
         """
         Method called when the update button is clicked within the Plot Part Editor.
         """
-        self.plot_preview_panel.draw_unrefreshed_plot("Update pending...")
         self.plot_preview_panel.script = self.ui.code_editor.text()
+        # Prevent the user from requesting updates faster than they can be processed
+        self.plot_preview_panel.ui.update_button.setEnabled(False)
+        self.plot_preview_panel.ui.update_button.setText("Updating...")
         self.plot_preview_panel.update()
 
         __new_dpi = self.plot_dpi_widget.ui.resolution_combobox.currentText()

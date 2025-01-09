@@ -950,6 +950,7 @@ class ActorPart(BasePart):
             ori_def = orig_part.get_ori_def(context)
             new_part = self.create_child_part_from_ori(ori_def, context, refs_map,
                                                        paste_offset=paste_offset, max_ifx_level=0)
+            new_part.editor_geometry = orig_part.editor_geometry
             new_children.append(new_part)
 
             if context != OriContextEnum.copy:
