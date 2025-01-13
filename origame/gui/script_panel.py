@@ -25,6 +25,7 @@ from importlib import import_module
 
 # [2. third-party]
 import jedi
+import jedi.api
 from jedi.api.classes import Name as JediName
 
 from PyQt5.Qsci import QsciLexer, QsciLexerPython, QsciScintilla
@@ -71,20 +72,11 @@ log = logging.getLogger('system')
 def get_jedi_docstring(jediName: JediName) -> str:
     """
     Returns a string that represents the docstring of a Python object as determined by Jedi.
-    :param defn: the Jedi Definition object that represents a Python object
+    :param jediName: the JediName object that represents a Python object
     """
-    if jediName.type == 'module':
-        # jedi only provides object docstring, whereas really we want members similar to help(object)
-        try:
-            module = import_module(jediName.name)
-            return get_docstring(module)
+    docstring = jediName.docstring(raw=True)
 
-        except (ImportError, ValueError):
-            # return default docstring, which won't have as much but no choice because jedi definition could
-            # not be resolved to an actual module (this is the case of random module, which jedi says is random.p)
-            pass
-
-    return '{} {}:\n{}'.format(jediName.type, jediName.name, jediName.docstring(raw=True))
+    return '{} {}:\n{}'.format(jediName.type, jediName.name, docstring)
 
 
 def get_docstring(obj: Any) -> str:
@@ -629,6 +621,10 @@ class ScriptPanel(QsciScintilla):
             # if no code assistance available, don't waste resources getting doc string
             return
 
+        if current_word == "":
+            # If no word is selected, don't waste resources getting doc string
+            return
+
         # context is an easy way to get Qt to do some work: aaa.bbb.ccc if cursor is on one of the 'b'
         # yields a context = ['aaa', 'b']
         context, start, end = self.apiContext(abs_pos)
@@ -817,6 +813,9 @@ class PyCodingAssistant(CodingAssistant):
             # in jedi, first line is 1, but in Scintilla it is 0
             jedi_scripter1, jedi_scripter2 = self.__get_jedies(text)
             definitions = jedi_scripter2.infer(line=line + 1, column=col)
+            if definitions and definitions[0].full_name == "numpy.ufunc":
+                # As of 2024, numpy ufuncs don't work well with jedi infer, but will work with jedi goto
+                definitions = jedi_scripter2.goto(line=line + 1, column=col)
             # call_signatures = jedi_scripter2.call_signatures()
             # definitions = jedi_scripter1.goto_definitions()  # doesn't work
 
