@@ -172,9 +172,14 @@ class MainWindow(QMainWindow):
         self.ui.action_open.triggered.connect(self.__slot_load_scenario)
         self.ui.action_save.triggered.connect(self.__uil_file_commands.slot_save_scenario)
         self.ui.action_save_as.triggered.connect(self.__uil_file_commands.slot_save_scenario_as)
+        self.ui.action_toggle_save_warning.triggered.connect(self.__uil_file_commands.slot_toggle_save_warning)
         self.ui.action_import.triggered.connect(self.__uil_file_commands.slot_import_scenario)
         self.ui.action_export.triggered.connect(self.__uil_file_commands.slot_export_scenario)
         self.ui.action_quit.triggered.connect(self.__slot_on_close_requested)
+
+        # On startup, remember this option's setting from the last time the program was run.
+        # If never run before, default to True.
+        self.ui.action_toggle_save_warning.setChecked(QSettings().value("show_save_warning", defaultValue=True, type=bool))
 
         # Populate the Edit menu with actions from 2D panel
         for action in self.__2d_panel.get_edit_actions():

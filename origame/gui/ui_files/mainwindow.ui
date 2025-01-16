@@ -225,6 +225,7 @@
       <string>Preferences</string>
      </property>
      <addaction name="action_save_settings"/>
+     <addaction name="action_toggle_save_warning"/>
     </widget>
     <addaction name="action_new"/>
     <addaction name="action_open"/>
@@ -1225,6 +1226,23 @@
    </property>
    <property name="statusTip">
     <string>Save application settings to external file</string>
+   </property>
+  </action>
+  <action name="action_toggle_save_warning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show "Unsaved Objects" Warning</string>
+   </property>
+   <property name="toolTip">
+    <string>Show/Hide a warning for unsaved objects when saving/loading a scenario</string>
+   </property>
+   <property name="statusTip">
+    <string>Show/Hide a warning for unsaved objects when saving/loading a scenario</string>
    </property>
   </action>
   <action name="action_restore_default_view">
