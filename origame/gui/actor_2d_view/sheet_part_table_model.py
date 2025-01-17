@@ -20,8 +20,8 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
-from PyQt5.QtWidgets import QWidget, QTableView
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
+from PyQt6.QtWidgets import QWidget, QTableView
 
 # [3. local]
 from ...core import override
@@ -107,16 +107,16 @@ class SheetPartTableModel(QAbstractTableModel):
         sheet_part.signals.sig_full_sheet_changed.connect(self._slot_update_sheet)
 
     @override(QAbstractTableModel)
-    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole) -> Either[str, None]:
+    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.ItemDataRole.DisplayRole) -> Either[str, None]:
         """
         Gets the current horizontal (column) and vertical (row) header data from the sheet part at the index 'section'.
         See the Qt documentation for method parameter definitions.
         """
 
-        if role != Qt.DisplayRole:
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
 
-        if orientation == Qt.Horizontal and section < self._cols:
+        if orientation == Qt.Orientation.Horizontal and section < self._cols:
             try:
                 return self._sheet_part.get_col_header(section)
             except IndexError:
@@ -124,19 +124,19 @@ class SheetPartTableModel(QAbstractTableModel):
                 return None
 
         # Section is row index
-        if orientation == Qt.Vertical and section < self._rows:
+        if orientation == Qt.Orientation.Vertical and section < self._rows:
             return self._sheet_part.get_row_header(section)
 
         return None
 
     @override(QAbstractTableModel)
-    def setHeaderData(self, section: int, orientation: Qt.Orientation, value: QVariant, role=Qt.EditRole) -> bool:
+    def setHeaderData(self, section: int, orientation: Qt.Orientation, value: QVariant, role=Qt.ItemDataRole.EditRole) -> bool:
         """
         Sets the horizontal (column) header data into the sheet part at index 'section'. Only column headers can be set.
         See the Qt documentation for method parameter definitions.
         """
 
-        if role == Qt.EditRole and orientation == Qt.Horizontal:
+        if role == Qt.ItemDataRole.EditRole and orientation == Qt.Orientation.Horizontal:
 
             try:
                 col_idx = section
@@ -215,7 +215,7 @@ class SheetPartTableModel(QAbstractTableModel):
         return self._cols
 
     @override(QAbstractTableModel)
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> str:
+    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> str:
         """
         This method returns the sheet part data located at 'index' to the sheet part's View (class SheetPart2dContent).
 
@@ -232,7 +232,7 @@ class SheetPartTableModel(QAbstractTableModel):
         col = index.column()
         row = index.row()
 
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             try:
                 return str(retrieve_cached_py_expr(self,
                                                    self.__py_expr_cache,
@@ -241,10 +241,10 @@ class SheetPartTableModel(QAbstractTableModel):
             except IndexError:
                 return QVariant()
 
-        if role == Qt.TextAlignmentRole:
-            return Qt.AlignHCenter | Qt.AlignVCenter
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
 
-        if role == Qt.ToolTipRole:
+        if role == Qt.ItemDataRole.ToolTipRole:
             try:
                 return retrieve_cached_py_expr(self,
                                                self.__py_expr_cache,
@@ -256,16 +256,16 @@ class SheetPartTableModel(QAbstractTableModel):
         return QVariant()
 
     @override(QAbstractTableModel)
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         """
-        This method returns Qt.ItemIsEnabled for all rows and columns. This allows the user to interact with all values
+        This method returns Qt.ItemFlag.ItemIsEnabled for all rows and columns. This allows the user to interact with all values
         in the sheet.
         See the Qt documentation for method parameter definitions.
         """
         if not index.isValid():
-            return Qt.NoItemFlags
+            return Qt.ItemFlag.NoItemFlags
 
-        return Qt.ItemIsEnabled
+        return Qt.ItemFlag.ItemIsEnabled
 
     @override(QAbstractTableModel)
     def insertColumns(self, insert_index: int, num_columns: int, parent=QModelIndex()) -> bool:
@@ -474,14 +474,14 @@ class SheetPartTableModel(QAbstractTableModel):
         :param col_header: the new header data (not used since the table model gets the name from the back-end directly)
         """
         del col_header
-        self.headerDataChanged.emit(Qt.Horizontal, col_index, col_index)
+        self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_index, col_index)
 
     def _trigger_index_style_changed(self):
         """
         Forwards back-end sheet part header updates (ALL header names) to the front-end
         """
         last_col_index = self.columnCount() - 1
-        self.headerDataChanged.emit(Qt.Horizontal, 0, last_col_index)
+        self.headerDataChanged.emit(Qt.Orientation.Horizontal, 0, last_col_index)
 
     # Protected slots
     _slot_update_rows = safe_slot(_update_rows)

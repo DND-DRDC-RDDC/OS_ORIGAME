@@ -25,9 +25,8 @@ import subprocess
 import sys
 
 # [2. third-party]
-from PyQt5.QtCore import QCoreApplication, QSize
-from PyQt5.QtWidgets import QWidget, QMessageBox
-from PyQt5.Qt import Qt
+from PyQt6.QtCore import QCoreApplication, QSize, Qt
+from PyQt6.QtWidgets import QWidget, QMessageBox
 
 # [3. local]
 from ....core import override
@@ -43,6 +42,7 @@ from ...safe_slot import safe_slot, ext_safe_slot
 from ...gui_utils import IScenarioMonitor
 from ...async_methods import AsyncRequest
 
+from . import batch_sim_control_rc # This needs to be included before the Ui_BatchSimulationControlWidget, so that it has access to it
 from .Ui_batch_simulation_control_status import Ui_BatchSimulationControlWidget
 from .batch_simulation_settings import BatchSimulationSettingsDialog
 
@@ -245,8 +245,8 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
                 # Scenario folder has not been created -> prompt to save and then run
                 msg_title = 'New Scenario'
                 msg = 'Click Yes to save the scenario before running the batch, or Cancel to abandon the batch run.'
-                if exec_modal_dialog(msg_title, msg, QMessageBox.Question,
-                                     buttons=[QMessageBox.Ok, QMessageBox.Cancel]) == QMessageBox.Cancel:
+                if exec_modal_dialog(msg_title, msg, QMessageBox.Icon.Question,
+                                     buttons=[QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Cancel]) == QMessageBox.StandardButton.Cancel:
                     return
 
                 self.__save_scen_callback(self.__on_scen_saved_run_batch)
@@ -270,7 +270,7 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         run = True
         if has_changes:
             msg = "Scenario has un-saved changes. Are you sure you wish to start a batch simulation?"
-            if exec_modal_dialog("Run Batch Simulation", msg, QMessageBox.Question) == QMessageBox.No:
+            if exec_modal_dialog("Run Batch Simulation", msg, QMessageBox.Icon.Question) == QMessageBox.StandardButton.No:
                 run = False
 
         if run:
@@ -287,7 +287,7 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         """
         abort = True
         msg = "Are you sure you want to abort the batch simulation?"
-        if exec_modal_dialog("Abort Batch Simulation", msg, QMessageBox.Question) == QMessageBox.No:
+        if exec_modal_dialog("Abort Batch Simulation", msg, QMessageBox.Icon.Question) == QMessageBox.StandardButton.No:
             abort = False
 
         if abort and self.__batch_sim_manager.state_id == BsmStatesEnum.running:
@@ -299,7 +299,7 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
         """
         new = True
         msg = "Are you sure you want to configure a new batch simulation?"
-        if exec_modal_dialog("New Batch Simulation", msg, QMessageBox.Question) == QMessageBox.No:
+        if exec_modal_dialog("New Batch Simulation", msg, QMessageBox.Icon.Question) == QMessageBox.StandardButton.No:
             new = False
 
         if new:
@@ -405,11 +405,11 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
 
         path_to_image = get_icon_path("button_runbatch.svg")
         set_button_image(self.ui.run_abort_new_toolbutton, str(path_to_image), size=QSize(40, 50),
-                         text='Run Batch\nSimulation', style=Qt.ToolButtonTextUnderIcon)
+                         text='Run Batch\nSimulation', style=Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 
         path_to_image = get_icon_path("button_pausebatch.svg")
         set_button_image(self.ui.play_pause_toolbutton, str(path_to_image), size=QSize(40, 50),
-                         text='Pause', style=Qt.ToolButtonTextUnderIcon)
+                         text='Pause', style=Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         self.ui.play_pause_toolbutton.setEnabled(False)
 
         self.ui.batch_settings_toolbutton.setEnabled(True)
@@ -463,10 +463,10 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
 
         path_to_image = get_icon_path("button_abortbatch.svg")
         set_button_image(self.ui.run_abort_new_toolbutton, str(path_to_image), size=QSize(40, 50),
-                         text='Abort', style=Qt.ToolButtonTextUnderIcon)
+                         text='Abort', style=Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 
         set_button_image(self.ui.play_pause_toolbutton, str(path_to_pause_resume_image), size=QSize(40, 50),
-                         text=button_text, style=Qt.ToolButtonTextUnderIcon)
+                         text=button_text, style=Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         self.ui.play_pause_toolbutton.setEnabled(True)
 
         self.ui.batch_settings_toolbutton.setEnabled(False)
@@ -504,11 +504,11 @@ class BatchSimulationControlPanel(IScenarioMonitor, QWidget):
 
         path_to_image = get_icon_path("button_newbatch.svg")
         set_button_image(self.ui.run_abort_new_toolbutton, str(path_to_image), size=QSize(40, 50),
-                         text='New', style=Qt.ToolButtonTextUnderIcon)
+                         text='New', style=Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 
         path_to_image = get_icon_path("button_pausebatch.svg")
         set_button_image(self.ui.play_pause_toolbutton, str(path_to_image), size=QSize(40, 50),
-                         text='Pause', style=Qt.ToolButtonTextUnderIcon)
+                         text='Pause', style=Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
         self.ui.play_pause_toolbutton.setEnabled(False)
 
         self.ui.batch_settings_toolbutton.setEnabled(False)

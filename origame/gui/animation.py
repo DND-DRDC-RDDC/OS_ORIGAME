@@ -28,8 +28,8 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QAction
+from PyQt6.QtCore import QObject
+from PyQt6.QtGui import QAction
 
 # [3. local]
 from ..core import override_optional, override

@@ -20,9 +20,8 @@ import logging
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.Qt import Qt
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QDialog, QFileDialog, QSpinBox, QMessageBox, QWidget
+from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtWidgets import QDialog, QFileDialog, QSpinBox, QMessageBox, QWidget
 
 # [3. local]
 from ....scenario import SimSteps
@@ -201,7 +200,7 @@ class BatchSimulationSettingsDialog(SimSettingsDialog):
                 seed_table = self.seed_options.get_seeds_from_table_widget(num_variants, num_replics_per_variant)
             except ValueError as error:
                 error_message = "Invalid seed data in table\n{}.".format(error)
-                exec_modal_dialog("Seed Table Error", error_message, QMessageBox.Critical)
+                exec_modal_dialog("Seed Table Error", error_message, QMessageBox.Icon.Critical)
                 return dict()
 
         zero_sim_time = self.sim_steps.ui.zero_sim_time_checkbox.isChecked()
@@ -295,7 +294,7 @@ class BatchSimulationSettingsDialog(SimSettingsDialog):
         Use main sim settings checked/unchecked.
         :param checked: The Qt.CheckState that is 'Unchecked', 'PartiallyChecked', or 'Checked'.
         """
-        if checked == Qt.Checked:
+        if checked == Qt.CheckState.Checked:
             self.sim_steps.set_step_settings(self.__batch_sim_manager.get_scen_sim_steps())
             self.sim_steps.enable_step_settings(False)  # no user config allowed since using main scenario settings
         else:
@@ -308,7 +307,7 @@ class BatchSimulationSettingsDialog(SimSettingsDialog):
         """
         batch_runs_path = QFileDialog.getExistingDirectory(self, "Select a Batch Simulation Runs Folder",
                                                            QSettings().value(self.BATCH_RUNS_FOLDER),
-                                                           options=QFileDialog.ShowDirsOnly)
+                                                           options=QFileDialog.Option.ShowDirsOnly)
 
         if not batch_runs_path:
             return

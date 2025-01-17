@@ -19,8 +19,8 @@ import logging
 import datetime, math, re
 
 # [2. third-party]
-from PyQt5.QtGui import QColor
-from PyQt5.QtCore import QPointF
+from PyQt6.QtGui import QColor
+from PyQt6.QtCore import QPointF
 
 # [3. local]
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO

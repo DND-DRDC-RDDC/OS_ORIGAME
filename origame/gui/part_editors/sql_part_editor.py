@@ -20,12 +20,9 @@ import logging
 from textwrap import dedent
 
 # [2. third-party]
-from PyQt5.Qsci import QsciScintilla, QsciLexerSQL
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QMessageBox, QDialog
-from PyQt5.Qt import Qt
-
-from origame.scenario.alerts import ScenAlertLevelEnum
+from PyQt6.Qsci import QsciScintilla, QsciLexerSQL
+from PyQt6.QtCore import pyqtSlot, Qt
+from PyQt6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QMessageBox, QDialog
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -33,6 +30,7 @@ from ...core.typing import List, Tuple, Sequence, Set, Dict, Iterable, Stream
 
 from ...core import override
 from ...scenario import ori
+from ...scenario.alerts import ScenAlertLevelEnum
 from ...scenario.defn_parts import SqlPart
 from ...scenario.sql_dataset import SqlDataSet
 from ...scenario.part_execs.scripting_utils import get_signature_from_str
@@ -96,7 +94,7 @@ class SqlCodingAssistant(CodingAssistant):
                         - "a: int, b: [], c: bool=True": 3 parameters, 'a' has type int, 'b' list, and
                             'c' boolean that defaults to True
                         """)
-            exec_modal_dialog("Parse Error", msg, QMessageBox.Critical)
+            exec_modal_dialog("Parse Error", msg, QMessageBox.Icon.Critical)
 
     @override(CodingAssistant)
     def check_show_completions(self, keystroke: str, word_at_cursor: str) -> bool:
@@ -225,13 +223,13 @@ class SqlPreviewWidget(IPreviewWidget):
             if self.__param_dialog is not None:
                 # Unlike the function part, it does not pop up a completion message because the preview will confirm
                 # the result of the execution.
-                self.__param_dialog.done(QDialog.Accepted)
+                self.__param_dialog.done(QDialog.DialogCode.Accepted)
 
             self.init_preview_table()
 
             if not data:
                 msg = "The SQL statement did not return any data."
-                exec_modal_dialog("No Data", msg, QMessageBox.Information)
+                exec_modal_dialog("No Data", msg, QMessageBox.Icon.Information)
                 return
 
             records = data.get_records()
@@ -243,7 +241,7 @@ class SqlPreviewWidget(IPreviewWidget):
             for row, rec in enumerate(records):
                 for col in range(num_cols):
                     item = QTableWidgetItem(str(rec[col]))
-                    item.setFlags(Qt.ItemIsEnabled)
+                    item.setFlags(Qt.ItemFlag.ItemIsEnabled)
                     self.__table.setItem(row, col, item)
 
             self.__table.setHorizontalHeaderLabels(data.get_column_names())
@@ -266,10 +264,10 @@ class SqlPreviewWidget(IPreviewWidget):
         def on_input_ready(call_args_dict: CallArgs):
             """
             This is a call-back function for the ParameterInputDialog.
-            
+
             After the user clicks OK button, this function sends the collected information from the dialog to
-            the backend to run the part. 
-    
+            the backend to run the part.
+
             If the execution has errors, the ParameterInputDialog will stay open until the user cancels it or re-runs
             succeed eventually.
             :param call_args_dict: The user input on the dialog
@@ -304,7 +302,7 @@ class SqlPreviewWidget(IPreviewWidget):
         :param msg: The message to show.
         """
         log.error(msg)
-        exec_modal_dialog("SQL Preview Error", msg, QMessageBox.Critical)
+        exec_modal_dialog("SQL Preview Error", msg, QMessageBox.Icon.Critical)
 
     def get_preview_table(self) -> QTableWidget:
         """Get the table widget."""
@@ -332,16 +330,16 @@ class SqlPartEditorPanel(ScriptEditor):
 
     # --------------------------- instance (self) PUBLIC methods --------------------------------
 
-    def __init__(self, part: SqlPart, parent: QWidget = None):       
-        # Initialize database connection settings        
+    def __init__(self, part: SqlPart, parent: QWidget = None):
+        # Initialize database connection settings
         self.__db_connection_settings = {}
         self.__external_database_enabled = False
-        self.__db_type = DatabaseTypeEnum.MS_ACCESS.value        
-             
+        self.__db_type = DatabaseTypeEnum.MS_ACCESS.value
+
         super().__init__(part, parent=parent)
-        
+
         self.__sql_part = part
-                
+
         self.__lang = 'sql'
         self.set_coding_assistant(SqlCodingAssistant())
         lang_monitor = PyInSqlLangMonitor()
@@ -352,19 +350,19 @@ class SqlPartEditorPanel(ScriptEditor):
         self.sql_preview_panel = SqlPreviewWidget(part)
         self.sql_preview_panel.ui.update_button.clicked.connect(self.__slot_on_update_button_clicked)
         self.ui.main_code_editor_layout.layout().addWidget(self.sql_preview_panel)
-                
+
         # Add database settings buttons action
-        self.ui.settings_button.clicked.connect(self.__slot_on_setting_button_clicked) 
-        self.ui.externalDatabaseEnabled.stateChanged.connect(self.__slot_on_external_db_state_changed)        
+        self.ui.settings_button.clicked.connect(self.__slot_on_setting_button_clicked)
+        self.ui.externalDatabaseEnabled.stateChanged.connect(self.__slot_on_external_db_state_changed)
         self.ui.database_type_selecteor.currentIndexChanged.connect(self.__slot_on_db_type_changed)
-        
+
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
     @override(ScriptEditor)
     def _get_data_for_submission(self) -> Dict[str, Any]:
         data_dict = dict()
         self.__fill_data_for_submission(data_dict)
-        return self._get_deepcopy(data_dict)    
+        return self._get_deepcopy(data_dict)
 
     @override(ScriptEditor)
     def _on_data_arrived(self, data: Dict[str, Any]):
@@ -372,29 +370,29 @@ class SqlPartEditorPanel(ScriptEditor):
         parameters = data['parameters']
         self.ui.part_params.setText(parameters)
         self.sql_preview_panel.init_preview_table()
-        
+
         # Set Database Settings content
         db_is_enabled = False
         if 'external_db_enabled' in data.keys():
             db_is_enabled = data['external_db_enabled']
-            self.__external_database_enabled = db_is_enabled   
+            self.__external_database_enabled = db_is_enabled
             self.ui.externalDatabaseEnabled.setChecked(db_is_enabled)
-        
+
         if 'db_connection_settings' in data.keys():
             self.__db_connection_settings = data['db_connection_settings']
-        
+
         if 'db_type' in data.keys():
             db_type = data['db_type']
             if db_type >= 0 and db_type != self.__db_type:
                 self.__db_type = db_type
                 self.ui.database_type_selecteor.setCurrentIndex(db_type)
 
-        # Disable/Enable the Database selection combo-box and Settings button based on the checkbox value 
-        self.ui.settings_button.setEnabled(db_is_enabled)  
-        self.ui.database_type_selecteor.setEnabled(db_is_enabled)  
-                
+        # Disable/Enable the Database selection combo-box and Settings button based on the checkbox value
+        self.ui.settings_button.setEnabled(db_is_enabled)
+        self.ui.database_type_selecteor.setEnabled(db_is_enabled)
+
         self.__on_db_config_changed()
-        
+
     # --------------------------- instance __PRIVATE members-------------------------------------
 
     def __fill_data_for_submission(self, data: dict):
@@ -404,8 +402,8 @@ class SqlPartEditorPanel(ScriptEditor):
             data (dict): the data to submit.
         """
         data['parameters'] = self.ui.part_params.text()
-        data['sql_script'] = self.ui.code_editor.text()        
-        data['external_db_enabled'] = self.__external_database_enabled        
+        data['sql_script'] = self.ui.code_editor.text()
+        data['external_db_enabled'] = self.__external_database_enabled
         data['db_connection_settings'] = self.__db_connection_settings
         data['db_type'] = self.__db_type
 
@@ -434,7 +432,7 @@ class SqlPartEditorPanel(ScriptEditor):
         self.sql_preview_panel.script = self.ui.code_editor.text()
         self.sql_preview_panel.params = self.ui.part_params.text()
         self.sql_preview_panel.update()
-    
+
     def __on_db_type_changed(self):
         """Method is called when database type selector is changed.
         """
@@ -442,41 +440,41 @@ class SqlPartEditorPanel(ScriptEditor):
         if db_type >= 0 and db_type != self.__db_type:
             self.__db_type = db_type
             self.__on_db_config_changed()
-        
+
     def __on_external_db_state_changed(self):
         """
         Method is called when the Use of External Database Checkbox is clicked.
-        """        
+        """
         checked = self.ui.externalDatabaseEnabled.isChecked()
-        self.__external_database_enabled = checked        
+        self.__external_database_enabled = checked
         self.ui.settings_button.setEnabled(checked)
-        self.ui.database_type_selecteor.setEnabled(checked)         
-        self.__on_db_config_changed()        
+        self.ui.database_type_selecteor.setEnabled(checked)
+        self.__on_db_config_changed()
 
     def __on_setting_button_clicked(self):
         """
         Method is called when the Database Settings button is clicked within the SQL Part Editor.
-        """        
+        """
         db_connection_settings_dialog = DbConnectionSettingsDialog(self.__db_connection_settings, self.__db_type)
-        
-        answer = db_connection_settings_dialog.exec()        
+
+        answer = db_connection_settings_dialog.exec()
         if answer:
             self.__db_connection_settings = db_connection_settings_dialog.get_db_connection_settings()
             self.__on_db_config_changed()
-            
+
             if all(value == '' for value in self.__db_connection_settings.values()):
                 msg = 'External database is enabled but no database connection has been yet configured.'
                 log.warning(msg)
-                exec_modal_dialog("SQL Part Warning", msg, QMessageBox.Critical)
-            
+                exec_modal_dialog("SQL Part Warning", msg, QMessageBox.Icon.Critical)
+
             db_connection_settings_dialog = None
-       
+
     def __on_db_config_changed(self):
         """One or more of the database configuration items is changed, Notify the SQL part about it.
         """
         db_config = DatabaseConfig(self.__db_type, self.__db_connection_settings, self.__external_database_enabled)
-        self.__sql_part.set_db_config(db_config)        
-    
+        self.__sql_part.set_db_config(db_config)
+
     __slot_on_lang_changed = safe_slot(__on_lang_changed)
     __slot_on_update_button_clicked = safe_slot(__on_update_button_clicked)
     __slot_on_external_db_state_changed = safe_slot(__on_external_db_state_changed)

@@ -19,9 +19,9 @@ import logging
 from enum import IntEnum, unique
 
 # [2. third-party]
-from PyQt5.QtCore import QVariant, Qt, QEvent, QObject, pyqtSlot, pyqtSignal, QRectF
-from PyQt5.QtWidgets import QGraphicsObject, QGraphicsItem, QGraphicsSceneMouseEvent
-from PyQt5.QtGui import QKeyEvent, QMouseEvent
+from PyQt6.QtCore import QVariant, Qt, QEvent, QObject, pyqtSlot, pyqtSignal, QRectF
+from PyQt6.QtWidgets import QGraphicsObject, QGraphicsItem, QGraphicsSceneMouseEvent
+from PyQt6.QtGui import QKeyEvent, QMouseEvent
 
 # [3. local]
 from ...core import override_required, override_optional, override
@@ -74,10 +74,10 @@ def disconnect_all_slots(emitter: QObject, receiver: QObject):
                 meth_name = bytes(method.name()).decode()
                 yield getattr(obj, meth_name)
 
-    from PyQt5.QtCore import QMetaMethod
+    from PyQt6.QtCore import QMetaMethod
     disconnections = {}
-    for signal in methods(emitter, QMetaMethod.Signal):
-        for slot in methods(receiver, QMetaMethod.Slot):
+    for signal in methods(emitter, QMetaMethod.MethodType.Signal):
+        for slot in methods(receiver, QMetaMethod.MethodType.Slot):
             try:
                 signal.disconnect(slot)
                 disconnections.setdefault(signal, []).append(slot)
@@ -279,12 +279,12 @@ class IInteractiveItem(ICustomItem):
         :param new_value: the new value of attribute associated with change
         :returns: False if attempted disallowed selection, or superclass itemChange() otherwise
         """
-        if change == QGraphicsItem.ItemSelectedChange and new_value:
+        if change == QGraphicsItem.GraphicsItemChange.ItemSelectedChange and new_value:
             if not self.scene().check_item_selectable(self):
                 log.debug('Item of type {} cannot be in current extended selection', self.__class__.__name__)
                 return False
 
-        elif change == QGraphicsItem.ItemSelectedHasChanged:
+        elif change == QGraphicsItem.GraphicsItemChange.ItemSelectedHasChanged:
             # log.debug('Setting highlight to {}', new_value)
             self.set_highlighted(new_value)
 
@@ -356,10 +356,10 @@ class IInteractiveItem(ICustomItem):
 
     def _set_flags_item_change_interactive(self):
         """Must be called by derived class (during init, but after QGraphicsItem.__init__() called)"""
-        self.setFlag(QGraphicsItem.ItemIsFocusable)
-        self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsFocusable)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         if self.DRAGGABLE:
-            self.setFlag(QGraphicsItem.ItemIsMovable)
+            self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
     @override_optional
     def _highlighting_changed(self):
@@ -387,19 +387,19 @@ class EventStr:
         event_mods = event.modifiers()
 
         mods = []
-        if bool(event_mods & Qt.ControlModifier):
+        if bool(event_mods & Qt.KeyboardModifier.ControlModifier):
             mods.append("ctrl")
-        if bool(event_mods & Qt.AltModifier):
+        if bool(event_mods & Qt.KeyboardModifier.AltModifier):
             mods.append("alt")
-        if bool(event_mods & Qt.ShiftModifier):
+        if bool(event_mods & Qt.KeyboardModifier.ShiftModifier):
             mods.append("shift")
         mods = '-'.join(mods)
 
         def get_buttons(event):
             buttons = []
-            if bool(self.event.buttons() & Qt.LeftButton):
+            if bool(self.event.buttons() & Qt.MouseButton.LeftButton):
                 buttons.append('LEFT')
-            if bool(self.event.buttons() & Qt.RightButton):
+            if bool(self.event.buttons() & Qt.MouseButton.RightButton):
                 buttons.append('RIGHT')
             return ', '.join(buttons)
 

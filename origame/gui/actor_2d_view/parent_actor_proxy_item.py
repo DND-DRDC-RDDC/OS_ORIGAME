@@ -19,10 +19,10 @@ import logging
 from math import atan, cos, tan
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, QRectF, QPointF, QVariant
-from PyQt5.QtWidgets import QWidget, QGraphicsProxyWidget, QGraphicsItem, QGraphicsObject
-from PyQt5.QtWidgets import QStyleOptionGraphicsItem, QGraphicsRectItem, QGraphicsSceneMouseEvent
-from PyQt5.QtGui import QColor, QBrush, QPainter, QPainterPath, QPen, QPolygonF
+from PyQt6.QtCore import Qt, QRectF, QPointF, QVariant
+from PyQt6.QtWidgets import QWidget, QGraphicsProxyWidget, QGraphicsItem, QGraphicsObject
+from PyQt6.QtWidgets import QStyleOptionGraphicsItem, QGraphicsRectItem, QGraphicsSceneMouseEvent
+from PyQt6.QtGui import QColor, QBrush, QPainter, QPainterPath, QPen, QPolygonF
 
 # [3. local]
 from ...core import override
@@ -84,17 +84,17 @@ class ParentActorProxyItem(IInteractiveItem, LinkAnchorItem):
         # Flags
         self._set_flags_item_change_interactive()
         self._set_flags_item_change_link_anchor()
-        assert self.flags() & (QGraphicsItem.ItemIsFocusable | QGraphicsItem.ItemIsSelectable | self.ItemIsMovable)
-        assert self.flags() & QGraphicsItem.ItemSendsScenePositionChanges
+        assert self.flags() & (QGraphicsItem.GraphicsItemFlag.ItemIsFocusable | QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        assert self.flags() & QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges
         self.setAcceptHoverEvents(True)
 
         # Brushes (for filling shapes)
-        self.__default_brush = QBrush(PART_ICON_COLORS['actor_proxy'], Qt.SolidPattern)
-        self.__highlight_brush = QBrush(ParentActorProxyItem.COLOR_HIGHLIGHT, Qt.SolidPattern)
+        self.__default_brush = QBrush(PART_ICON_COLORS['actor_proxy'], Qt.BrushStyle.SolidPattern)
+        self.__highlight_brush = QBrush(ParentActorProxyItem.COLOR_HIGHLIGHT, Qt.BrushStyle.SolidPattern)
 
         # Bounding rectangles on the widget allow the size of the actor proxy to change
         # when the name changes and apply a highlight around it
-        pen = QPen(Qt.NoPen)
+        pen = QPen(Qt.PenStyle.NoPen)
         self.__margin = ParentActorProxyItem.MARGIN
         self.__widget_rect = QGraphicsRectItem(self)
         self.__widget_rect.setPen(pen)
@@ -135,8 +135,8 @@ class ParentActorProxyItem(IInteractiveItem, LinkAnchorItem):
 
     @override(QGraphicsItem)
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget = None):
-        painter.setRenderHints(QPainter.TextAntialiasing | QPainter.Antialiasing | QPainter.HighQualityAntialiasing)
-        painter.setPen(Qt.NoPen)
+        painter.setRenderHints(QPainter.RenderHint.TextAntialiasing | QPainter.RenderHint.Antialiasing)
+        painter.setPen(Qt.PenStyle.NoPen)
 
         if self._highlighted:
             painter.setBrush(self.__highlight_brush)

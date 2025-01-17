@@ -18,8 +18,8 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QCheckBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QCheckBox
+from PyQt6.QtCore import Qt
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO

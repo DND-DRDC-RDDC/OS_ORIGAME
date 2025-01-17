@@ -24,9 +24,9 @@ import csv
 from bisect import bisect_left
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QFileDialog, QPlainTextEdit, QMessageBox, QTextEdit, QPushButton
-from PyQt5.QtCore import QObject, QSettings, pyqtSignal, Qt
-from PyQt5.QtGui import QKeyEvent, QKeySequence, QTextCharFormat, QTextCursor, QColor, QFont
+from PyQt6.QtWidgets import QWidget, QFileDialog, QPlainTextEdit, QMessageBox, QTextEdit, QPushButton
+from PyQt6.QtCore import QObject, QSettings, pyqtSignal, Qt
+from PyQt6.QtGui import QKeyEvent, QKeySequence, QTextCharFormat, QTextCursor, QColor, QFont
 
 # [3. local]
 from ..core import override, log_level_int
@@ -312,7 +312,7 @@ class LogCapture(QObject, logging.Handler):
     slot_set_log_level_system_warning = safe_slot(set_log_level_system_warning)
     slot_set_log_level_system_info = safe_slot(set_log_level_system_info)
     slot_set_log_level_system_debug = safe_slot(set_log_level_system_debug)
-    
+
     slot_set_log_level_user_critical = safe_slot(set_log_level_user_critical)
     slot_set_log_level_user_error = safe_slot(set_log_level_user_error)
     slot_set_log_level_user_warning = safe_slot(set_log_level_user_warning)
@@ -378,10 +378,10 @@ class LogCapture(QObject, logging.Handler):
 
 class LogLineMarker:
     """
-    Manage marking of a log message in the log view. Keeps track of number of lines of log messages so that if the 
-    line marked is within a multi-line log message, the proper log id is obtained. 
+    Manage marking of a log message in the log view. Keeps track of number of lines of log messages so that if the
+    line marked is within a multi-line log message, the proper log id is obtained.
     """
-    
+
     def __init__(self):
         # track the starting line # of each log received
         self.__log_line_starts = []
@@ -396,11 +396,11 @@ class LogLineMarker:
         self.__update_marked_log(line_num, log_infos)
         assert self.__marked_log_id is not None
         return self.__marked_log_id
-    
+
     def on_logs_changed(self, new_log_infos: List[LogMsgInfo], marked_log_id: int) -> Optional[int]:
         """
-        Must be called whenever the logs change. A new text cursor is returned, such that the next closest 
-        log is marked. If the log marked is marked_log_id and it is a multi-line line, the cursor is on the 
+        Must be called whenever the logs change. A new text cursor is returned, such that the next closest
+        log is marked. If the log marked is marked_log_id and it is a multi-line line, the cursor is on the
         original line.
         :param new_log_infos: list of log messages
         :param marked_log_id: the marked log id
@@ -493,7 +493,7 @@ class LogMessagesHider:
 
         :param log_infos: the list of log messages displayed
         :param marked_log_id: the id of the log that was marked
-        :return: first item is the list of log messages to display in new state; the second item is the log 
+        :return: first item is the list of log messages to display in new state; the second item is the log
             message to mark in the new state.
         """
         if self.__hiding_logs:
@@ -510,17 +510,17 @@ class LogMessagesHider:
         self.__update_hide_button(log_infos, marked_log_id)
         return log_infos, marked_log_id
 
-    def on_logs_changed(self, log_infos: List[LogMsgInfo], 
+    def on_logs_changed(self, log_infos: List[LogMsgInfo],
                         marked_log_id: Optional[int]) -> Tuple[List[LogMsgInfo], Optional[int]]:
         """
         Refresh the current list of hidden logs (presumably because the filtering has changed).
         If currently hiding, hides based on most recent toggling. Parameters and return are the
         same as toggle_hiding.
-        
+
         :param log_infos: the list of log messages displayed
         :param marked_log_id: the id of the log that was marked; can be None only if *not* currently hiding
-        :return: first item is the list of log messages to display in new state; the second item is the log 
-            message to mark. The marked log may not be 
+        :return: first item is the list of log messages to display in new state; the second item is the log
+            message to mark. The marked log may not be
         """
         if self.__hiding_logs:
             assert marked_log_id is not None
@@ -539,9 +539,9 @@ class LogMessagesHider:
 
     def __update_hide_button(self, log_infos: List[LogMsgInfo], marked_log_id: int):
         """
-        Update the state of the Hide/Unhide button. The button is always enabled when showing all logs. 
-        While hiding, the button is enabled only if there is a log message marked, and if it is not the first 
-        log message (there is nothing to hide if log marked is first message). 
+        Update the state of the Hide/Unhide button. The button is always enabled when showing all logs.
+        While hiding, the button is enabled only if there is a log message marked, and if it is not the first
+        log message (there is nothing to hide if log marked is first message).
 
         :param log_infos: the list of log messages displayed
         :param marked_log_id: the id of the log that was marked
@@ -581,7 +581,7 @@ class LogMessagesHider:
     def __get_next_closest_log(self, log_infos: List[LogMsgInfo], log_id: Optional[int]) -> Optional[int]:
         """
         Get the log ID for the log item that is closest to the entry specified by log_id.
-        
+
         :param log_infos: the list of log messages displayed
         :param log_id: the id of the log that was marked
         :return: the next closest log id
@@ -638,8 +638,8 @@ class TextHighlighter:
 
         else:
             marked_cursor = log_view.textCursor()
-            marked_cursor.movePosition(QTextCursor.Start)
-            marked_cursor.movePosition(QTextCursor.Down, n=marked_line_num)
+            marked_cursor.movePosition(QTextCursor.MoveOperation.Start)
+            marked_cursor.movePosition(QTextCursor.MoveOperation.Down, n=marked_line_num)
             self.__marked_line_paint = self.__make_line_marker(marked_cursor)
 
         self.__all_sel_highlights = self.__get_sel_highlights(log_view)
@@ -654,7 +654,7 @@ class TextHighlighter:
     def on_log_added(self, log_view: QPlainTextEdit, log_msg: str):
         """
         Notify this component that a log message has been added. If there is currently user selection,
-        any occurrences of the selection will be highlighted in the new log message. 
+        any occurrences of the selection will be highlighted in the new log message.
         :param log_view: the text box containing text to which message was added
         :param log_msg: the message that was added (can be multiline)
         """
@@ -690,10 +690,10 @@ class TextHighlighter:
 
         current_scroll_h = log_view.horizontalScrollBar().value()
         current_scroll_v = log_view.verticalScrollBar().value()
-        line_color = QColor(Qt.red).lighter(160)
+        line_color = QColor(Qt.GlobalColor.red).lighter(160)
         all_sel_highlights = []
 
-        log_view.moveCursor(QTextCursor.Start)
+        log_view.moveCursor(QTextCursor.MoveOperation.Start)
         while log_view.find(self.__user_selected_text):
             extra_sel = QTextEdit.ExtraSelection()
             extra_sel.cursor = log_view.textCursor()
@@ -719,13 +719,13 @@ class TextHighlighter:
         if there was one).
         :param cursor: the text cursor for the line to highlight
         """
-        cursor.select(QTextCursor.LineUnderCursor)
+        cursor.select(QTextCursor.SelectionType.LineUnderCursor)
 
         # format the line
         format = QTextCharFormat()
-        line_color = QColor(Qt.darkCyan)
+        line_color = QColor(Qt.GlobalColor.darkCyan)
         format.setBackground(line_color)
-        format.setForeground(QColor(Qt.white))
+        format.setForeground(QColor(Qt.GlobalColor.white))
         ext_sel = QTextEdit.ExtraSelection()
         ext_sel.format = format
         ext_sel.cursor = cursor
@@ -752,10 +752,10 @@ class LogPanel(QWidget):
         # Text View
         log_view = self.ui.log_record_display
         log_view.clear()  # Clear the dummy text from Designer
-        log_view.setLineWrapMode(QPlainTextEdit.NoWrap)
+        log_view.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         # many of the log messages will be related to scenario, so the scenario font is used.
-        log_view.document().setDefaultFont(get_scenario_font(stretch=QFont.SemiCondensed))
-        log_view.setTabStopWidth(20)
+        log_view.document().setDefaultFont(get_scenario_font(stretch=QFont.Stretch.SemiCondensed))
+        log_view.setTabStopDistance(20)
 
         # Buttons
         self.ui.toggle_options_button.clicked.connect(self.slot_toggle_log_options)
@@ -825,7 +825,7 @@ class LogPanel(QWidget):
         :param key_event: The key event. We only want to process Ctrl+C
         """
         super().keyPressEvent(key_event)
-        if key_event.matches(QKeySequence.Copy):
+        if key_event.matches(QKeySequence.StandardKey.Copy):
             self.ui.log_record_display.copy()
 
     def set_system_filtering(self, log_level: str, status: bool):
@@ -876,7 +876,7 @@ class LogPanel(QWidget):
                 writer.writerows(list_by_range_stripped)
         except IOError as exc:
             exec_modal_dialog("File Save Error",
-                              "This file is set to read only. Try again with a different name.", QMessageBox.Critical)
+                              "This file is set to read only. Try again with a different name.", QMessageBox.Icon.Critical)
 
     def clear_logs(self):
         """Clear the logs"""
@@ -899,10 +899,10 @@ class LogPanel(QWidget):
         """Toggles the display of the log options panel"""
         if self.ui.options_panel.isHidden():
             self.ui.options_panel.show()
-            self.ui.toggle_options_button.setArrowType(Qt.RightArrow)
+            self.ui.toggle_options_button.setArrowType(Qt.ArrowType.RightArrow)
         else:
             self.ui.options_panel.hide()
-            self.ui.toggle_options_button.setArrowType(Qt.LeftArrow)
+            self.ui.toggle_options_button.setArrowType(Qt.ArrowType.LeftArrow)
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
 

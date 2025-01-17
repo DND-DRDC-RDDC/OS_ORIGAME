@@ -19,9 +19,9 @@ import logging
 import datetime
 
 # [2. third-party]
-from PyQt5.QtCore import QSize, QDir, QSettings
-from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox
-from PyQt5.QtGui import QImageReader, QPixmap, QImage, QTransform
+from PyQt6.QtCore import QSize, QDir, QSettings
+from PyQt6.QtWidgets import QWidget, QFileDialog, QMessageBox
+from PyQt6.QtGui import QImageReader, QPixmap, QImage, QTransform
 
 # [3. local]
 from ...core import override
@@ -98,9 +98,9 @@ class ImgEditorWidget(QWidget):
                                      QDir.currentPath())
 
         dialog = QFileDialog(None, "Select Image", location)
-        dialog.setAcceptMode(QFileDialog.AcceptOpen)
+        dialog.setAcceptMode(QFileDialog.DialogLabel.AcceptMode.AcceptOpen)
         dialog.setMimeTypeFilters(dialog_filter)
-        while dialog.exec() == QFileDialog.Accepted and not self.load_img(dialog.selectedFiles()[0]):
+        while dialog.exec() == QFileDialog.DialogLabel.Accept and not self.load_img(dialog.selectedFiles()[0]):
             pass
 
     def load_img(self, file_name: str, rotation_2d: float = 0.0, suppress_warning_popup: bool = False) -> bool:
@@ -117,7 +117,7 @@ class ImgEditorWidget(QWidget):
                 self.position_img(QPixmap(), 0.0)
                 return True
             else:
-                exec_modal_dialog("Invalid File", "Invalid image file selection.", QMessageBox.Critical)
+                exec_modal_dialog("Invalid File", "Invalid image file selection.", QMessageBox.Icon.Critical)
                 return False
         pix = QPixmap.fromImage(img)
         self.__rotation_2d = rotation_2d

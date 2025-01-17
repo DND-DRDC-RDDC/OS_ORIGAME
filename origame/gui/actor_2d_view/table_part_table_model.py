@@ -21,8 +21,8 @@ import logging
 from math import fmod
 
 # [2. third-party]
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QObject, pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget, QTableView
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, QObject, pyqtSignal, Qt
+from PyQt6.QtWidgets import QWidget, QTableView
 
 # [3. local]
 from ...core import override
@@ -142,15 +142,15 @@ class TablePartTableModel(QAbstractTableModel):
         table_part.signals.sig_index_dropped.connect(self.__slot_remove_indexed_columns)
 
     @override(QAbstractTableModel)
-    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole) -> Either[str, None]:
+    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.ItemDataRole.DisplayRole) -> Either[str, None]:
         """
         Gets the current horizontal (column) and vertical (row) header data from the table part at the index 'section'.
         See the Qt documentation for method parameter definitions.
         """
-        if role != Qt.DisplayRole:
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
 
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             try:
                 col_name = self.__get_displayed_col_name(self.__col_name_cache[section])
                 return str(col_name)
@@ -159,7 +159,7 @@ class TablePartTableModel(QAbstractTableModel):
                 # a refresh of the table data.
                 return None
 
-        if orientation == Qt.Vertical and section < self.__rows:
+        if orientation == Qt.Orientation.Vertical and section < self.__rows:
             return str(section + 1)  # The first row is row '1'
 
         return None
@@ -215,7 +215,7 @@ class TablePartTableModel(QAbstractTableModel):
         return self.__cols
 
     @override(QAbstractTableModel)
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> Optional[TableCellData]:
+    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Optional[TableCellData]:
         """
         This method returns the table part data located at 'index' to the table part's View (class TablePart2dContent).
 
@@ -230,7 +230,7 @@ class TablePartTableModel(QAbstractTableModel):
             # the index is the "root" of table, which has no data
             return None
 
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             row_index = index.row()
             col_index = index.column()
 
@@ -246,20 +246,20 @@ class TablePartTableModel(QAbstractTableModel):
                 # a refresh of the table data.
                 return None
 
-        if role == Qt.TextAlignmentRole:
-            return Qt.AlignHCenter | Qt.AlignVCenter
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
 
         return None
 
     @override(QAbstractTableModel)
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         """
         Sets all items in the Table's view to be 'disabled'. This prevents the user from interacting with all values
         in the table (selecting or editing values directly outside of the Table Editor).
 
         See the Qt documentation for method parameter definitions.
         """
-        return Qt.NoItemFlags
+        return Qt.ItemFlag.NoItemFlags
 
     @override(QAbstractTableModel)
     def insertColumns(self, insert_index: int, num_columns: int, parent=QModelIndex()) -> bool:
@@ -414,7 +414,7 @@ class TablePartTableModel(QAbstractTableModel):
         """
         self.__col_name_cache = col_names
         self.__cols = len(self.__col_name_cache)
-        self.headerDataChanged.emit(Qt.Horizontal, 0, len(col_names) - 1)
+        self.headerDataChanged.emit(Qt.Orientation.Horizontal, 0, len(col_names) - 1)
 
     def __init_table_cache(self, is_update: bool = True):
         """
@@ -580,7 +580,7 @@ class TablePartTableModel(QAbstractTableModel):
         # Inform the Table View of the change
         num_cols_to_add = 1
         self.insertColumns(new_col_index, num_cols_to_add)
-        self.headerDataChanged.emit(Qt.Horizontal, new_col_index, new_col_index)
+        self.headerDataChanged.emit(Qt.Orientation.Horizontal, new_col_index, new_col_index)
 
     def __remove_column(self, col_name: str):
         """
@@ -604,7 +604,7 @@ class TablePartTableModel(QAbstractTableModel):
         # Inform the Table View of the change
         num_cols_to_remove = 1
         self.removeColumns(remove_col_index, num_cols_to_remove)
-        self.headerDataChanged.emit(Qt.Horizontal, remove_col_index, remove_col_index)
+        self.headerDataChanged.emit(Qt.Orientation.Horizontal, remove_col_index, remove_col_index)
         top_left_index = self.index(0, 0)
         bottom_right_index = self.index(self.__rows - 1, self.__cols - 1)
         self.dataChanged.emit(top_left_index, bottom_right_index)
@@ -623,7 +623,7 @@ class TablePartTableModel(QAbstractTableModel):
         self.__col_name_cache[col_index] = new_name
 
         # Inform the Table View of the change
-        self.headerDataChanged.emit(Qt.Horizontal, col_index, col_index)
+        self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_index, col_index)
 
     def __add_indexed_columns(self, indexed_columns: List[str]):
         """
@@ -634,7 +634,7 @@ class TablePartTableModel(QAbstractTableModel):
             if col_name not in self.__col_indexes:
                 self.__col_indexes.append(col_name)
             col_idx = self.__col_name_cache.index(col_name)
-            self.headerDataChanged.emit(Qt.Horizontal, col_idx, col_idx)
+            self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_idx, col_idx)
 
     def __remove_indexed_columns(self, unindexed_columns: List[str]):
         """
@@ -644,7 +644,7 @@ class TablePartTableModel(QAbstractTableModel):
         for col_name in unindexed_columns:
             self.__col_indexes.remove(col_name)
             col_idx = self.__col_name_cache.index(col_name)
-            self.headerDataChanged.emit(Qt.Horizontal, col_idx, col_idx)
+            self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_idx, col_idx)
 
     def __get_displayed_col_name(self, col_name: str) -> str:
         """

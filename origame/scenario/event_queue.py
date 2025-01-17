@@ -35,7 +35,7 @@ from datetime import datetime
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtWidgets import QApplication, QMainWindow
 
 # [3. local]
 from ..core import BridgeEmitter, BridgeSignal, override, override_required
@@ -73,8 +73,7 @@ MIN_EVENT_TIME = 0.0
 
 def get_main_window() -> typing.Union[QMainWindow, None]:
     """Get the main window of the running instance of QApplication"""
-    app = QApplication.instance()
-    for widget in app.topLevelWidgets():
+    for widget in QApplication.topLevelWidgets():
         if isinstance(widget, QMainWindow):
             return widget
     return None
@@ -232,11 +231,11 @@ class EventInfo:
     def get_time(self) -> float:
         """Get the simulation time (in days) at which event should be processed"""
         return self._time_days
-    
+
     def get_priority(self) -> float:
         """Get the numerical value of priority, or ASAP_PRIORITY_VALUE if ASAP"""
         return self._priority
-    
+
     def get_call_info(self) -> CallInfo:
         """Get the call information of the event"""
         return self._call_info
@@ -1363,7 +1362,7 @@ class EventQueue(IOriSerializable):
         return None
 
     def __gen_next_event_id(self) -> int:
-        """Generate and return the next event's ID."""      
+        """Generate and return the next event's ID."""
         while self.__next_event_id in self.__used_event_ids:
             self.__next_event_id += 1
         self.__used_event_ids.append(self.__next_event_id)

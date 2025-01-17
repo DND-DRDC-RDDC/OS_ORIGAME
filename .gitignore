@@ -1,5 +1,6 @@
 # virtual environment folder
 venv*/
+.venv*/
 # compiled bytecode
 **/__pycache__/
 **/*.pyc

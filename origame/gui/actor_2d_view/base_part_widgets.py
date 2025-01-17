@@ -19,10 +19,10 @@ import logging
 from enum import IntEnum, unique
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, QSize, QMarginsF
-from PyQt5.QtGui import QPalette
-from PyQt5.QtWidgets import QWidget, QAction, QHBoxLayout, QLabel, QMessageBox, QDialog
-from PyQt5.QtSvg import QSvgWidget
+from PyQt6.QtCore import Qt, QSize, QMarginsF
+from PyQt6.QtGui import QPalette, QAction
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QMessageBox, QDialog
+from PyQt6.QtSvgWidgets import QSvgWidget
 
 # [3. local]
 from ...core import override, override_optional, override_required
@@ -141,9 +141,9 @@ class IPartWidget(AlertIndicator, QWidget):
         """
         Those widgets that could slow down __init_ may override this function to populate data after the
         __init__(). Two of the examples are data part and sheet part widgets.
-        
+
         The background:
-        If the construction of a part widget cannot be completed in a timely manner in the __init__, the 
+        If the construction of a part widget cannot be completed in a timely manner in the __init__, the
         QGraphicsWidget.setWidget() will be blocked. So, the item cannot be added to the scene. That would be an
         annoying user experience because the user cannot see the frame of the part while it is preparing the data.
         """
@@ -352,12 +352,12 @@ class FramedPartWidget(IPartWidget):
         self._bottom_layout = self.ui.bottom_widget.layout()
 
         self._palette = QPalette()
-        self._palette.setColor(QPalette.Window, color)
-        self._palette.setColor(QPalette.Text, Qt.white)
-        self._palette.setColor(QPalette.WindowText, Qt.white)
+        self._palette.setColor(QPalette.ColorRole.Window, color)
+        self._palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
+        self._palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
         self.ui.part_name_label.setStyleSheet("QLabel {color: white; font: bold; padding-right: 1px};")
         self._white_palette = QPalette()
-        self._white_palette.setColor(QPalette.Window, Qt.white)
+        self._white_palette.setColor(QPalette.ColorRole.Window, Qt.GlobalColor.white)
 
         self.ui.header_frame.setAutoFillBackground(True)
         self.ui.header_frame.setPalette(self._palette)
@@ -376,7 +376,7 @@ class FramedPartWidget(IPartWidget):
         # The force_to_center_layout is a technique used to make a widget go to the center of a stacked widget.
         force_to_center_layout = QHBoxLayout(self._icon_label)
         force_to_center_layout.setContentsMargins(0, 0, 0, FramedPartWidget.CENTER_ICON_MARGIN_ADJUSTMENT)
-        force_to_center_layout.addWidget(center_icon, Qt.AlignCenter)
+        force_to_center_layout.addWidget(center_icon, Qt.AlignmentFlag.AlignCenter)
 
         self.ui.stacked_widget.addWidget(self._icon_label)
         self._size_hint = QSize(0, 0)
@@ -487,8 +487,8 @@ class FramedPartWidget(IPartWidget):
         """
         Updates the GUI according to the detail level state
         """
-        for x in self.__type_to_obj:
-            self.ui.header_frame.layout().insertWidget(x.value, self.__type_to_obj[x.value])
+        for k in sorted(self.__type_to_obj):
+            self.ui.header_frame.layout().addWidget(self.__type_to_obj[k])
 
         detail_level_in_effect = self._detail_level_in_effect()
         if detail_level_in_effect == DetailLevelEnum.minimal:
@@ -723,16 +723,16 @@ class IExecPartWidget:
                 return
 
             exec_modal_dialog('Success', 'The part "{}" has been run successfully.'.format(str(self._part)),
-                              QMessageBox.Information)
-            self.__param_dialog.done(QDialog.Accepted)
+                              QMessageBox.Icon.Information)
+            self.__param_dialog.done(QDialog.DialogCode.Accepted)
 
         def on_input_ready(call_args_dict: CallArgs):
             """
             This is a call-back function for the ParameterInputDialog.
-            
+
             After the user clicks OK button, this function sends the collected information from the dialog to
-            the backend to run the part. 
-    
+            the backend to run the part.
+
             If the execution has errors, the ParameterInputDialog will stay open until the user cancels it or re-runs
             succeed eventually.
             :param call_args_dict: The user input on the dialog

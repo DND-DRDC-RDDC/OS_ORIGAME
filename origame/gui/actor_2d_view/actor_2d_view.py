@@ -22,11 +22,11 @@ from enum import IntEnum, unique
 from textwrap import dedent
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, QMarginsF, QRect, QPointF, QRectF
-from PyQt5.QtCore import pyqtSignal, QEvent
-from PyQt5.QtGui import QMouseEvent, QWheelEvent, QContextMenuEvent, QKeyEvent, QPaintEvent, QPainter, QCursor
-from PyQt5.QtWidgets import QMenu, QMessageBox, QGraphicsView, QAbstractSlider, QGraphicsItem
-from PyQt5.QtWidgets import QScrollBar
+from PyQt6.QtCore import Qt, QMarginsF, QRect, QPointF, QRectF
+from PyQt6.QtCore import pyqtSignal, QEvent
+from PyQt6.QtGui import QMouseEvent, QWheelEvent, QContextMenuEvent, QKeyEvent, QPaintEvent, QPainter, QCursor
+from PyQt6.QtWidgets import QMenu, QMessageBox, QGraphicsView, QAbstractSlider, QGraphicsItem
+from PyQt6.QtWidgets import QScrollBar
 
 # [3. local]
 from ...core import override
@@ -88,9 +88,9 @@ ViewActions = namedtuple('ViewActions', ['action_override_full', 'action_overrid
 
 _bare = ButtonActionOnReparentEnum
 BUTTONS_ADJUST_BAD_LINKS_ON_MOVE = [(), (), ()]
-BUTTONS_ADJUST_BAD_LINKS_ON_MOVE[_bare.break_] = ("Break", QMessageBox.AcceptRole)
-BUTTONS_ADJUST_BAD_LINKS_ON_MOVE[_bare.adjust] = ("Adjust", QMessageBox.AcceptRole)
-BUTTONS_ADJUST_BAD_LINKS_ON_MOVE[_bare.cancel] = ("Cancel", QMessageBox.RejectRole)
+BUTTONS_ADJUST_BAD_LINKS_ON_MOVE[_bare.break_] = ("Break", QMessageBox.ButtonRole.AcceptRole)
+BUTTONS_ADJUST_BAD_LINKS_ON_MOVE[_bare.adjust] = ("Adjust", QMessageBox.ButtonRole.AcceptRole)
+BUTTONS_ADJUST_BAD_LINKS_ON_MOVE[_bare.cancel] = ("Cancel", QMessageBox.ButtonRole.RejectRole)
 
 
 class Decl(AnnotationDeclarations):
@@ -395,7 +395,7 @@ class ViewClipboard:
                   3. Cancel""")
         answer = exec_modal_dialog(dialog_title="Move Part",
                                    message=message,
-                                   icon=QMessageBox.Question,
+                                   icon=QMessageBox.Icon.Question,
                                    buttons_str_role=BUTTONS_ADJUST_BAD_LINKS_ON_MOVE)
         return ButtonActionOnReparentEnum(answer)
 
@@ -475,10 +475,10 @@ class Actor2dView(QGraphicsView):
         # Value ranges from 0 to 500, where 250 means no zoom at all.
         self.__zoom_slider_value = Actor2dView.DEFAULT_ZOOM_SLIDER_VALUE
 
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setRenderHint(QPainter.SmoothPixmapTransform, True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
+        self.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform, True)
 
         self.__cursor_override = False
         self.__rubberband_mode = False
@@ -501,7 +501,7 @@ class Actor2dView(QGraphicsView):
 
         # Colin July 11, 2017: Tested all the options. It seems the default MinimalViewportUpdate and
         # SmartViewportUpdate are OK. But it breaks the test_scene.py. More investigation needed.
-        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setViewportUpdateMode(QGraphicsView.ViewportUpdateMode.FullViewportUpdate)
 
         self.context_menu = QMenu(self)
 
@@ -589,11 +589,11 @@ class Actor2dView(QGraphicsView):
 
     @override(QGraphicsView)
     def keyPressEvent(self, event: QKeyEvent):
-        if event.key() == Qt.Key_Plus:
+        if event.key() == Qt.Key.Key_Plus:
             self.__command_type = NavToViewCmdTypeEnum.zoom
             self.__zoom_slider_value += Actor2dView.TYPICAL_MOUSE_WHEEL_STEP
             self.__set_zoom(self.__zoom_slider_value)
-        elif event.key() == Qt.Key_Minus:
+        elif event.key() == Qt.Key.Key_Minus:
             self.__command_type = NavToViewCmdTypeEnum.zoom
             self.__zoom_slider_value -= Actor2dView.TYPICAL_MOUSE_WHEEL_STEP
             self.__set_zoom(self.__zoom_slider_value)
@@ -606,7 +606,7 @@ class Actor2dView(QGraphicsView):
         # since the view.viewport().underMouse() condition fails when the context menu is open
         log.debug("View got mouse press: {}", EventStr(event))
 
-        if event.button() == Qt.RightButton:
+        if event.button() == Qt.MouseButton.RightButton:
             super().mousePressEvent(event)
             self.__mouse_right_click_scene_pos = self.mapToScene(event.pos())
             return
@@ -697,11 +697,11 @@ class Actor2dView(QGraphicsView):
         Scroll the view left-right or up-down. When the scroll bars hit the limits, we extend the
         scene so that the scrolling can continue.
         """
-        if event.modifiers() == Qt.ControlModifier:
+        if event.modifiers() == Qt.KeyboardModifier.ControlModifier:
             self.__handle_zoom_event(event)
             self.__command_type = NavToViewCmdTypeEnum.zoom
 
-        elif event.modifiers() == Qt.ShiftModifier:
+        elif event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
             # the SHIFT key modifier will by default cause the horizontal scroll bar to take a page
             # step instead of a single (line) step, so need to remove the modifier before forwarding
             # to the horizontal scroll bar (but Qt does not have event cloning functions so have to
@@ -711,9 +711,9 @@ class Actor2dView(QGraphicsView):
                                               event.pixelDelta(),
                                               event.angleDelta(),
                                               event.angleDelta().y(),  # qt4delta is the y coomponent (undocumented)
-                                              Qt.Horizontal,  # we want horizontal scroll
-                                              Qt.MidButton,
-                                              Qt.NoModifier)  # and no SHIFT modifier
+                                              Qt.Orientation.Horizontal,  # we want horizontal scroll
+                                              Qt.MouseButton.MiddleButton,
+                                              Qt.KeyboardModifier.NoModifier)  # and no SHIFT modifier
             self.horizontalScrollBar().event(event_without_shift)
             self.__on_horizontal_mouse_wheel()
 
@@ -779,7 +779,7 @@ class Actor2dView(QGraphicsView):
 
     def fit_content_in_view(self, items: List[QGraphicsItem] = None):
         """
-        This function fits the given items to the view so that the viewport center and the content center are the 
+        This function fits the given items to the view so that the viewport center and the content center are the
         same point in the scene coordinate system. If items are not given, it applies to all the items.
         :param items: The items to be fit in the view
         """
@@ -859,7 +859,7 @@ class Actor2dView(QGraphicsView):
         part_names = ['"{}"'.format(selectedPart.name) for selectedPart in parts]
         msg = "Cut (will delete) {} part{} ({}). Are you sure?".format(
             len(part_names), plural_if(parts), ', '.join(part_names))
-        if exec_modal_dialog("Cut Part", msg, QMessageBox.Question) != QMessageBox.Yes:
+        if exec_modal_dialog("Cut Part", msg, QMessageBox.Icon.Question) != QMessageBox.StandardButton.Yes:
             return
 
         new_clipboard = ViewClipboard(ClipboardActionEnum.cut, parts, self.scene().get_part_selection_center_scenario())
@@ -897,7 +897,7 @@ class Actor2dView(QGraphicsView):
 
         if self.__clipboard is None:
             msg = "There are no items on the clipboard to paste."
-            exec_modal_dialog("Paste Error", msg, QMessageBox.Information)
+            exec_modal_dialog("Paste Error", msg, QMessageBox.Icon.Information)
             return
 
         log.info("Paste parts requested in scene")
@@ -1056,7 +1056,7 @@ class Actor2dView(QGraphicsView):
         Override the view drag mode cursor to allow another cursor to be set on the View.
         """
         log.debug("Actor2dView in cursor OVERRIDE mode")
-        self.setDragMode(QGraphicsView.NoDrag)
+        self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.__cursor_override = True
 
     def set_rubberband_mode(self):
@@ -1064,7 +1064,7 @@ class Actor2dView(QGraphicsView):
         Sets the drag-mode to RubberBandDrag.
         """
         log.debug("Actor2dView in RUBBER-BAND mode")
-        self.setDragMode(QGraphicsView.RubberBandDrag)
+        self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)
         self.__rubberband_mode = True
 
     def set_cursor_default(self):
@@ -1072,7 +1072,7 @@ class Actor2dView(QGraphicsView):
         Restore the view to the default ScrollHandDrag mode.
         """
         log.debug("Actor2dView in cursor DEFAULT mode")
-        self.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.__cursor_override = False
         self.__rubberband_mode = False
 
@@ -1257,16 +1257,16 @@ class Actor2dView(QGraphicsView):
         """
         Sets the scene rectangle to a virtually unlimited size, i.e., width and height approximately equal to the
         full scroll bar range (SCROLL_BAR_MAX - SCROLL_BAR_MIN)
-        
+
         A typical use case is to call it before dragging the view beyond the current extent of the view because the view
         does not do this automatically during mouse move.
-        
-        Note: This function should be called only during mouse move, because it makes the scene very big. A huge scene 
-        is just virtual - not consuming any extra memory as something like bitmap does. Also, Qt has already taken care 
-        of always presenting a pair of reasonably good-looking sliders, which won't go as small as view size/2147483647 
-        however the scene is adjusted. Setting the scene rectangle that way likely helps performance because setting 
-        a pair of reasonable values would require some calculation depending on the current scale factor. I speculate 
-        that the values will be used by Qt internally to do a single conditional check MIN < actual < MAX. So, less 
+
+        Note: This function should be called only during mouse move, because it makes the scene very big. A huge scene
+        is just virtual - not consuming any extra memory as something like bitmap does. Also, Qt has already taken care
+        of always presenting a pair of reasonably good-looking sliders, which won't go as small as view size/2147483647
+        however the scene is adjusted. Setting the scene rectangle that way likely helps performance because setting
+        a pair of reasonable values would require some calculation depending on the current scale factor. I speculate
+        that the values will be used by Qt internally to do a single conditional check MIN < actual < MAX. So, less
         drastic lower and upper limits won't make a difference.
         """
         rect = self.sceneRect()
@@ -1277,11 +1277,11 @@ class Actor2dView(QGraphicsView):
         """
         Moves the center of the view port to the given center. Before the move, the scene must be adjusted so that
         the view port centered on the point will be covered by the adjusted scene.
-        
+
         Note: Unlike the QGraphicsView.centerOn(), which cannot center on a point beyond the current scene rectangle,
         this function extends the scene, if necessary, before calling the centerOn(). We do not override the centerOn()
         because that basic center moving mechanism is also used for other purposes.
-        
+
         :param center: The center the view port will centered on.
         """
         vp_rect = QRectF(self.viewport().rect())
@@ -1382,7 +1382,7 @@ class Actor2dView(QGraphicsView):
 
     def __add_extra_margins(self, rect: QRectF) -> QRectF:
         """
-        Adds margins to the given rect and returns the enlarged (new) rect. The added margins are based on the width and 
+        Adds margins to the given rect and returns the enlarged (new) rect. The added margins are based on the width and
         height of the given rect.
         :param rect: The rect to be based on
         :return: The new enlarged rect.
@@ -1434,27 +1434,27 @@ class Actor2dView(QGraphicsView):
         single_step = bar.singleStep()
         page_step = bar.pageStep()
 
-        if slider_action == QAbstractSlider.SliderMove:
+        if slider_action == QAbstractSlider.SliderAction.SliderMove:
             self.__command_type = NavToViewCmdTypeEnum.horizontal_slider_move
 
-        elif slider_action == QAbstractSlider.SliderSingleStepAdd:
+        elif slider_action == QAbstractSlider.SliderAction.SliderSingleStepAdd:
             if upper - val < self.SINGLE_STEP_TOL:
                 self.setSceneRect(self.sceneRect().adjusted(0, 0, page_step, 0))
                 bar.setValue(val + single_step)
 
             self.__command_type = NavToViewCmdTypeEnum.slider_step
 
-        elif slider_action == QAbstractSlider.SliderSingleStepSub:
+        elif slider_action == QAbstractSlider.SliderAction.SliderSingleStepSub:
             if val - lower < self.SINGLE_STEP_TOL:
                 self.setSceneRect(self.sceneRect().adjusted(-page_step, 0, 0, 0))
                 bar.setValue(val - single_step)
 
             self.__command_type = NavToViewCmdTypeEnum.slider_step
 
-        elif slider_action == QAbstractSlider.SliderPageStepAdd:
+        elif slider_action == QAbstractSlider.SliderAction.SliderPageStepAdd:
             self.__command_type = NavToViewCmdTypeEnum.slider_step
 
-        elif slider_action == QAbstractSlider.SliderPageStepSub:
+        elif slider_action == QAbstractSlider.SliderAction.SliderPageStepSub:
             self.__command_type = NavToViewCmdTypeEnum.slider_step
 
         else:
@@ -1474,27 +1474,27 @@ class Actor2dView(QGraphicsView):
         single_step = bar.singleStep()
         page_step = bar.pageStep()
 
-        if slider_action == QAbstractSlider.SliderMove:
+        if slider_action == QAbstractSlider.SliderAction.SliderMove:
             self.__command_type = NavToViewCmdTypeEnum.vertical_slider_move
 
-        elif slider_action == QAbstractSlider.SliderSingleStepAdd:
+        elif slider_action == QAbstractSlider.SliderAction.SliderSingleStepAdd:
             if upper - val < self.SINGLE_STEP_TOL:
                 self.setSceneRect(self.sceneRect().adjusted(0, 0, 0, page_step))
                 bar.setValue(val + single_step)
 
             self.__command_type = NavToViewCmdTypeEnum.slider_step
 
-        elif slider_action == QAbstractSlider.SliderSingleStepSub:
+        elif slider_action == QAbstractSlider.SliderAction.SliderSingleStepSub:
             if val - lower < self.SINGLE_STEP_TOL:
                 self.setSceneRect(self.sceneRect().adjusted(0, -page_step, 0, 0))
                 bar.setValue(val - single_step)
 
             self.__command_type = NavToViewCmdTypeEnum.slider_step
 
-        elif slider_action == QAbstractSlider.SliderPageStepAdd:
+        elif slider_action == QAbstractSlider.SliderAction.SliderPageStepAdd:
             self.__command_type = NavToViewCmdTypeEnum.slider_step
 
-        elif slider_action == QAbstractSlider.SliderPageStepSub:
+        elif slider_action == QAbstractSlider.SliderAction.SliderPageStepSub:
             self.__command_type = NavToViewCmdTypeEnum.slider_step
 
         else:
@@ -1522,7 +1522,7 @@ class Actor2dView(QGraphicsView):
 
     def __check_moving_view(self, event: QMouseEvent) -> bool:
         """Return True if the event indicates that view is being moved over scene"""
-        return event.buttons() == Qt.LeftButton and self.itemAt(event.pos()) is None
+        return event.buttons() == Qt.MouseButton.LeftButton and self.itemAt(event.pos()) is None
 
     def __check_view_changed(self):
         """

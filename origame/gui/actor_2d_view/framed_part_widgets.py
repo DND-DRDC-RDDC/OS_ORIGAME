@@ -21,18 +21,18 @@ from inspect import signature
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, QMarginsF
-from PyQt5.QtGui import QPalette, QResizeEvent, QPixmap, QMouseEvent
-from PyQt5.QtSvg import QGraphicsSvgItem
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QMessageBox, QTableView, QGraphicsObject, QAction, QHBoxLayout
-from PyQt5.QtWidgets import QWidget, QScrollArea, QHeaderView, QPlainTextEdit, QMenu
+from PyQt6.QtCore import Qt, QMarginsF
+from PyQt6.QtGui import QPalette, QResizeEvent, QPixmap, QMouseEvent, QAction
+from PyQt6.QtSvgWidgets import QGraphicsSvgItem
+from PyQt6.QtWidgets import QLabel, QVBoxLayout, QMessageBox, QTableView, QGraphicsObject, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QScrollArea, QHeaderView, QPlainTextEdit, QMenu
 
 from dateutil.relativedelta import relativedelta
 
 import matplotlib
 
-if matplotlib.get_backend() != 'Qt5Agg':
-    matplotlib.use('Qt5Agg')
+if matplotlib.get_backend() != 'QtAgg':
+    matplotlib.use('QtAgg')
 from matplotlib import pyplot
 
 # [3. local]
@@ -151,8 +151,8 @@ class ParentActorProxyWidget(QWidget):
             self.go_to_parent_button.clicked.connect(self.__slot_on_go_to_parent)
 
         self._palette = QPalette()
-        self._palette.setColor(QPalette.Window, PART_ICON_COLORS['actor_proxy'])
-        self._palette.setColor(QPalette.Text, Qt.white)
+        self._palette.setColor(QPalette.ColorRole.Window, PART_ICON_COLORS['actor_proxy'])
+        self._palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
         self.setPalette(self._palette)
         self.setAutoFillBackground(True)
 
@@ -229,7 +229,7 @@ class ChildActor2dContent(QWidget):
         """
         Makes the image fit in the container - centered and with aspect ratio.
         """
-        fit_in = self.__svg.actual_image_size.scaled(self.__logical_owner.size(), Qt.KeepAspectRatio)
+        fit_in = self.__svg.actual_image_size.scaled(self.__logical_owner.size(), Qt.AspectRatioMode.KeepAspectRatio)
         self.__svg.setFixedSize(fit_in * ChildActor2dContent.MAKE_IMG_SMALLER)
 
     def set_image(self, new_path: str = None):
@@ -549,10 +549,10 @@ class FunctionPart2dContent(QWidget):
         vertical_layout = QVBoxLayout(self)
         vertical_layout.setContentsMargins(4, 4, 4, 4)
         vertical_layout.setSpacing(2)
-        self.params_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        self.params_label.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         vertical_layout.addLayout(horizontal_layout)
         self.function_listing = ScriptEditBox()
-        self.function_listing.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.function_listing.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.function_listing.setReadOnly(True)
         vertical_layout.addWidget(self.function_listing)
 
@@ -583,8 +583,8 @@ class FunctionPartWidget(BreakpointIndicator, EventCounterManager, FramedPartWid
         separator.setSeparator(True)
 
         roles = create_action(self, "Roles" + HORIZONTAL_ELLIPSIS)
-        roles.setMenu(QMenu())
 
+        menu = QMenu()
         self.__toggle_startup_action = create_action(None, "Startup", tooltip="Toggle Startup role",
                                                      connect=self.__slot_toggle_startup)
         self.__toggle_reset_action = create_action(None, "Reset", tooltip="Toggle Reset role",
@@ -595,11 +595,12 @@ class FunctionPartWidget(BreakpointIndicator, EventCounterManager, FramedPartWid
                                                    connect=self.__slot_toggle_setup)
         self.__toggle_batch_action = create_action(None, "Batch", tooltip="Toggle Batch role",
                                                    connect=self.__slot_toggle_batch)
-        roles.menu().addAction(self.__toggle_setup_action)
-        roles.menu().addAction(self.__toggle_reset_action)
-        roles.menu().addAction(self.__toggle_startup_action)
-        roles.menu().addAction(self.__toggle_finish_action)
-        roles.menu().addAction(self.__toggle_batch_action)
+        menu.addAction(self.__toggle_setup_action)
+        menu.addAction(self.__toggle_reset_action)
+        menu.addAction(self.__toggle_startup_action)
+        menu.addAction(self.__toggle_finish_action)
+        menu.addAction(self.__toggle_batch_action)
+        roles.setMenu(menu)
 
         self.__startup_marker = QGraphicsSvgItem(str(get_icon_path("role_startup.svg")))
         self.__startup_marker.setVisible(False)
@@ -1138,8 +1139,8 @@ class DataPart2dContent(QWidget):
         layout.addWidget(self._data_view)
 
         self._data_view.setShowGrid(False)
-        header = DataPartHeaderView(Qt.Horizontal)
-        header.setSectionResizeMode(QHeaderView.ResizeToContents)
+        header = DataPartHeaderView(Qt.Orientation.Horizontal)
+        header.setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self._data_view.setHorizontalHeader(header)
 
     def get_data_view(self) -> QTableView:
@@ -1186,14 +1187,14 @@ class DataPartWidget(FramedPartWidget):
             self.__proxy_model = SortFilterProxyModelByColumns(self, [key_col])
             self.__proxy_model.setSourceModel(self._data_model)
             self._content_widget.get_data_view().setModel(self.__proxy_model)
-            self._content_widget.get_data_view().sortByColumn(key_col, Qt.AscendingOrder)
+            self._content_widget.get_data_view().sortByColumn(key_col, Qt.SortOrder.AscendingOrder)
             self._content_widget.get_data_view().setSortingEnabled(True)
 
         elif display_order == DisplayOrderEnum.reverse_alphabetical:
             self.__proxy_model = SortFilterProxyModelByColumns(self, [key_col])
             self.__proxy_model.setSourceModel(self._data_model)
             self._content_widget.get_data_view().setModel(self.__proxy_model)
-            self._content_widget.get_data_view().sortByColumn(key_col, Qt.DescendingOrder)
+            self._content_widget.get_data_view().sortByColumn(key_col, Qt.SortOrder.DescendingOrder)
             self._content_widget.get_data_view().setSortingEnabled(True)
 
         else:
@@ -1217,8 +1218,8 @@ class SheetPart2dContent(QWidget):
         layout.addWidget(self.sheet_view)
 
         self.sheet_view.setShowGrid(False)
-        header = QHeaderView(Qt.Horizontal)
-        header.setSectionResizeMode(QHeaderView.Stretch)
+        header = QHeaderView(Qt.Orientation.Horizontal)
+        header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.sheet_view.setHorizontalHeader(header)
 
 
@@ -1376,11 +1377,11 @@ class TablePart2dContent(QWidget):
         self.table_view.setShowGrid(False)
         layout.addWidget(self.table_view)
 
-        h_header = QHeaderView(Qt.Horizontal)
+        h_header = QHeaderView(Qt.Orientation.Horizontal)
         h_header.setSectionsClickable(False)
         h_header.setSectionsMovable(False)
-        h_header.setSectionResizeMode(QHeaderView.Interactive)
-        v_header = QHeaderView(Qt.Vertical)
+        h_header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        v_header = QHeaderView(Qt.Orientation.Vertical)
         v_header.setSectionsClickable(False)
         v_header.setSectionsMovable(False)
         self.table_view.setHorizontalHeader(h_header)
@@ -1430,14 +1431,14 @@ class TablePartWidget(FramedPartWidget):
             self.__proxy_model.setSourceModel(self._table_model)
             self._content_widget.table_view.setModel(self.__proxy_model)
             self._content_widget.table_view.setSortingEnabled(True)
-            self._content_widget.table_view.sortByColumn(sorted_column[0], Qt.AscendingOrder)
+            self._content_widget.table_view.sortByColumn(sorted_column[0], Qt.SortOrder.AscendingOrder)
 
         elif display_order == DisplayOrderEnum.reverse_alphabetical:
             self.__proxy_model = SortFilterProxyModelByColumns(self, all_col_idxs)
             self.__proxy_model.setSourceModel(self._table_model)
             self._content_widget.table_view.setModel(self.__proxy_model)
             self._content_widget.table_view.setSortingEnabled(True)
-            self._content_widget.table_view.sortByColumn(sorted_column[0], Qt.DescendingOrder)
+            self._content_widget.table_view.sortByColumn(sorted_column[0], Qt.SortOrder.DescendingOrder)
 
         else:
             # This must be DisplayOrderEnum.of_creation
@@ -1617,7 +1618,7 @@ class LibraryPart2dContent(QWidget):
         vertical_layout.setContentsMargins(4, 4, 4, 4)
         vertical_layout.setSpacing(2)
         self.function_listing = ScriptEditBox()
-        self.function_listing.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.function_listing.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.function_listing.setReadOnly(True)
         vertical_layout.addWidget(self.function_listing)
 
@@ -1685,7 +1686,7 @@ class LibraryPartWidget(BreakpointIndicator, FramedPartWidget, IExecPartWidget):
         def on_response(name_list: List[str], sig_list: List[signature]):
             if len(name_list) == 0:
                 exec_modal_dialog("Runable Functions", "There are no functions defined in the library.",
-                                  QMessageBox.Information)
+                                  QMessageBox.Icon.Information)
                 return
 
             self.__list_and_fire = ListAndFirePopup(name_list, sig_list)
@@ -1922,7 +1923,7 @@ class ButtonPartWidget(FramedPartWidget):
         """
 
         def on_error(error_info: AsyncErrorInfo):
-            exec_modal_dialog("Button Press Error", error_info.msg, QMessageBox.Critical)
+            exec_modal_dialog("Button Press Error", error_info.msg, QMessageBox.Icon.Critical)
             self.__on_released()
 
         AsyncRequest.call(self._part.on_user_press, error_cb=on_error)
@@ -1934,7 +1935,7 @@ class ButtonPartWidget(FramedPartWidget):
         """
 
         def on_error(error_info: AsyncErrorInfo):
-            exec_modal_dialog("Button Release Error", error_info.msg, QMessageBox.Critical)
+            exec_modal_dialog("Button Release Error", error_info.msg, QMessageBox.Icon.Critical)
 
         AsyncRequest.call(self._part.on_user_release, error_cb=on_error)
 
@@ -2043,7 +2044,7 @@ class PlotPart2dContent(QWidget):
         """
         Makes the plot fit in the container - with aspect ratio.
         """
-        fit_in = self.canvas.size().scaled(self.__logical_owner.size(), Qt.KeepAspectRatio)
+        fit_in = self.canvas.size().scaled(self.__logical_owner.size(), Qt.AspectRatioMode.KeepAspectRatio)
         self.canvas.setFixedSize(fit_in * 0.9)
 
 

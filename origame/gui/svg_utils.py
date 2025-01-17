@@ -22,10 +22,10 @@ from pathlib import Path
 from xml.dom.minidom import parseString
 
 # [2. third-party]
-from PyQt5.QtCore import QSize, QByteArray, Qt
-from PyQt5.QtGui import QPixmap, QTransform
-from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtCore import QSize, QByteArray, Qt
+from PyQt6.QtGui import QPixmap, QTransform
+from PyQt6.QtSvgWidgets import QSvgWidget
+from PyQt6.QtWidgets import QWidget
 
 # [3. local]
 from ..core import override
@@ -137,7 +137,7 @@ class SvgFromImageWidget(QSvgWidget):
                                                               self.__actual_image_size.height() / 2))
         image_tag = self.__svg_dom.getElementsByTagName("image")
         image_tag[0].setAttribute("xlink:href", "data:{};base64, {}".format(self.__mime[0], img_b64))
-        svg_byte_array.append(self.__svg_dom.toxml())
+        svg_byte_array.append(self.__svg_dom.toxml().encode())
         super(SvgFromImageWidget, self).load(svg_byte_array)
 
     def rotate(self, angle_in_degree):
@@ -153,7 +153,7 @@ class SvgFromImageWidget(QSvgWidget):
                                                               self.__actual_image_size.width() / 2,
                                                               self.__actual_image_size.height() / 2))
         svg_byte_array = QByteArray()
-        svg_byte_array.append(self.__svg_dom.toxml())
+        svg_byte_array.append(self.__svg_dom.toxml().encode())
         super(SvgFromImageWidget, self).load(svg_byte_array)
 
         self.__actual_image_size = self.__actual_image.transformed(QTransform().rotate(angle_in_degree)).size()
@@ -178,7 +178,7 @@ class SvgFromImageWidget(QSvgWidget):
         :param container_size: The size of the widget to fit the SVG into.
         :param size_scale_factor: A scale factor for the size.
         """
-        size = self.actual_image_size.scaled(container_size, Qt.KeepAspectRatio)
+        size = self.actual_image_size.scaled(container_size, Qt.AspectRatioMode.KeepAspectRatio)
         self.setFixedSize(size * size_scale_factor)
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------

@@ -19,15 +19,15 @@ import logging
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QDialog, QMessageBox, QScrollArea, QSizePolicy
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QDialog, QMessageBox, QScrollArea, QSizePolicy
+from PyQt6.QtCore import Qt
 
 from matplotlib import pyplot
 import matplotlib
 
-if matplotlib.get_backend() != 'Qt5Agg':
-    matplotlib.use('Qt5Agg')
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+if matplotlib.get_backend() != 'QtAgg':
+    matplotlib.use('QtAgg')
+from matplotlib.backends.backend_qtagg import FigureCanvas
 
 # [3. local]
 from ...core import override, override_required
@@ -86,7 +86,7 @@ class PlotEditorDialog(EditorDialog):
 
     @override(QDialog)
     def done(self, result: int):
-        if result != QDialog.Rejected:
+        if result != QDialog.DialogCode.Rejected:
             isvalid = self.send_to_plot_part()
             if not isvalid:
                 # For invalid results, return the user to the orignal dialog to correct mistakes
@@ -132,7 +132,7 @@ class ExportImageDialog(PlotEditorDialog):
 
         if error_found:
             msg_title = 'Export Error'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
             return False
 
@@ -183,7 +183,7 @@ class ExportDataDialog(PlotEditorDialog):
 
         if error_found:
             msg_title = 'Export Error'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
             return False
 
@@ -195,7 +195,7 @@ class ExportDataDialog(PlotEditorDialog):
             if not success:
                 msg_title = 'Export Error'
                 warn_msg = 'Plot data export did not succeed. Refer to the log window for more information.'
-                exec_modal_dialog(msg_title, warn_msg, QMessageBox.Critical)
+                exec_modal_dialog(msg_title, warn_msg, QMessageBox.Icon.Critical)
                 log.warning('{}: {}', msg_title, warn_msg)
 
         AsyncRequest.call(self._part.export_data, file_path, sheet, response_cb=on_data_export_complete)

@@ -21,9 +21,8 @@ from enum import IntEnum
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QDialog, QWidget, QFileDialog, QMessageBox, QTableWidgetItem, QGroupBox
-from PyQt5.Qt import Qt
+from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtWidgets import QDialog, QWidget, QFileDialog, QMessageBox, QTableWidgetItem, QGroupBox
 
 # [3. local]
 from ...core import override_required, override
@@ -37,6 +36,7 @@ from ..gui_utils import exec_modal_dialog, set_default_dialog_frame_flags
 from ..conversions import convert_seconds_to_string, convert_float_days_to_string
 
 from .Ui_seed_options import Ui_SeedOptionsWidget
+from . import sim_steps_rc  # This needs to be included before the Ui_SimStepsWidget, so that it has access to it
 from .Ui_sim_steps import Ui_SimStepsWidget
 
 # -- Meta-data ----------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ class SimSettingsDialog(SimDialog):
         except Exception as exc:
             msg_title = 'Load {} Simulation Settings File Error'.format(load_type)
             error_msg = str(exc) + '\nAn error occurred while loading the simulation settings.'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
 
         self.set_panel_settings()
@@ -416,7 +416,7 @@ class SeedOptionsWidget(QWidget):
         Autogenerate seeds checked/unchecked.
         :param checked: The Qt.CheckState that is 'Unchecked', 'PartiallyChecked', or 'Checked'.
         """
-        if checked == Qt.Checked:
+        if checked == Qt.CheckState.Checked:
             self.enable_seed_settings(False)
         else:
             self.enable_seed_settings(True)
@@ -461,7 +461,7 @@ class SeedOptionsWidget(QWidget):
             except Exception as exc:
                 msg_title = 'Seed Table Creation Error'
                 error_msg = str(exc) + '\nAn error occurred while creating the seed table for saving.'
-                exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+                exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
                 log.error('{}: {}', msg_title, error_msg)
 
             self.__seed_table = seed_table
@@ -471,7 +471,7 @@ class SeedOptionsWidget(QWidget):
         except Exception as exc:
             msg_title = 'Seed Table Save Error'
             error_msg = str(exc) + '\nAn error occurred while saving the seed table.'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
 
     def __on_load_seeds_button_clicked(self):
@@ -498,7 +498,7 @@ class SeedOptionsWidget(QWidget):
         except Exception as exc:
             msg_title = 'Load Seed Table Error'
             error_msg = str(exc) + '\nAn error occurred while loading the seed table.'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
 
         QSettings().setValue(self.SEED_FILE_LOCATION, filepath)

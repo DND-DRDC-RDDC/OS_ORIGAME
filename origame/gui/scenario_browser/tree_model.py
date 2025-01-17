@@ -15,7 +15,7 @@ Implements the following classes:
     TreeModel: an editable model based on TreeItem.
     TODO: handle additional roles in a nice way
 
-Version History: based on the PyQt5 itemviews/editabletreemodel.py example
+Version History: based on the PyQt6 itemviews/editabletreemodel.py example
     PEP-8-ized by Alan Ezust, 2014
     Some bugs fixed by the R4HR team. 2014
 
@@ -29,8 +29,8 @@ Version History: based on the PyQt5 itemviews/editabletreemodel.py example
 import logging
 
 # [2. third-party]
-from PyQt5.QtCore import QAbstractItemModel, Qt, QObject, QModelIndex
-from PyQt5.QtWidgets import QMessageBox
+from PyQt6.QtCore import QAbstractItemModel, Qt, QObject, QModelIndex
+from PyQt6.QtWidgets import QMessageBox
 
 # [3. local]
 from ...core import override
@@ -76,7 +76,7 @@ class TreeItem(QObject):
         """
         :param data: a list of columns, or a single element if there is only 1 column of data.
         :param parent: optional parent TreeItem
-        :param user_data: optional user data, returned from Qt.UserRole, can be any object
+        :param user_data: optional user data, returned from Qt.ItemDataRole.UserRole, can be any object
         """
         QObject.__init__(self)
         self._parent_item = parent
@@ -86,7 +86,7 @@ class TreeItem(QObject):
         self.__model = model
         self._undo = scene_undo_stack()
 
-        self.set_data(0, user_data, Qt.UserRole)
+        self.set_data(0, user_data, Qt.ItemDataRole.UserRole)
 
     def child(self, child_num: int):
         """
@@ -106,11 +106,11 @@ class TreeItem(QObject):
     def column_count(self) -> int:
         return len(self.__item_data)
 
-    def data(self, column, role=Qt.DisplayRole) -> object:
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+    def data(self, column, role=Qt.ItemDataRole.DisplayRole) -> object:
+        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             return self.__item_data[column]
         else:
-            if role == Qt.UserRole:
+            if role == Qt.ItemDataRole.UserRole:
                 return self.__user_data
 
         return None
@@ -233,7 +233,7 @@ class TreeItem(QObject):
         :param role: A role to set application specific data.
         :return: Boolean indicating whether or not the TreeItem's data was set successfully.
         """
-        if role == int(Qt.UserRole):
+        if role == int(Qt.ItemDataRole.UserRole):
             if self.__user_data == user_data:
                 return True
 
@@ -251,7 +251,7 @@ class TreeItem(QObject):
 
             return True
 
-        if role != int(Qt.EditRole):
+        if role != int(Qt.ItemDataRole.EditRole):
             return False
 
         if column < 0 or column >= len(self.__item_data):
@@ -282,7 +282,7 @@ class TreeItem(QObject):
         child_index = self.__model.index(position, 0, self_index)
 
         self.__model.set_index_data(child_index, child_part.part_frame.name)
-        self.__model.set_index_data(child_index, child_part, Qt.UserRole)
+        self.__model.set_index_data(child_index, child_part, Qt.ItemDataRole.UserRole)
 
         new_tree_item = child_index.internalPointer()
 
@@ -357,9 +357,9 @@ class TreeItem(QObject):
         self.__child_items.insert(position, tree_item)
 
         child_actor = tree_item.user_data
-        child_actor.signals.sig_child_deleted.connect(tree_item.slot_on_child_deleted, Qt.UniqueConnection)
-        child_actor.part_frame.signals.sig_name_changed.connect(tree_item.slot_on_renamed, Qt.UniqueConnection)
-        child_actor.signals.sig_child_added.connect(tree_item.slot_on_child_added, Qt.UniqueConnection)
+        child_actor.signals.sig_child_deleted.connect(tree_item.slot_on_child_deleted, Qt.ConnectionType.UniqueConnection)
+        child_actor.part_frame.signals.sig_name_changed.connect(tree_item.slot_on_renamed, Qt.ConnectionType.UniqueConnection)
+        child_actor.signals.sig_child_added.connect(tree_item.slot_on_child_added, Qt.ConnectionType.UniqueConnection)
 
         return True
 
@@ -421,7 +421,7 @@ class TreeModel(QAbstractItemModel):
         return self._root_item.column_count() if self._root_item else 0
 
     @override(QAbstractItemModel)
-    def data(self, index: QModelIndex, role=Qt.DisplayRole) -> object:
+    def data(self, index: QModelIndex, role=Qt.ItemDataRole.DisplayRole) -> object:
         """
         override from base class. called from index.data().
 
@@ -439,18 +439,18 @@ class TreeModel(QAbstractItemModel):
             return None
 
     @override(QAbstractItemModel)
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         """ Returns what kinds of interactions the user can have with an item at a particular location
         :param index: the index of the item
-        :return: A bitwise or of flags defined in Qt.ItemFlags
+        :return: A bitwise or of flags defined in Qt.ItemFlag
         """
         if not index.isValid():
             return 0
 
-        return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        return Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
     @override(QAbstractItemModel)
-    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole) -> object:
+    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.ItemDataRole.DisplayRole) -> object:
         """
         Returns information about the header row or column for this model.
         :param section: the row or column number
@@ -458,7 +458,7 @@ class TreeModel(QAbstractItemModel):
         :param role: The kind of data that is requested (display text, size hint, background color, etc)
         :return: data of any type
         """
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             return self._root_item.data(section)
 
     @override(QAbstractItemModel)
@@ -610,7 +610,7 @@ class TreeModel(QAbstractItemModel):
         raise ValueError('BUG: QModelIndex for tree item {} not found!'.format(tree_item.get_user_data()))
 
     @override(QAbstractItemModel)
-    def setData(self, index: QModelIndex, value: Any, role=Qt.EditRole) -> bool:
+    def setData(self, index: QModelIndex, value: Any, role=Qt.ItemDataRole.EditRole) -> bool:
         """
         This is how  values from user editing operations get sent to the model.
         Called when the user finishes editing a cell in the View.
@@ -620,28 +620,28 @@ class TreeModel(QAbstractItemModel):
         :return: true if successful.
         """
 
-        actioned_actor = index.data(Qt.UserRole)
+        actioned_actor = index.data(Qt.ItemDataRole.UserRole)
         rename_command = RenamePartCommand(actioned_actor, value)
         self._undo_stack.push(rename_command)
 
         return True
 
-    def set_index_data(self, index: QModelIndex, value: Either[ActorPart, str], role=Qt.EditRole) -> bool:
+    def set_index_data(self, index: QModelIndex, value: Either[ActorPart, str], role=Qt.ItemDataRole.EditRole) -> bool:
         """
         When values (part names) on the backend change, they must call this method to update our cached copy
         of the data.
         Given a QModelIndex, this method is used to set data for different roles that are represented
-        by this index. If role is Qt.EditRole, the value must be of type string.  If role is UserData, then value must
+        by this index. If role is Qt.ItemDataRole.EditRole, the value must be of type string.  If role is UserData, then value must
         be of type ActorPart.
         :param index:  The QModelIndex of tree item.
         :param value:  The value of a particular Qt role being set.
         :param role:  The role for which the value is being set.
         :return:
         """
-        if role == Qt.EditRole:
+        if role == Qt.ItemDataRole.EditRole:
             assert isinstance(value, str)
 
-        if role == Qt.UserRole:
+        if role == Qt.ItemDataRole.UserRole:
             assert isinstance(value, ActorPart)
 
         result = index.internalPointer().set_data(index.column(), value, role)
@@ -658,7 +658,7 @@ class TreeModel(QAbstractItemModel):
         """
         if index is None:
             pass
-        actioned_actor = index.data(Qt.UserRole)
+        actioned_actor = index.data(Qt.ItemDataRole.UserRole)
         log.info("Add Actor clicked for actor {} row {} col {}", actioned_actor, index.row(), index.column())
         add_command = AddPartCommand(actioned_actor, 'actor')
         self._undo_stack.push(add_command)
@@ -671,11 +671,11 @@ class TreeModel(QAbstractItemModel):
             the backend (which is being done here via the AsyncRequest call).
         :returns a boolean flag indicating if the user confirmed actor deletion.
         """
-        actioned_actor = index.data(Qt.UserRole)
+        actioned_actor = index.data(Qt.ItemDataRole.UserRole)
         assert actioned_actor.parent_actor_part is not None
 
         msg = "Delete '{}'? Are you sure?".format(actioned_actor.name)
-        if exec_modal_dialog("Delete Actor", msg, QMessageBox.Question) == QMessageBox.Yes:
+        if exec_modal_dialog("Delete Actor", msg, QMessageBox.Icon.Question) == QMessageBox.StandardButton.Yes:
             log.info("Delete clicked on actor {}", actioned_actor.name)
             remove_command = RemovePartCommand(actioned_actor, view_is_parent=True)
             self._undo_stack.push(remove_command)
@@ -684,8 +684,8 @@ class TreeModel(QAbstractItemModel):
             return False
 
     @override(QAbstractItemModel)
-    def setHeaderData(self, section, orientation: Qt.Orientation, value: Any, role=Qt.EditRole) -> bool:
-        if role != Qt.EditRole or orientation != Qt.Horizontal:
+    def setHeaderData(self, section, orientation: Qt.Orientation, value: Any, role=Qt.ItemDataRole.EditRole) -> bool:
+        if role != Qt.ItemDataRole.EditRole or orientation != Qt.Orientation.Horizontal:
             return False
 
         result = self._root_item.set_data(section, value)
@@ -704,7 +704,7 @@ class TreeModel(QAbstractItemModel):
         row_count = self.rowCount(parent_index)
         for row in range(0, row_count):
             idx = self.index(row, 0, parent_index)
-            part_obj = self.data(idx, Qt.UserRole)
+            part_obj = self.data(idx, Qt.ItemDataRole.UserRole)
             if part_obj is find_part:
                 return idx
 

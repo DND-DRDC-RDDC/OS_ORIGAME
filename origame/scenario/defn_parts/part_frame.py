@@ -1351,7 +1351,7 @@ class PartFrame(IOriSerializable):
         if detail_level_value == 'icon':
             self.__detail_level = DetailLevelEnum.minimal
         else:
-            self.__detail_level = DetailLevelEnum[detail_level_value]
+            self.__detail_level = DetailLevelEnum.full
 
         if self.__part.RESIZABLE_FRAME:
             size = ori_data[PfKeys.SIZE]

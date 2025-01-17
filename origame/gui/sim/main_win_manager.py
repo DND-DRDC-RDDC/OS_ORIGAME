@@ -19,9 +19,9 @@ import logging
 import weakref
 
 # [2. third-party]
-from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QMessageBox, QAction
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt6.QtCore import QObject
+from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtGui import QIcon, QPixmap, QAction
 
 # [3. local]
 from ...core import override
@@ -33,6 +33,7 @@ from ..safe_slot import safe_slot
 from ..async_methods import AsyncRequest
 from ..animation import RuntimeAnimationSettingMonitor
 from .main import MainSimSharedButtonStates
+from .. import gui_rc # This needs to be included before the Ui_MainWindow, so that it has access to it
 from ..Ui_mainwindow import Ui_MainWindow
 
 # -- Meta-data ----------------------------------------------------------------------------------
@@ -84,7 +85,7 @@ class BatchSimManagerBridge(QObject):
 
         except Exception as exc:
             message = "Could not start the batch simulation, please check configuration."
-            exec_modal_dialog('Batch Simulation Error', message, QMessageBox.Critical)
+            exec_modal_dialog('Batch Simulation Error', message, QMessageBox.Icon.Critical)
             log.error(message)
 
     slot_run_batch = safe_slot(run_batch)
@@ -164,10 +165,10 @@ class MainSimBridge(IScenarioMonitor, QObject):
         """
         msg = 'Are you sure you want to delete ALL events from the Event Queue? Click Yes to proceed, or ' \
               'No to go back.'
-        user_confirmation = exec_modal_dialog('Clear Event Queue', msg, QMessageBox.Question)
+        user_confirmation = exec_modal_dialog('Clear Event Queue', msg, QMessageBox.Icon.Question)
 
         scenario = self.__scenario_weak()
-        if scenario is not None and user_confirmation == QMessageBox.Yes:
+        if scenario is not None and user_confirmation == QMessageBox.StandardButton.Yes:
             AsyncRequest.call(scenario.sim_controller.clear_event_queue)
 
     slot_on_clear_queue = safe_slot(on_clear_queue)

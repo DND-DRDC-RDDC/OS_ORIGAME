@@ -22,7 +22,7 @@ from textwrap import dedent
 # [2. third-party]
 import matplotlib
 
-if matplotlib.get_backend() not in ('Qt5Agg', 'Agg'):
+if matplotlib.get_backend() not in ('QtAgg', 'Agg'):
     # if not setup for Qt or window-less, do it here:
     matplotlib.use('Agg')
 from matplotlib import pyplot

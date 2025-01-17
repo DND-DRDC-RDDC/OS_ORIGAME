@@ -19,8 +19,8 @@ import logging
 from textwrap import dedent
 
 # [2. third-party]
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialogButtonBox, QPushButton, QMessageBox, QDialog, QWidget, QAbstractButton
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QDialogButtonBox, QPushButton, QMessageBox, QDialog, QWidget, QAbstractButton
 
 # [3. local]
 from ...core import override
@@ -59,7 +59,7 @@ class DebugCodeViewer(QDialog):
 
     def __init__(self, parent: QWidget = None):
         super().__init__(parent,
-                         (Qt.Dialog | Qt.WindowCloseButtonHint | Qt.WindowMinMaxButtonsHint | Qt.WindowTitleHint))
+                         (Qt.WindowType.Dialog | Qt.WindowType.WindowCloseButtonHint | Qt.WindowType.WindowMinMaxButtonsHint | Qt.WindowType.WindowTitleHint))
 
         self.ui = Ui_DebugCodeViewerPanel()
         self.ui.setupUi(self)
@@ -90,8 +90,8 @@ class DebugCodeViewer(QDialog):
                       by running a simulation, clicking Yes PAUSES the simulation.)
                     - Click No to return to the Debug View.
                     """
-                answer = exec_modal_dialog("Abort Run", dedent(msg), QMessageBox.Question)
-                if answer == QMessageBox.No:
+                answer = exec_modal_dialog("Abort Run", dedent(msg), QMessageBox.Icon.Question)
+                if answer == QMessageBox.StandardButton.No:
                     return
 
             PyDebugger.get_singleton().next_command_stop()
@@ -138,7 +138,7 @@ class DebugCodeViewer(QDialog):
         :param button:  The button that was clicked.
         """
         button_role = self.ui.button_close.buttonRole(button)
-        if button_role == QDialogButtonBox.RejectRole:
+        if button_role == QDialogButtonBox.ButtonRole.RejectRole:
             self.reject()
 
     def on_toggle_breakpoint(self):

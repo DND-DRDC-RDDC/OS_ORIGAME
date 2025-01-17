@@ -20,7 +20,7 @@ Version History: See SVN log.
 # [1. standard library]
 import threading
 from pathlib import Path, PureWindowsPath
-from distutils.dir_util import copy_tree
+from shutil import copytree
 import logging
 import re
 import shutil
@@ -187,7 +187,7 @@ class ImageManager:
                 if not Path(target_path).exists():
                     Path(target_path).mkdir(parents=True)
 
-                copy_tree(str(source_images_path), str(target_images_path))
+                copytree(str(source_images_path), str(target_images_path), dirs_exist_ok=True)
 
             except Exception as exc:
                 log.error("Error copying directory '{}' to directory '{}'. Additional info: {}",

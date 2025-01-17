@@ -17,7 +17,7 @@
    <string notr="true"/>
   </property>
   <property name="dockOptions">
-   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+   <set>QMainWindow::DockOption::AllowNestedDocks|QMainWindow::DockOption::AllowTabbedDocks|QMainWindow::DockOption::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="central_widget">
    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
@@ -301,7 +301,7 @@
   </widget>
   <widget class="QDockWidget" name="scenario_browser_dock">
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetClosable|QDockWidget::DockWidgetFeature::DockWidgetMovable|QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetVerticalTitleBar</set>
    </property>
    <property name="windowTitle">
     <string>Scenario Browser</string>
@@ -477,7 +477,7 @@
   </widget>
   <widget class="QDockWidget" name="log_panel_dock">
    <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetClosable|QDockWidget::DockWidgetFeature::DockWidgetMovable|QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetVerticalTitleBar</set>
    </property>
    <property name="windowTitle">
     <string>Application Log</string>
@@ -1262,9 +1262,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <includes>
-  <include location="local">from . import gui_rc</include>
- </includes>
  <resources>
   <include location="gui.qrc"/>
  </resources>

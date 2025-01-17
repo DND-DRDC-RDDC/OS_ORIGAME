@@ -21,9 +21,9 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtDesigner import QPyDesignerCustomWidgetPlugin
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QWidget
+from PyQt6.QtDesigner import QPyDesignerCustomWidgetPlugin
 
 # [3. local]
 

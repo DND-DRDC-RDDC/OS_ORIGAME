@@ -10,32 +10,30 @@ See LICENSE file.
 
 ## RECOMMENDED INSTALLATION
 
-These instructions are for running ORIGAME on python 3.8 and 3.11 
+These instructions are for running ORIGAME on Python 3.8 and 3.11
 
-1. Install Python 3.8.10 (python-3.8.10-amd64.exe)
-	- https://www.python.org/downloads/release/python-3810/
+1. Install the most recent Python 3.8 and/or Python 3.11 release for your system
+	- https://www.python.org/downloads/windows/
 
-2. Install Python 3.11.2 (python-3.11.2-amd64.exe)
-	- https://www.python.org/downloads/release/python-3112/
-
-3. Install Visual C++ Redistributable for Visual Studio 2015 (vc_redist.x64.exe)
+2. Install Visual C++ Redistributable for Visual Studio 2015 (vc_redist.x64.exe)
 	- https://www.microsoft.com/en-ca/download/details.aspx?id=48145
 
-4. Clone or download ORIGAME to a project folder on your system
+3. Clone or download ORIGAME to a project folder on your system
 
-5. From the project folder, create a virtual environment for ORIGAME for each Python version
+4. From the project folder, create a virtual environment for ORIGAME for each Python version that you wish to run
+   ORIGAME within
 	- e.g. `C:\Python38\python -m venv venv8`
 	- e.g. `C:\Python311\python -m venv venv11`
 
-6. Activate a virtual environment and install dependencies in "requirements.txt". Deactivate the virtual environment
-if not in use.
+5. Activate a virtual environment and install dependencies in "requirements.txt". Deactivate the virtual environment
+   if not in use. For example, with Python 11, run:
 	- `venv11\Scripts\activate`
 	- `pip install -r requirements.txt`
 	- `deactivate`
 
-7. Activate the desired virtual environment, and launch ORIGAME GUI.
+6. Activate the desired virtual environment, and launch ORIGAME GUI.
 	- `venv11\Scripts\activate`
-	- `py .\origame_gui.py`
+	- `python .\origame_gui.py`
 
 Visit this [this page](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#activating-a-virtual-environment) for more information about virtual environments.
 
@@ -50,7 +48,7 @@ if they require Pandas 1.x. The load error associated with this problem can be s
 
 ![Pandas 1 Required](wiki_images\pandas_1_required.png)
 
-To resolve this issue, run the following command in your virtual environment before launching ORIGAME:  
+To resolve this issue, run the following command in your virtual environment before launching ORIGAME:
 `pip install pandas==1.5.3`
 
 ## TESTING
@@ -62,6 +60,23 @@ These test scenarios constitute Government Supplied Material 2 (GSM 2), referred
 Note: **Pandas 1.5.3** is required for loading and running Scenario 2 that is provided in the /testing folder, so make sure
 it is installed in the python virtual environment before launching ORIGAME, by running the command in the
 Backwards Compatibility section of this document.
+
+## UI Changes
+
+After making changes to the ui components (The .ui files, and .qrc files), or adding new ones, it is imperative to run
+the script to compile them to python code. To do this run:
+
+``` pwsh
+python .\origame\gui\compile_all_ui_files.py
+```
+
+This should also be done if updating QT dependencies.
+
+Note that the above relies on the requirements_update_gui.txt being installed first:
+
+``` pwsh
+pip install -r requirements_update_gui.txt
+```
 
 ## CONTACT
 

@@ -9,7 +9,7 @@
 """
 Script to start Qt Designer with plugins from Origame.
 
-Note: The PyQt5 wheel from pypi no longer includes developer tools like Designer. These tools have
+Note: The PyQt6 wheel from pypi no longer includes developer tools like Designer. These tools have
 to be installed by installing the Qt C++ binary distribution.
 """
 
@@ -33,9 +33,9 @@ os.environ['PYQTDESIGNERPATH'] = str(base)
 origame_path = str(base.parent.parent.parent)
 os.environ['PYTHONPATH'] = origame_path
 
-import PyQt5
+import PyQt6
 
-qt_dir = str(Path(PyQt5.__file__).parent)
+qt_dir = str(Path(PyQt6.__file__).parent)
 command = r"C:\Qt\Qt5.7.0\5.7\msvc2015_64\bin\designer.exe {}".format(sys.argv[1])
 
 print('plugins in', os.getenv('PYQTDESIGNERPATH'))

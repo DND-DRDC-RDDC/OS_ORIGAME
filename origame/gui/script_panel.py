@@ -28,10 +28,10 @@ import jedi
 import jedi.api
 from jedi.api.classes import Name as JediName
 
-from PyQt5.Qsci import QsciLexer, QsciLexerPython, QsciScintilla
-from PyQt5.QtCore import QObject, Qt, pyqtSignal, QTimer
-from PyQt5.QtGui import QFont, QFontMetrics, QColor, QKeySequence, QKeyEvent, QMouseEvent
-from PyQt5.QtWidgets import QWidget, QShortcut, QMessageBox
+from PyQt6.Qsci import QsciLexer, QsciLexerPython, QsciScintilla
+from PyQt6.QtCore import QObject, Qt, pyqtSignal, QTimer
+from PyQt6.QtGui import QFont, QFontMetrics, QColor, QKeySequence, QKeyEvent, QMouseEvent, QShortcut
+from PyQt6.QtWidgets import QWidget, QMessageBox
 
 # [3. local]
 from ..core import override, override_optional
@@ -363,13 +363,13 @@ class ScriptPanel(QsciScintilla):
         self.setFont(self.__from_default_mono)
 
         # Code folding:
-        self.setFolding(QsciScintilla.BoxedFoldStyle)
+        self.setFolding(QsciScintilla.FoldStyle.BoxedFoldStyle)
 
         # Margin for line numbers and markers:
         self.setMarginLineNumbers(0, True)
         self.setMarginSensitivity(1, True)
         self.setMarginsFont(self.__from_default_mono)
-        self.setMarginWidth(0, QFontMetrics(self.__from_default_mono).width("0" * self.MAX_LINE_NUMBER_DIGITS))
+        self.setMarginWidth(0, QFontMetrics(self.__from_default_mono).horizontalAdvance("0" * self.MAX_LINE_NUMBER_DIGITS))
         self.setMarginsBackgroundColor(self.MARGIN_COLOR)
 
         # Auto-indentation:
@@ -402,7 +402,7 @@ class ScriptPanel(QsciScintilla):
         self.__scroll_value = None
 
         # Local actions (shortcuts that only work when the ScriptPanel has focus)
-        self.setBraceMatching(QsciScintilla.StrictBraceMatch)
+        self.setBraceMatching(QsciScintilla.BraceMatch.StrictBraceMatch)
         self.setMatchedBraceIndicator(1)
         go_to_matching_brace_action = create_action(self, "Go To Matching Brace")
         go_to_matching_brace_action.setShortcut(QKeySequence("Ctrl+0"))
@@ -425,8 +425,8 @@ class ScriptPanel(QsciScintilla):
             # additional transitions between lexers. For now, make the text read-only.
             # self.setLexer(None)
             self.setCaretLineVisible(False)
-            self.setCaretLineBackgroundColor(QColor(Qt.lightGray))
-            self.lexer().setPaper(QColor(Qt.lightGray))
+            self.setCaretLineBackgroundColor(QColor(Qt.GlobalColor.lightGray))
+            self.lexer().setPaper(QColor(Qt.GlobalColor.lightGray))
 
         elif coding_helper.LEXER_CLASS is not None:
             self.setCaretLineVisible(True)
@@ -450,11 +450,11 @@ class ScriptPanel(QsciScintilla):
         :param enable: True to enable it, False to disable it.
         """
         self.marginClicked.connect(self.__slot_on_margin_clicked)
-        self.markerDefine(QsciScintilla.RightArrow, self.MARKER_BREAKPOINT)
+        self.markerDefine(QsciScintilla.MarkerSymbol.RightArrow, self.MARKER_BREAKPOINT)
         self.setMarkerBackgroundColor(self.BREAKPOINT_MARKER_COLOR, self.MARKER_BREAKPOINT)
-        self.markerDefine(QsciScintilla.Background, self.MARKER_BREAKPOINT_BACKGROUND)
+        self.markerDefine(QsciScintilla.MarkerSymbol.Background, self.MARKER_BREAKPOINT_BACKGROUND)
         self.setMarkerBackgroundColor(self.BREAKPOINT_BACKGROUND_COLOR, self.MARKER_BREAKPOINT_BACKGROUND)
-        self.markerDefine(QsciScintilla.Background, self.MARKER_STOPPED_AT)
+        self.markerDefine(QsciScintilla.MarkerSymbol.Background, self.MARKER_STOPPED_AT)
         self.setMarkerBackgroundColor(self.BREAKPOINT_STEP_COLOR, self.MARKER_STOPPED_AT)
         self.__enable_breakpoint_marking = enable
 
@@ -575,7 +575,7 @@ class ScriptPanel(QsciScintilla):
         shortcut_ctrl_space = QShortcut(QKeySequence("Ctrl+Space"), self)
         shortcut_ctrl_space.activated.connect(self.__slot_show_auto_completions)
 
-    def __on_margin_clicked(self, _1: int, line_number: int, _2: Qt.KeyboardModifiers):
+    def __on_margin_clicked(self, _1: int, line_number: int, _2: Qt.KeyboardModifier):
         """
         This method is called when a click occurs on the left margin.
         :param line_number: The line number at which a margin clicked occurred.
@@ -727,7 +727,10 @@ class ScriptPanel(QsciScintilla):
         """
         self.__doc_string_timer.start(self.DOC_STRING_TIMEOUT)
 
-    __slot_on_margin_clicked = safe_slot(__on_margin_clicked)
+    # need to ignore types for __on_margin_clicked, because checking types causes a failure due to
+    # the signal it will be connected to has arguments of type [int, int, Qt::KeyBoardModifiers]
+    # and Qt::KeyBoardModifiers does not have a direct mapping in PyQT6
+    __slot_on_margin_clicked = safe_slot(__on_margin_clicked, ignore_types=True)
     __slot_go_to_matching_brace = safe_slot(__go_to_matching_brace)
     __slot_show_auto_completions = safe_slot(__show_auto_completions)
     __slot_user_list_choice = safe_slot(__user_list_choice)
@@ -781,7 +784,7 @@ class PyCodingAssistant(CodingAssistant):
                     'c' boolean that defaults to True
                 """)
             details = traceback.format_exc()
-            exec_modal_dialog('Error Parsing Parameters', msg, QMessageBox.Critical, detailed_message=details)
+            exec_modal_dialog('Error Parsing Parameters', msg, QMessageBox.Icon.Critical, detailed_message=details)
 
         else:
             # don't reassign namespace so that ScriptPanel sees changes on next auto-completion action

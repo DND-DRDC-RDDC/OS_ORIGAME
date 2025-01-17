@@ -18,9 +18,9 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtCore import QRectF, QRect, Qt
-from PyQt5.QtWidgets import QGraphicsObject, QGraphicsItem, QWidget, QStyleOptionGraphicsItem
-from PyQt5.QtGui import QBrush, QColor, QPainter
+from PyQt6.QtCore import QRectF, QRect, Qt
+from PyQt6.QtWidgets import QGraphicsObject, QGraphicsItem, QWidget, QStyleOptionGraphicsItem
+from PyQt6.QtGui import QBrush, QColor, QPainter
 
 # [3. local]
 from ...core import override
@@ -81,8 +81,8 @@ class HubPartItem(FramelessPartItem):
         :param option  style options for the item, such as its state, exposed area and its level-of-detail hints.
         :param widget  optional but may point to the actual widget being painted on, or None if painting off-screen.
         """
-        painter.setPen(Qt.NoPen)
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         offset_x = self._icon_size.width() / 2.0
         offset_y = self._icon_size.height() / 2.0
         painter.translate(offset_x, offset_y)
@@ -94,7 +94,7 @@ class HubPartItem(FramelessPartItem):
                        self._icon_size.height())
         painter.drawEllipse(outer)
 
-        painter.setBrush(QBrush(Qt.white))
+        painter.setBrush(QBrush(Qt.GlobalColor.white))
         inner_size = self._icon_size * HubPartItem.INNER_OUTER_RATIO
         inner = QRectF(-inner_size.width() / 2.0,
                        -inner_size.height() / 2.0,
@@ -129,9 +129,9 @@ class NodePartItem(FramelessPartItem):
         :param option  style options for the item, such as its state, exposed area and its level-of-detail hints.
         :param widget  optional but may point to the actual widget being painted on, or None if painting off-screen.
         """
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setBrush(QBrush(NodePartItem.NODE_COLOR))
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
         painter.drawEllipse(QRect(0, 0, self._icon_size.width(), self._icon_size.height()))
 
 
@@ -163,8 +163,8 @@ class MultiplierPartItem(FramelessPartItem):
         :param option  style options for the item, such as its state, exposed area and its level-of-detail hints.
         :param widget  optional but may point to the actual widget being painted on, or None if painting off-screen.
         """
-        painter.setPen(Qt.NoPen)
-        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         offset_x = self._icon_size.width() / 2.0
         offset_y = self._icon_size.height() / 2.0
         painter.translate(offset_x, offset_y)
@@ -197,7 +197,7 @@ class MultiplierPartItem(FramelessPartItem):
             painter.rotate(angle_to_rotate)
 
         # Draw the inner circle
-        painter.setBrush(QBrush(Qt.white))
+        painter.setBrush(QBrush(Qt.GlobalColor.white))
         inner = QRectF(-MultiplierPartItem.INNER_RADIUS,
                        -MultiplierPartItem.INNER_RADIUS,
                        MultiplierPartItem.INNER_DIAMETER,

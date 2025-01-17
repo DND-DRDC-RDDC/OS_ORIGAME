@@ -21,11 +21,11 @@ import logging
 from inspect import signature, Parameter
 
 # [2. third-party]
-from PyQt5.QtCore import QObject, QCoreApplication
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QValidator
-from PyQt5.QtWidgets import QMessageBox, QDialog, QLineEdit
-from PyQt5.QtWidgets import QFormLayout, QDialogButtonBox
+from PyQt6.QtCore import QObject, QCoreApplication
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QValidator
+from PyQt6.QtWidgets import QMessageBox, QDialog, QLineEdit
+from PyQt6.QtWidgets import QFormLayout, QDialogButtonBox
 
 # [3. local]
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -52,7 +52,7 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 # -- Module-level objects -----------------------------------------------------------------------
 
-__all__ = [  
+__all__ = [
     # public API of module: one line per string
     'ParameterInputDialog',
     'PyExprValidator',
@@ -160,7 +160,7 @@ class ParameterInputDialog(QDialog):
         first_line_edit_widget = self.ui.formLayout.itemAt(index_of_first_qline_edit).widget()
         first_line_edit_widget.setFocus()
 
-        ok_button = self.ui.buttonBox.button(QDialogButtonBox.Ok)
+        ok_button = self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok)
         all_present = all(required_values_present)
         ok_button.setEnabled(all_present)
         tooltip = "" if all_present else REQUIRED_ARG_ABSENT
@@ -170,13 +170,13 @@ class ParameterInputDialog(QDialog):
     def accept(self):
         """
         We want to control the show-and-hide of the dialog. But the Qt Designer generated code connects OK to accept()
-        automatically. 
+        automatically.
         """
         # 1. Check the mandatory input fields
         try:
             self.__get_call_args_dict()
         except ValueError as exc:
-            exec_modal_dialog("Missing Data", str(exc), QMessageBox.Critical)
+            exec_modal_dialog("Missing Data", str(exc), QMessageBox.Icon.Critical)
             return
 
         # 2. Check other validity of the input
@@ -201,7 +201,7 @@ class ParameterInputDialog(QDialog):
         var_args_used = False
         for idx, param_info in enumerate(self.__params.values()):
             form_layout = self.ui.formLayout
-            user_input = form_layout.itemAt(idx, QFormLayout.FieldRole).widget().text()
+            user_input = form_layout.itemAt(idx, QFormLayout.ItemRole.FieldRole).widget().text()
             have_anything = user_input.strip()
             if param_info.kind == Parameter.VAR_POSITIONAL:
                 var_args_used = True
@@ -230,7 +230,7 @@ class ParameterInputDialog(QDialog):
                     user_input = repr(param_info.default)
 
                 if var_args_used:
-                    var_name = form_layout.itemAt(idx, QFormLayout.LabelRole).widget().text()
+                    var_name = form_layout.itemAt(idx, QFormLayout.ItemRole.LabelRole).widget().text()
                     param_kwargs[var_name] = get_verified_eval(user_input)
                 else:
                     param_list.append(get_verified_eval(user_input))
@@ -243,10 +243,10 @@ class ParameterInputDialog(QDialog):
         Checks the validity of all the fields. As soon as the first invalid field is detected, disables the OK button
         and sets a tooltip. If all of the fields are valid, enables the button and clears the tooltip.
         """
-        ok_button = self.ui.buttonBox.button(QDialogButtonBox.Ok)
+        ok_button = self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok)
         for idx, param_info in enumerate(self.__params.values()):
             form_layout = self.ui.formLayout
-            user_input = form_layout.itemAt(idx, QFormLayout.FieldRole).widget().text()
+            user_input = form_layout.itemAt(idx, QFormLayout.ItemRole.FieldRole).widget().text()
             have_anything = user_input.strip()
             if param_info.kind == Parameter.VAR_POSITIONAL:
                 if not have_anything:
@@ -267,7 +267,7 @@ class ParameterInputDialog(QDialog):
                 validator = PyExprValidator(arg_required=param_info.default is Parameter.empty)
 
             val_acceptable, _, _ = validator.validate(have_anything, 0)
-            if val_acceptable != QValidator.Acceptable:
+            if val_acceptable != QValidator.State.Acceptable:
                 ok_button.setEnabled(False)
                 ok_button.setToolTip(OK_DISABLED_TOOLTIP.format(param_info.name))
                 return
@@ -281,7 +281,7 @@ class ParameterInputDialog(QDialog):
         :param validator_name: The name previously set for the validator. It is usually the field name.
         :param valid: True - if one of them is valid
         """
-        ok_button = self.ui.buttonBox.button(QDialogButtonBox.Ok)
+        ok_button = self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok)
         if valid:
             self.__check_each_arg_expr()
         else:
@@ -295,7 +295,7 @@ class PyExprValidator(QValidator):
     """
     Validates the string in the given QLineEdit according to the syntax of the Python expressions. The
     validation happens while the text is changed. When it is invalid, the QLineEdit will be highlighted as yellow.
-    
+
     The validation result is also emitted as a signal.
     """
 
@@ -319,20 +319,20 @@ class PyExprValidator(QValidator):
     @override(QValidator)
     def validate(self, params_str: str, pos: int) -> QValidator.State:
         """
-        Validates the string in the given QLineEdit according to the syntax of the Python function parameters.  
+        Validates the string in the given QLineEdit according to the syntax of the Python function parameters.
         """
         if not params_str:
             if self._arg_required:
-                return QValidator.Intermediate, params_str, pos
+                return QValidator.State.Intermediate, params_str, pos
             else:
-                return QValidator.Acceptable, params_str, pos
+                return QValidator.State.Acceptable, params_str, pos
 
         try:
             get_verified_eval(params_str)
         except:
-            return QValidator.Intermediate, params_str, pos
+            return QValidator.State.Intermediate, params_str, pos
         else:
-            return QValidator.Acceptable, params_str, pos
+            return QValidator.State.Acceptable, params_str, pos
 
     # --------------------------- instance __PRIVATE members-------------------------------------
 
@@ -342,7 +342,7 @@ class PyExprValidator(QValidator):
         This is called while the user is typing.
         """
         validity, _, _ = self.validate(self.__validation_target.text(), 0)
-        colors = {QValidator.Invalid: 'red', QValidator.Intermediate: 'yellow'}
+        colors = {QValidator.State.Invalid: 'red', QValidator.State.Intermediate: 'yellow'}
         if validity in colors:
             self.__validation_target.setStyleSheet('QLineEdit {{ background-color: {} }}'.format(colors[validity]))
             self.sig_params_valid.emit(self.objectName(), False)
@@ -357,7 +357,7 @@ class CallParamsValidator(PyExprValidator):
     """
     Validates the string in the given QLineEdit according to the syntax of the Python function parameters. The
     validation happens while the text is changed. When it is invalid, the QLineEdit will be highlighted as yellow.
-    
+
     The validation result is also emitted as a signal.
     """
 
@@ -366,27 +366,27 @@ class CallParamsValidator(PyExprValidator):
     @override(PyExprValidator)
     def validate(self, params_str: str, pos: int) -> QValidator.State:
         """
-        Validates the string in the given QLineEdit according to the syntax of the Python function parameters.  
+        Validates the string in the given QLineEdit according to the syntax of the Python function parameters.
         """
         if not params_str:
             if self._arg_required:
-                return QValidator.Intermediate, params_str, pos
+                return QValidator.State.Intermediate, params_str, pos
             else:
-                return QValidator.Acceptable, params_str, pos
+                return QValidator.State.Acceptable, params_str, pos
 
         try:
             get_params_from_str(params_str)
         except:
-            return QValidator.Intermediate, params_str, pos
+            return QValidator.State.Intermediate, params_str, pos
         else:
-            return QValidator.Acceptable, params_str, pos
+            return QValidator.State.Acceptable, params_str, pos
 
 
 class CallKwArgsValidator(PyExprValidator):
     """
     Validates the string in the given QLineEdit according to the syntax of the Python **kwargs. The
     validation happens while the text is changed. When it is invalid, the QLineEdit will be highlighted as yellow.
-    
+
     The validation result is also emitted as a signal.
     """
 
@@ -395,10 +395,10 @@ class CallKwArgsValidator(PyExprValidator):
     @override(PyExprValidator)
     def validate(self, kwargs_str: str, pos: int) -> QValidator.State:
         """
-        Validates the string in the given QLineEdit according to the syntax of the Python **kwargs.  
+        Validates the string in the given QLineEdit according to the syntax of the Python **kwargs.
         """
         if not kwargs_str:
-            return QValidator.Acceptable, kwargs_str, pos
+            return QValidator.State.Acceptable, kwargs_str, pos
 
         try:
             kwargs_value_list = kwargs_str.split(',')
@@ -407,9 +407,9 @@ class CallKwArgsValidator(PyExprValidator):
                 if len(kwargs_name_value_pair) == 2:
                     get_verified_eval(kwargs_name_value_pair[1])
                 else:
-                    return QValidator.Intermediate, kwargs_str, pos
+                    return QValidator.State.Intermediate, kwargs_str, pos
         except:
-            return QValidator.Intermediate, kwargs_str, pos
+            return QValidator.State.Intermediate, kwargs_str, pos
         else:
-            return QValidator.Acceptable, kwargs_str, pos
+            return QValidator.State.Acceptable, kwargs_str, pos
 

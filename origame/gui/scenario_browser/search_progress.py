@@ -18,8 +18,8 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QDialog, QDialogButtonBox
 
 # [3. local]
 from ..safe_slot import safe_slot
@@ -59,7 +59,7 @@ class SearchProgressDialog(QDialog):
 
     # --------------------------- instance (self) PUBLIC methods --------------------------------
     def __init__(self):
-        super().__init__(None, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
+        super().__init__(None, Qt.WindowType.WindowSystemMenuHint | Qt.WindowType.WindowTitleHint)
 
         self.__ui = Ui_SearchProgressDialog()
         self.__ui.setupUi(self)
@@ -78,7 +78,7 @@ class SearchProgressDialog(QDialog):
         self.__ui.current_part_label_name.setVisible(True)
         self.__ui.current_part_label_name.setText("Current Part: ")
         self.__ui.part_path_label.setText("")
-        self.__ui.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+        self.__ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
         self.show()
 
     def on_end(self, found: bool):
@@ -87,7 +87,7 @@ class SearchProgressDialog(QDialog):
 
         :param found: True if at least one hit is found.
         """
-        self.__ui.buttonBox.button(QDialogButtonBox.Ok).setEnabled(True)
+        self.__ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
         if found:
             self.close()
         else:

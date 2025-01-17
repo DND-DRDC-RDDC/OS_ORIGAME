@@ -19,17 +19,17 @@ import logging
 from inspect import signature
 
 # [2. third-party]
-from PyQt5.QtCore import QSize, QObject, pyqtSignal, Qt
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtWidgets import QDialog, QListWidgetItem, QSizePolicy, QHBoxLayout, QStackedLayout
-from PyQt5.QtWidgets import QWidget, QTextBrowser, QLineEdit, QPlainTextEdit, QLabel, QPushButton, QToolButton
+from PyQt6.QtCore import QSize, QObject, pyqtSignal, Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtSvgWidgets import QSvgWidget
+from PyQt6.QtWidgets import QDialog, QListWidgetItem, QSizePolicy, QHBoxLayout, QStackedLayout
+from PyQt6.QtWidgets import QWidget, QTextBrowser, QLineEdit, QPlainTextEdit, QLabel, QPushButton, QToolButton
 
 import matplotlib
 
-if matplotlib.get_backend() != 'Qt5Agg':
-    matplotlib.use('Qt5Agg')
-from matplotlib.backends.backend_qt5agg import FigureCanvas
+if matplotlib.get_backend() != 'QtAgg':
+    matplotlib.use('QtAgg')
+from matplotlib.backends.backend_qtagg import FigureCanvas
 
 # [3. local]
 from ...core import override
@@ -160,7 +160,7 @@ class ScriptEditBox(QPlainTextEdit):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
 
-        self.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.setReadOnly(True)
         self.setFont(get_scenario_font(mono=True))
 
@@ -216,7 +216,7 @@ class ImageWidget(QWidget):
         """
         super().__init__(parent)
         self.__img_container = QLabel(self)
-        self.__img_container.setAlignment(Qt.AlignCenter)
+        self.__img_container.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def pixmap(self) -> QPixmap:
         """
@@ -231,7 +231,7 @@ class ImageWidget(QWidget):
         """
         self.__img_container.setPixmap(pixmap)
         self.__img_container.setFixedSize(self.size())
-        self.__img_container.setPixmap(pixmap.scaled(self.size(), Qt.KeepAspectRatio))
+        self.__img_container.setPixmap(pixmap.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatio))
 
 
 class SvgPushButton(QPushButton):
@@ -253,7 +253,7 @@ class SvgPushButton(QPushButton):
         self.__on_svg = SvgFromImageWidget()
         self.__off_svg = SvgFromImageWidget()
 
-        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         self.__stacked_layout = QStackedLayout(self)
 
         self.__on_widget = QWidget()
@@ -261,14 +261,14 @@ class SvgPushButton(QPushButton):
         h_layout.setContentsMargins(SvgPushButton.SVG_MARGIN, SvgPushButton.SVG_MARGIN,
                                     SvgPushButton.SVG_MARGIN, SvgPushButton.SVG_MARGIN)
         h_layout.setSpacing(0)
-        h_layout.addWidget(self.__on_svg, Qt.AlignCenter)
+        h_layout.addWidget(self.__on_svg, Qt.AlignmentFlag.AlignCenter)
 
         self.__off_widget = QWidget()
         h_layout = QHBoxLayout(self.__off_widget)
         h_layout.setContentsMargins(SvgPushButton.SVG_MARGIN, SvgPushButton.SVG_MARGIN,
                                     SvgPushButton.SVG_MARGIN, SvgPushButton.SVG_MARGIN)
         h_layout.setSpacing(0)
-        h_layout.addWidget(self.__off_svg, Qt.AlignCenter)
+        h_layout.addWidget(self.__off_svg, Qt.AlignmentFlag.AlignCenter)
 
         self.__stacked_layout.addWidget(self.__on_widget)
         self.__stacked_layout.addWidget(self.__off_widget)
@@ -520,7 +520,7 @@ class ListAndFirePopup(QDialog):
             label_button.label.setText(func_name + str(sig))
             label_button.pushButton.setObjectName(func_name)
             label_button.pushButton.clicked.connect(self.__slot_run_this_function)
-            label_button.pushButton.setFocusPolicy(Qt.NoFocus)
+            label_button.pushButton.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
             item = QListWidgetItem(self.ui.listWidget)
             # setSizeHint is essential. Otherwise, nothing will be displayed in the one_row widget.
@@ -558,14 +558,14 @@ class ListAndFirePopup(QDialog):
         Sets the function name to run associated with the sender, which is a button.
         """
         self.__run_function_name = self.sender().objectName()
-        self.done(QDialog.Accepted)
+        self.done(QDialog.DialogCode.Accepted)
 
     def __update_run_function(self, list_item: QListWidgetItem):
         """
         Sets the function name to run associated with the item.
         """
         self.__run_function_name = self.ui.listWidget.itemWidget(list_item).objectName()
-        self.done(QDialog.Accepted)
+        self.done(QDialog.DialogCode.Accepted)
 
     __slot_run_this_function = safe_slot(__run_this_function)
     __slot_update_run_function = safe_slot(__update_run_function)

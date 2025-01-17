@@ -17,7 +17,7 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtSvg import QGraphicsSvgItem
+from PyQt6.QtSvgWidgets import QGraphicsSvgItem
 
 # [3. local]
 from ..gui_utils import get_icon_path

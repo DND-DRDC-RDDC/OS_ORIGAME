@@ -20,7 +20,7 @@ import datetime
 from copy import deepcopy
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QTimeEdit
+from PyQt6.QtWidgets import QWidget, QTimeEdit
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO

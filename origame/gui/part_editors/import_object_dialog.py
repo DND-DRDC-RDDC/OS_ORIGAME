@@ -9,9 +9,9 @@
 """
 *Project - R4 HR TDP*: Dialog to import new symbol object.
 
-[EDIT:]PEP 8 defers to PEP 257 for docstrings: Multi-line docstrings consist of a summary line just like a 
-[EDIT:]one-line docstring, followed by a blank line, followed by a more elaborate description. The 
-[EDIT:]docstring for a module should generally list the classes, exceptions and functions (and any other 
+[EDIT:]PEP 8 defers to PEP 257 for docstrings: Multi-line docstrings consist of a summary line just like a
+[EDIT:]one-line docstring, followed by a blank line, followed by a more elaborate description. The
+[EDIT:]docstring for a module should generally list the classes, exceptions and functions (and any other
 [EDIT:]objects) that are exported by the module, with a one-line summary of each.
 
 Version History: See SVN log.
@@ -25,9 +25,9 @@ import importlib
 from importlib import import_module
 
 # [2. third-party]
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QDialog, QFileDialog, QSpinBox, QMessageBox, QWidget
-from PyQt5.QtGui import QValidator
+from PyQt6.QtCore import QSettings
+from PyQt6.QtWidgets import QDialog, QFileDialog, QSpinBox, QMessageBox, QWidget
+from PyQt6.QtGui import QValidator
 
 # [3. local]
 from ..gui_utils import get_input_error_description, PyExpr, DETAILED_PARAMETER_SYNTAX_DESCRIPTION, get_scenario_font
@@ -51,7 +51,7 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 # -- Module-level objects -----------------------------------------------------------------------
 
-__all__ = [  
+__all__ = [
     # public API of module: one line per string
     '[EDIT:]'
 ]

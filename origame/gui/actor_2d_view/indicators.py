@@ -18,9 +18,9 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, QPointF
-from PyQt5.QtGui import QColor, QBrush, QPen, QPolygonF
-from PyQt5.QtWidgets import QGraphicsProxyWidget, QGraphicsItem, QGraphicsSceneMouseEvent, QMessageBox, \
+from PyQt6.QtCore import Qt, QPointF
+from PyQt6.QtGui import QColor, QBrush, QPen, QPolygonF
+from PyQt6.QtWidgets import QGraphicsProxyWidget, QGraphicsItem, QGraphicsSceneMouseEvent, QMessageBox, \
     QGraphicsPolygonItem
 
 # [3. local]
@@ -96,7 +96,7 @@ class CommentBoxItem(ICustomItem, QGraphicsProxyWidget):
         self.setZValue(ZLevelsEnum.bubble_comment)
         self.setVisible(False)
         self.setOpacity(QTBUG_55918_OPACITY)  # QTBUG-55918
-        self.setFlag(QGraphicsItem.ItemIsFocusable, False)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsFocusable, False)
 
         part_box_item.part_frame.signals.sig_comment_changed.connect(self.__slot_set_comment_text)
         AsyncRequest.call(part_box_item.part_frame.get_comment, response_cb=self.__set_comment_text)
@@ -169,14 +169,14 @@ class AlertIndicator:
     def show_alerts_message(self):
         """
         Emits the sig_alert_source_selected to notify the scene.
-        Opens a message box showing all the alerts for the part. 
+        Opens a message box showing all the alerts for the part.
         """
         self.__show_alerts_panel()
 
         def show_alerts_msg(formatted_msg: str):
             exec_modal_dialog(dialog_title="Part Alert",
                               message=formatted_msg,
-                              icon=QMessageBox.Critical)
+                              icon=QMessageBox.Icon.Critical)
 
         AsyncRequest.call(self.__get_formatted_alerts_message, response_cb=show_alerts_msg)
 
@@ -261,7 +261,7 @@ class MissingLinkIndicatorItem(BaseSideTrayItem):
         self.setVisible(False)
         self.__icon = QGraphicsPolygonItem(self)
         self.__icon.setBrush(QBrush(self.ITEM_COLOR))
-        self.__icon.setPen(QPen(Qt.NoPen))
+        self.__icon.setPen(QPen(Qt.PenStyle.NoPen))
 
         p0 = QPointF(0, (self.ITEM_HEIGHT_ARROW - self.ITEM_HEIGHT_TAIL) / 2)
         p1 = QPointF(self.ITEM_WIDTH_TAIL, (self.ITEM_HEIGHT_ARROW - self.ITEM_HEIGHT_TAIL) / 2)

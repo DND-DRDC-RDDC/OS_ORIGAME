@@ -20,11 +20,12 @@ from xml.dom.minidom import parseString
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtCore import pyqtSignal, QSize, QByteArray, QEvent, QPointF, QPoint, QRectF, Qt
-from PyQt5.QtGui import QPixmap, QTransform, QPolygonF, QColor, QBrush, QPen, QCursor, QPainterPath
-from PyQt5.QtSvg import QGraphicsSvgItem, QSvgRenderer
-from PyQt5.QtWidgets import QGraphicsItem, QGraphicsWidget, QGraphicsRectItem
-from PyQt5.QtWidgets import QAction, QGraphicsPolygonItem, QWidget, QGraphicsSceneMouseEvent
+from PyQt6.QtCore import pyqtSignal, QSize, QByteArray, QEvent, QPointF, QPoint, QRectF, Qt
+from PyQt6.QtGui import QPixmap, QTransform, QPolygonF, QColor, QBrush, QPen, QCursor, QPainterPath, QAction
+from PyQt6.QtSvg import QSvgRenderer
+from PyQt6.QtSvgWidgets import QGraphicsSvgItem
+from PyQt6.QtWidgets import QGraphicsItem, QGraphicsWidget, QGraphicsRectItem
+from PyQt6.QtWidgets import QGraphicsPolygonItem, QWidget, QGraphicsSceneMouseEvent
 
 # [3. local]
 from ...core import override, override_required
@@ -195,7 +196,7 @@ class SizeGripCornerItem(SizeGripItem):
         self.setData(OBJECT_NAME, "size_grip_corner")
         # GUI
 
-        self.setCursor(QCursor(Qt.SizeFDiagCursor))
+        self.setCursor(Qt.CursorShape.SizeFDiagCursor)
         bar_width = SIZE_GRIP_STROKE_WIDTH
         self.__width_adjustment = SIZE_GRIP_STROKE_WIDTH / 2
         short_side = 3 * bar_width
@@ -211,7 +212,7 @@ class SizeGripCornerItem(SizeGripItem):
                              ])
         corner.setPolygon(polygon)
         corner.setBrush(QBrush(SIZE_GRIP_COLOR))
-        corner.setPen(QPen(Qt.NoPen))
+        corner.setPen(QPen(Qt.PenStyle.NoPen))
 
     @override(SizeGripItem)
     def parent_rect_changed(self, rect: QRectF):
@@ -259,14 +260,14 @@ class SizeGripRightItem(SizeGripItem):
         SizeGripItem.__init__(self, widget_to_resize, min_width, min_height, parent, end_action)
         self.setData(OBJECT_NAME, "size_grip_right")
         # GUI
-        self.setCursor(QCursor(Qt.SizeHorCursor))
+        self.setCursor(Qt.CursorShape.SizeHorCursor)
         width = SIZE_GRIP_STROKE_WIDTH
         self.__width_adjustment = SIZE_GRIP_STROKE_WIDTH / 2
         height = min_height / 2
         right = QGraphicsRectItem(0, 0, width, height, self)
 
         right.setBrush(QBrush(SIZE_GRIP_COLOR))
-        right.setPen(QPen(Qt.NoPen))
+        right.setPen(QPen(Qt.PenStyle.NoPen))
 
     @override(SizeGripItem)
     def parent_rect_changed(self, rect: QRectF):
@@ -309,14 +310,14 @@ class SizeGripBottomItem(SizeGripItem):
         SizeGripItem.__init__(self, widget_to_resize, min_width, min_height, parent, end_action)
         self.setData(OBJECT_NAME, "size_grip_bottom")
         # GUI
-        self.setCursor(QCursor(Qt.SizeVerCursor))
+        self.setCursor(Qt.CursorShape.SizeVerCursor)
         height = SIZE_GRIP_STROKE_WIDTH
         self.__width_adjustment = SIZE_GRIP_STROKE_WIDTH / 2
         width = min_width / 2
         bottom = QGraphicsRectItem(0, 0, width, height, self)
 
         bottom.setBrush(QBrush(SIZE_GRIP_COLOR))
-        bottom.setPen(QPen(Qt.NoPen))
+        bottom.setPen(QPen(Qt.PenStyle.NoPen))
 
     @override(SizeGripItem)
     def parent_rect_changed(self, rect: QRectF):
@@ -433,7 +434,7 @@ class SvgFromImageItem(ICustomItem, QGraphicsSvgItem):
         image_tag = self.__svg_dom.getElementsByTagName("image")
         image_tag[0].setAttribute("xlink:href", "data:{};base64, {}".format(self.__mime[0], img_b64))
         svg_byte_array = QByteArray()
-        svg_byte_array.append(self.__svg_dom.toxml())
+        svg_byte_array.append(self.__svg_dom.toxml().encode())
         self.setSharedRenderer(QSvgRenderer(svg_byte_array))
 
     def rotate(self, angle_in_degree):
@@ -449,7 +450,7 @@ class SvgFromImageItem(ICustomItem, QGraphicsSvgItem):
                                                               self.__actual_image_size.width() / 2,
                                                               self.__actual_image_size.height() / 2))
         svg_byte_array = QByteArray()
-        svg_byte_array.append(self.__svg_dom.toxml())
+        svg_byte_array.append(self.__svg_dom.toxml().encode())
         super(SvgFromImageItem, self).load(svg_byte_array)
 
         self.__actual_image_size = self.__actual_image.transformed(QTransform().rotate(angle_in_degree)).size()
@@ -469,12 +470,12 @@ class SvgFromImageItem(ICustomItem, QGraphicsSvgItem):
         used as a child in the BottomSideTrayItem.
         :return: super().sceneEvent(event)
         """
-        if event.type() == QEvent.GraphicsSceneMousePress:
+        if event.type() == QEvent.Type.GraphicsSceneMousePress:
             event.accept()
             self.sig_mouse_pressed.emit()
             return True
 
-        elif event.type() == QEvent.GraphicsSceneMouseRelease:
+        elif event.type() == QEvent.Type.GraphicsSceneMouseRelease:
             event.accept()
             self.sig_mouse_released.emit()
             return True

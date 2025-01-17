@@ -20,7 +20,7 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QMessageBox, QDialog
+from PyQt6.QtWidgets import QWidget, QMessageBox, QDialog
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -450,12 +450,12 @@ class ObjectPropertiesPanel(QWidget):
 
         if not new_name:
             msg = "Name '{}' can't be empty. Click OK to close and edit name.".format(new_name)
-            exec_modal_dialog("Name Error", msg, QMessageBox.Critical, default_button=QMessageBox.Ok)
+            exec_modal_dialog("Name Error", msg, QMessageBox.Icon.Critical, default_button=QMessageBox.StandardButton.Ok)
             return
 
         if new_name.isspace():
             msg = "Name '{}' can't be empty spaces. Click OK to close and edit name.".format(new_name)
-            exec_modal_dialog("Name Error", msg, QMessageBox.Critical, default_button=QMessageBox.Ok)
+            exec_modal_dialog("Name Error", msg, QMessageBox.Icon.Critical, default_button=QMessageBox.StandardButton.Ok)
             return
 
         if self.__old_name == new_name:

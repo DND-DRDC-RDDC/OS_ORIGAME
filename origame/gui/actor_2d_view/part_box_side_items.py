@@ -19,12 +19,12 @@ import logging
 from enum import IntEnum, unique
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, QRectF, QPointF, QVariant
-from PyQt5.QtGui import QColor, QBrush, QPen, QPalette, QFont, QPolygonF, QCursor, QPainter, QPainterPath
-from PyQt5.QtWidgets import QGraphicsTextItem, QLabel, QGraphicsItem, QGraphicsObject, QGraphicsRectItem
-from PyQt5.QtWidgets import QGraphicsSceneMouseEvent, QAction, QGraphicsPolygonItem
-from PyQt5.QtWidgets import QGraphicsWidget, QGraphicsProxyWidget, QGraphicsSceneContextMenuEvent, QMenu
-from PyQt5.QtSvg import QGraphicsSvgItem
+from PyQt6.QtCore import Qt, QRectF, QPointF, QVariant
+from PyQt6.QtGui import QColor, QBrush, QPen, QPalette, QFont, QPolygonF, QCursor, QPainter, QPainterPath, QAction
+from PyQt6.QtWidgets import QGraphicsTextItem, QLabel, QGraphicsItem, QGraphicsObject, QGraphicsRectItem
+from PyQt6.QtWidgets import QGraphicsSceneMouseEvent, QGraphicsPolygonItem
+from PyQt6.QtWidgets import QGraphicsWidget, QGraphicsProxyWidget, QGraphicsSceneContextMenuEvent, QMenu
+from PyQt6.QtSvgWidgets import QGraphicsSvgItem
 
 # [3. local]
 from origame.gui.actor_2d_view.part_box_side_item_base import BottomSideTrayItemTypeEnum, BaseSideTrayItem
@@ -497,11 +497,9 @@ class IfxBarTrayItem(BaseSideTrayItem):
         d = PART_ITEM_BORDER_WIDTH
         self.__background.setRect(QRectF(-d/2, -d/2, adjusted_width + d, self.IFX_BAR_HEIGHT + d))
         self.__background.setBrush(QBrush(IFX_BAR_BACKGROUND_COLOR))
-        self.__background.setPen(QPen(Qt.NoPen))
+        self.__background.setPen(QPen(Qt.PenStyle.NoPen))
         #self.__background.setPen(QPen(QBrush(IFX_BAR_BACKGROUND_COLOR),
         #                              PART_ITEM_BORDER_WIDTH))
-
-        
 
         # Centers the interface bar over frameless items
         x_offset_adjustment = 0
@@ -611,7 +609,7 @@ class PartProximityBorderItem(ICustomItem, QGraphicsRectItem):
         ICustomItem.__init__(self)
         QGraphicsRectItem.__init__(self, parent)
         self.setZValue(ZLevelsEnum.proximity_boundary)
-        self.setPen(QPen(Qt.NoPen))
+        self.setPen(QPen(Qt.PenStyle.NoPen))
 
     @override(QGraphicsRectItem)
     def type(self) -> int:
@@ -716,7 +714,7 @@ class LinkCreationActionItem(BaseSideTrayItem):
     @override(BaseSideTrayItem)
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
         log.debug("Link creation shortcut item got mouse press: {}", EventStr(event))
-        if event.button() == Qt.LeftButton and self.__action is not None:
+        if event.button() == Qt.MouseButton.LeftButton and self.__action is not None:
             # event.accept()
             self.__action.triggered.emit()
 
@@ -748,7 +746,7 @@ class EventCounterItem(BaseSideTrayItem):
         self.setVisible(False)
         self.__icon = QGraphicsPolygonItem(self)
         self.__icon.setBrush(QBrush(self.ITEM_COLOR_NEXT))
-        self.__icon.setPen(QPen(Qt.NoPen))
+        self.__icon.setPen(QPen(Qt.PenStyle.NoPen))
 
         # Text
         self.__counter_text = QGraphicsTextItem("", self)
@@ -874,9 +872,9 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
 
         self._set_flags_item_change_link_anchor()
         self._set_flags_item_change_interactive()
-        assert self.flags() & (QGraphicsItem.ItemIsFocusable | QGraphicsItem.ItemIsSelectable)
-        assert self.flags() & QGraphicsItem.ItemSendsScenePositionChanges
-        assert not (self.flags() & self.ItemIsMovable)
+        assert self.flags() & (QGraphicsItem.GraphicsItemFlag.ItemIsFocusable | QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        assert self.flags() & QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges
+        assert not (self.flags() & QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
         self.setToolTip(port.name)
 
@@ -884,7 +882,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
         self.__highlight_border = QGraphicsRectItem(self)
         self.__highlight_border.setData(OBJECT_NAME, "highlight_border")
         self.__highlight_border.setVisible(False)
-        self.__highlight_border.setPen(QPen(Qt.NoPen))
+        self.__highlight_border.setPen(QPen(Qt.PenStyle.NoPen))
         self.__highlight_border.setPen(QPen(QBrush(HIGHLIGHTED_BORDER_COLOR), IFX_PORT_HIGHLIGHT_MARGIN))
 
         # Port background.
@@ -896,7 +894,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
                    self.PART_TYPE_ICON_HEIGHT))
 
         self.__port_background.setBrush(QBrush(IFX_BACKGROUND_COLOR[part_type]))
-        self.__port_background.setPen(QPen(Qt.NoPen))
+        self.__port_background.setPen(QPen(Qt.PenStyle.NoPen))
 
         self.__icon = QGraphicsSvgItem(str(part_image(part_type)), self)
         self.__icon.setData(OBJECT_NAME, "icon")
@@ -937,12 +935,12 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
         # Name
         self.__part_name = part_name  # the real name in full
         self.__name = QLabel()  # will be abridged
-        self.__name.setFont(get_scenario_font(point_size=IFX_TEXT_SIZE, mono=True, stretch=QFont.SemiCondensed))
+        self.__name.setFont(get_scenario_font(point_size=IFX_TEXT_SIZE, mono=True, stretch=QFont.Stretch.SemiCondensed))
         self.__name.resize(int(get_ifx_port_name_width()), int(self.NAME_HEIGHT))
         pal = QPalette()
-        pal.setColor(QPalette.Window, IFX_BACKGROUND_COLOR[part_type])
-        pal.setColor(QPalette.Text, IFX_TEXT_COLOR)
-        pal.setColor(QPalette.WindowText, IFX_TEXT_COLOR)
+        pal.setColor(QPalette.ColorRole.Window, IFX_BACKGROUND_COLOR[part_type])
+        pal.setColor(QPalette.ColorRole.Text, IFX_TEXT_COLOR)
+        pal.setColor(QPalette.ColorRole.WindowText, IFX_TEXT_COLOR)
         self.__name.setPalette(pal)
         self.__name_proxy = QGraphicsProxyWidget(self)
         self.__name_proxy.setData(OBJECT_NAME, "part_name")
@@ -955,7 +953,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
                    self.PART_TYPE_ICON_WIDTH + PORT_BORDER_ALIGNMENT + get_ifx_port_name_width(),
                    IFX_INDICATOR_HEIGHT))
         self.__ifx_ind_long.setBrush(QBrush(IFX_BAR_BACKGROUND_COLOR))
-        self.__ifx_ind_long.setPen(QPen(Qt.NoPen))
+        self.__ifx_ind_long.setPen(QPen(Qt.PenStyle.NoPen))
         self.__ifx_ind_long.setY(-IFX_INDICATOR_HEIGHT)
         self.__ifx_ind_long.setVisible(self.__parent_actor_has_port)
 
@@ -965,7 +963,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
                                             self.PART_TYPE_ICON_WIDTH,
                                             IFX_INDICATOR_HEIGHT))
         self.__ifx_ind_short.setBrush(QBrush(IFX_BAR_BACKGROUND_COLOR))
-        self.__ifx_ind_short.setPen(QPen(Qt.NoPen))
+        self.__ifx_ind_short.setPen(QPen(Qt.PenStyle.NoPen))
         self.__ifx_ind_short.setY(-IFX_INDICATOR_HEIGHT)
         self.__ifx_ind_short.setVisible(self.__parent_actor_has_port)
 
@@ -1015,7 +1013,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
             self.__icon.setX(-PORT_BORDER_ALIGNMENT)
             self.__name_proxy.setX(self.PART_TYPE_ICON_WIDTH)
             self.__name.setText(" " + self.__name_abridged(self.__part_name))
-            self.__name.setAlignment(Qt.AlignVCenter)
+            self.__name.setAlignment(Qt.AlignmentFlag.AlignVCenter)
             self.__highlight_border.setX(-ITEM_SPACE)
         else:
             # The order: name, icon, link
@@ -1029,7 +1027,7 @@ class IfxPortItem(IInteractiveItem, LinkAnchorItem):
             self.__icon.setX(get_ifx_port_name_width() + PORT_BORDER_ALIGNMENT)
             self.__name_proxy.setX(0)
             self.__name.setText(self.__name_abridged(self.__part_name) + " ")
-            self.__name.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.__name.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
             self.__highlight_border.setX(0)
 
         self.enable_move_up()

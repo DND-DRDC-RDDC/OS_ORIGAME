@@ -14,7 +14,7 @@
 
 # [1. standard library]
 import logging
-from PyQt5.QtWidgets import QWidget,  QDialog
+from PyQt6.QtWidgets import QWidget,  QDialog
 
 # [2. third-party]
 
@@ -42,7 +42,7 @@ log = logging.getLogger('system')
 # -- Function definitions -----------------------------------------------------------------------
 
 # -- Class Definitions --------------------------------------------------------------------------
-    
+
 class DbConnectionSettingsDialog(EditorDialog):
     """
     Represents the database connection settings dialog.
@@ -57,32 +57,32 @@ class DbConnectionSettingsDialog(EditorDialog):
             db_type (int): database type.
             parent (QWidget, optional): The Sql Part Editor parent.
         """
-                
+
         super().__init__(parent)
         self.ui = Ui_DbConnectionSettingsDialog()
-        self.ui.setupUi(self)  
-        
+        self.ui.setupUi(self)
+
         # Initialize database connection settings
         self.__db_connection_settings = db_connection_settings
-        
+
         self.ui.access_filepath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_ACCESS.value, ''))
         self.ui.ms_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MS_SQL.value, ''))
         self.ui.my_sql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.MYSQL.value, ''))
         self.ui.postgresql_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.POSTGRESQL.value, ''))
         self.ui.sqliteFilePath.setText(self.__db_connection_settings.get(DatabaseTypeEnum.SQLITE.value, ''))
         self.ui.generic_connection.setText(self.__db_connection_settings.get(DatabaseTypeEnum.GENERIC.value, ''))
-        
+
         # Set current tab based on the value of type selector
         self.__set_db_type_tab(db_type)
 
     def __set_db_type_tab(self, db_type: int):
         """Selects the tab based on the value of database type selector.
-        
+
         Args:
             db_type (int): database type.
         """
         selected_type = db_type
-        
+
         tab_name = None
         match selected_type:
             case 0:
@@ -97,10 +97,10 @@ class DbConnectionSettingsDialog(EditorDialog):
                 tab_name = 'sqlite'
             case 5:
                 tab_name = 'generic'
-        
+
         tab_widget = self.ui.tabWidget
         tab_widget.setCurrentWidget(tab_widget.findChild(QWidget, tab_name))
-                      
+
     @override(QDialog)
     def accept(self):
         """Override to get the database connections configuration values and set them in the backend before closing the dialog"""
@@ -110,7 +110,7 @@ class DbConnectionSettingsDialog(EditorDialog):
         self.__db_connection_settings[DatabaseTypeEnum.POSTGRESQL.value] = self.ui.postgresql_connection.text()
         self.__db_connection_settings[DatabaseTypeEnum.SQLITE.value] = self.ui.sqliteFilePath.text()
         self.__db_connection_settings[DatabaseTypeEnum.GENERIC.value] = self.ui.generic_connection.text()
-        
+
         super().accept()
 
     def get_db_connection_settings(self) -> Dict[int, str]:
@@ -120,6 +120,6 @@ class DbConnectionSettingsDialog(EditorDialog):
         """
         return self.__db_connection_settings
 
-  
+
     #__slot_select_module_path = safe_slot(__select_module_path)
     #__slot_input_module_path = safe_slot(__input_module_path)

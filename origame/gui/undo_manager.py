@@ -20,9 +20,9 @@ from copy import deepcopy
 from enum import IntEnum
 
 # [2. third-party]
-from PyQt5.QtCore import QPointF, Qt
-from PyQt5.QtWidgets import QUndoCommand, QUndoStack, QMessageBox, QAction, qApp
-from PyQt5.QtGui import QCursor
+from PyQt6.QtCore import QPointF, Qt
+from PyQt6.QtWidgets import QMessageBox, QApplication
+from PyQt6.QtGui import QCursor, QAction, QUndoCommand, QUndoStack
 
 # [3. local]
 from ..core import override, override_optional, override_required
@@ -232,7 +232,7 @@ class UndoCommandBase(QUndoCommand):
             self.__async_redo_success(*args)
 
         log.info('DO: {}', self._get_description_try_do())
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         AsyncRequest.call(self._get_redo_cb(), response_cb=response_cb, error_cb=error_cb)
 
     @override(QUndoCommand)
@@ -248,7 +248,7 @@ class UndoCommandBase(QUndoCommand):
 
         if self.__undone_at_least_once:
             log.info('REDO: {}', self._get_description_redo())
-            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
             def error_cb(*args):
                 if self.__on_async_cmd_done_cb is not None:
@@ -272,7 +272,7 @@ class UndoCommandBase(QUndoCommand):
         or self._on_undo_fail() if an exception was raised by the callback.
         """
         log.info('UNDO: {}', self._get_description_undo())
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
         def error_cb(*args):
             if self.__on_async_cmd_done_cb is not None:
@@ -377,7 +377,7 @@ class UndoCommandBase(QUndoCommand):
         Method called when the redo operation succeeds.
         :param args: the values returned by the redo callback
         """
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         self._on_redo_success(*args)
 
     def __async_undo_success(self, *args):
@@ -385,7 +385,7 @@ class UndoCommandBase(QUndoCommand):
         Method called when the undo operation succeeds.
         :param args: the values returned by the undo callback
         """
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         self._on_undo_success(*args)
 
     def __async_redo_fail(self, exc: AsyncErrorInfo):
@@ -393,9 +393,9 @@ class UndoCommandBase(QUndoCommand):
         Method called when the redo operation fails.
         :param exc: Object containing information as to why the asynchronous redo call failed.
         """
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         msg = "Action failed ({}), nothing changed".format(exc.msg)
-        exec_modal_dialog("Async Redo Call Error", msg, QMessageBox.Critical)
+        exec_modal_dialog("Async Redo Call Error", msg, QMessageBox.Icon.Critical)
         log.error(exc.msg)
         log.debug(exc.traceback)
 
@@ -404,9 +404,9 @@ class UndoCommandBase(QUndoCommand):
         Method called when the undo operation fails.
         :param exc: Object containing information as to why the asynchronous undo call failed.
         """
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
         exec_modal_dialog("Async Undo Call Error", "Undo action failed ({}), nothing undone".format(exc.msg),
-                          QMessageBox.Critical)
+                          QMessageBox.Icon.Critical)
         log.error(exc.msg)
         log.debug(exc.traceback)
 
@@ -756,7 +756,7 @@ class AddPartCommand(UndoCommandBase):
         self._parent_part = parent_part
         self._position = Position() if position is None else position.copy()
 
-        # The first successful try_do() will set these as result of the async request: 
+        # The first successful try_do() will set these as result of the async request:
         self._part = None
 
         # The undo() will set these as a result of async request:
@@ -1514,7 +1514,7 @@ class ReparentCutPartsCommand(PastePartsCommand, IPasteFromCut):
         # The first successful try_do() will set these as result of the async request:
         self._restore_noparent = None
 
-        # check that they all had the same parent before they were cut, and that this parent is not the destination: 
+        # check that they all had the same parent before they were cut, and that this parent is not the destination:
         assert self.is_reparent(new_parent, parts, restore_infos)
 
     @override(UndoCommandBase)

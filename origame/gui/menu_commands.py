@@ -24,8 +24,8 @@ from enum import IntEnum
 import sys
 
 # [2. third-party]
-from PyQt5.QtCore import QObject, QSettings, QTimer, pyqtSignal
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QDialogButtonBox, QCheckBox
+from PyQt6.QtCore import QObject, QSettings, QTimer, pyqtSignal
+from PyQt6.QtWidgets import QFileDialog, QMessageBox, QDialogButtonBox, QCheckBox
 
 # [3. local]
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -292,7 +292,7 @@ class ScenarioManagerBridge(QObject):
 
         def on_error(err_info: AsyncErrorInfo):
             stop_progress()
-            exec_modal_dialog("Import Error", err_info.msg, QMessageBox.Critical)
+            exec_modal_dialog("Import Error", err_info.msg, QMessageBox.Icon.Critical)
 
         get_progress_bar().start_busy_progress('Importing')
         AsyncRequest.call(self.__scenario_manager.import_scenario, filename, self.__actor_part_selected,
@@ -317,7 +317,7 @@ class ScenarioManagerBridge(QObject):
 
         def on_error(err_info: AsyncErrorInfo):
             stop_progress()
-            exec_modal_dialog("Export Error", err_info.msg, QMessageBox.Critical)
+            exec_modal_dialog("Export Error", err_info.msg, QMessageBox.Icon.Critical)
 
         parts = self.__parts_selected_list[:]
         get_progress_bar().start_busy_progress('Exporting')
@@ -374,34 +374,34 @@ class ScenarioManagerBridge(QObject):
                     msg = 'The scenario has unsaved changes. ' \
                           '\n\nClick Save to save all changes, Don\'t Save to abandon all unsaved changes, or Cancel to go back.'
 
-                    user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
-                                                   buttons=[QMessageBox.Save, QMessageBox.Cancel],
-                                                   buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
+                    user_input = exec_modal_dialog(title, msg, QMessageBox.Icon.Question,
+                                               buttons=[QMessageBox.StandardButton.Save, QMessageBox.StandardButton.Cancel],
+                                               buttons_str_role=[("Don't Save", QMessageBox.ButtonRole.DestructiveRole)])
 
                 elif editors_have_unsaved_changes and not scenario_has_unsaved_changes:
                     msg = 'There are part editors with unapplied changes.' \
                           '\n\nClick Save to save all changes, Don\'t Save to abandon all unapplied changes, or Cancel to go back.'
 
-                    user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
-                                                   buttons=[QMessageBox.Save, QMessageBox.Cancel],
-                                                   buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
+                    user_input = exec_modal_dialog(title, msg, QMessageBox.Icon.Question,
+                                                buttons=[QMessageBox.StandardButton.Save, QMessageBox.StandardButton.Cancel],
+                                                buttons_str_role=[("Don't Save", QMessageBox.ButtonRole.DestructiveRole)])
 
                 else:
                     msg = 'The scenario has unsaved changes, and there are part editors with unapplied changes. ' \
                           '\n\nClick Save to save all changes, Don\'t Save to abandon all unapplied and unsaved changes, or Cancel to go back.'
 
-                    user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
-                                                   buttons=[QMessageBox.Save, QMessageBox.Cancel],
-                                                   buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
+                    user_input = exec_modal_dialog(title, msg, QMessageBox.Icon.Question,
+                                                buttons=[QMessageBox.StandardButton.Save, QMessageBox.StandardButton.Cancel],
+                                                buttons_str_role=[("Don't Save", QMessageBox.ButtonRole.DestructiveRole)])
 
-                if user_input == QMessageBox.Cancel:
+                if user_input == QMessageBox.StandardButton.Cancel:
                     # user cancelled the operation
                     return
 
-                if user_input == QMessageBox.Save:
+                if user_input == QMessageBox.StandardButton.Save:
                     # save opened editors first (if any) then save the scenario
                     for part in self.__changed_part_editors():
-                        part.content_editor.submit_data(QDialogButtonBox.ApplyRole)
+                        part.content_editor.submit_data(QDialogButtonBox.ButtonRole.ApplyRole)
                     self.__save_scenario()
 
             # Start the action
@@ -441,7 +441,7 @@ class ScenarioManagerBridge(QObject):
 
         def on_load_error(err_info: AsyncErrorInfo):
             get_progress_bar().stop_progress()
-            exec_modal_dialog("Load Error", err_info.msg, QMessageBox.Critical)
+            exec_modal_dialog("Load Error", err_info.msg, QMessageBox.Icon.Critical)
 
         def on_load_completed(scenario: Scenario, non_serialized_obj: List[str]):
             get_progress_bar().stop_progress()
@@ -499,10 +499,10 @@ class ScenarioManagerBridge(QObject):
                 title = 'Unsaved Edits'
                 msg = 'There are part editors with unsaved changes. ' \
                       '\n\nClick OK to save scenario without applying editor changes, or Cancel to go back.'
-                user_input = exec_modal_dialog(title, msg, QMessageBox.Warning,
-                                               buttons=[QMessageBox.Ok, QMessageBox.Cancel])
+                user_input = exec_modal_dialog(title, msg, QMessageBox.Icon.Warning,
+                                               buttons=[QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Cancel])
 
-                if user_input == QMessageBox.Cancel:
+                if user_input == QMessageBox.StandardButton.Cancel:
                     self.__is_saving_scenario = False
                     return False  # user cancelled
 
@@ -576,9 +576,9 @@ class ScenarioManagerBridge(QObject):
                     # The path exists, ask user to confirm overwrite
                     title = 'Confirm Save As'
                     message = '{} already exists.\nDo you want to replace it?'.format(Path(filepath).name)
-                    user_input = exec_modal_dialog(title, message, QMessageBox.Question)
+                    user_input = exec_modal_dialog(title, message, QMessageBox.Icon.Question)
 
-                    if user_input == QMessageBox.No:
+                    if user_input == QMessageBox.StandardButton.No:
                         save_approved = False
 
         def on_save_successful(_):
@@ -616,7 +616,7 @@ class ScenarioManagerBridge(QObject):
             self.__is_saving_scenario = False
             title = 'Save Error'
             message = 'The save operation failed: {}'.format(self.__save_was_successful.exc)
-            exec_modal_dialog(title, str(self.__save_was_successful.exc), QMessageBox.Critical)
+            exec_modal_dialog(title, str(self.__save_was_successful.exc), QMessageBox.Icon.Critical)
             self.__save_was_successful = None
 
         else:
@@ -658,7 +658,7 @@ class ScenarioManagerBridge(QObject):
         :param long_msg: The message displayed when the user clicks "Show Details"
         """
         msg_box = create_modal_dialog("Unsaved Objects", short_msg,
-                                      QMessageBox.Warning, buttons=[QMessageBox.Ok], detailed_message=long_msg)
+                                      QMessageBox.Icon.Warning, buttons=[QMessageBox.StandardButton.Ok], detailed_message=long_msg)
         # Add checkbox to modal dialog
         dont_show_again = QCheckBox("Don't show this again")
         msg_box.setCheckBox(dont_show_again)

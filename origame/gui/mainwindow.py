@@ -20,11 +20,10 @@ from pathlib import Path
 import argparse
 
 # [2. third-party]
-from PyQt5.QtCore import QCoreApplication, QSettings, QRect, QByteArray, QPoint, QSize, pyqtSignal, QThread
-from PyQt5.QtWidgets import QMainWindow, qApp, QApplication, QMessageBox, QAction
-from PyQt5.QtWidgets import QFileDialog, QWidget, QDockWidget, QStyle
-from PyQt5.QtGui import QMoveEvent, QResizeEvent, QCloseEvent, QCursor, QGuiApplication
-from PyQt5.Qt import Qt
+from PyQt6.QtCore import QCoreApplication, QSettings, QRect, QByteArray, QPoint, QSize, pyqtSignal, QThread, Qt
+from PyQt6.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt6.QtWidgets import QFileDialog, QWidget, QDockWidget, QStyle
+from PyQt6.QtGui import QMoveEvent, QResizeEvent, QCloseEvent, QCursor, QAction, QGuiApplication
 
 # [3. local]
 from ..core import override
@@ -37,6 +36,7 @@ from ..scenario.alerts import IScenAlertSource
 from ..batch_sim import BatchSimManager
 
 from .part_editors import ScenarioPartEditorDlg
+from . import gui_rc # This needs to be included before the Ui_MainWindow, so that it has access to it
 from .Ui_mainwindow import Ui_MainWindow
 from .scenario_browser import ScenarioBrowserPanel
 from .log_panel import LogPanel
@@ -79,7 +79,6 @@ try:
 except ImportError:
     pass
 
-
 class Decl(AnnotationDeclarations):
     GuiLogCacher = 'GuiLogCacher'
 
@@ -94,13 +93,13 @@ class MainWindow(QMainWindow):
     Main Window for origame application
 
     Most overrides are from QWidget. For full API Documentation, see
-    http://qt-project.org/doc/qt-5/qwidget.html
+    https://doc.qt.io/qt-6/qwidget.html
     """
 
     # --------------------------- class-wide data and signals -----------------------------------
 
     sig_exit = pyqtSignal()  # emitted when the application controller must shutdown
-    sig_expansion_changed = pyqtSignal(int, int)  # dock area, and ExpansionStatusEnum
+    sig_expansion_changed = pyqtSignal(Qt.DockWidgetArea, ExpansionStatusEnum)  # dock area, and ExpansionStatusEnum
 
     # --------------------------- class-wide methods --------------------------------------------
 
@@ -163,8 +162,8 @@ class MainWindow(QMainWindow):
         self.__open_editors = dict()
 
         # set some standard icons on the actions:
-        self.ui.action_open.setIcon(qApp.style().standardIcon(QStyle.SP_DialogOpenButton))
-        self.ui.action_save.setIcon(qApp.style().standardIcon(QStyle.SP_DialogSaveButton))
+        self.ui.action_open.setIcon(QApplication.style().standardIcon(QStyle.StandardPixmap.SP_DialogOpenButton))
+        self.ui.action_save.setIcon(QApplication.style().standardIcon(QStyle.StandardPixmap.SP_DialogSaveButton))
 
         # Connect some actions to our own slots
         self.ui.action_save_settings.triggered.connect(self.slot_save_settings)
@@ -274,7 +273,7 @@ class MainWindow(QMainWindow):
         self.__current_edit_context_panel = self.__2d_panel
 
         # Attach focus changed signal to manage context-based Edit menu
-        qApp.focusChanged.connect(self.__slot_on_edit_context_changed)
+        QApplication.instance().focusChanged.connect(self.__slot_on_edit_context_changed)
 
         def init_scen():
             if settings.scenario_path:
@@ -482,7 +481,7 @@ class MainWindow(QMainWindow):
         if not ok:
             return
         self.save_dockable_state()
-        settings_file = QSettings(file_name, QSettings.IniFormat)
+        settings_file = QSettings(file_name, QSettings.Format.IniFormat)
         settings_file.clear()
         s = QSettings()
         for key in s.allKeys():
@@ -673,10 +672,10 @@ class MainWindow(QMainWindow):
             # Parts are on the clipboard. Ask user to keep or discard.
             user_input = self.__open_parts_clipboard_dialog()
 
-            if user_input == QMessageBox.Yes:
+            if user_input == QMessageBox.StandardButton.Yes:
                 self.__2d_panel.view.replace_clipboard_by_ori(menu_cb)
 
-            elif user_input == QMessageBox.No:
+            elif user_input == QMessageBox.StandardButton.No:
                 self.__2d_panel.view.clear_parts_clipboard()
                 menu_cb()
 
@@ -711,8 +710,8 @@ class MainWindow(QMainWindow):
         msg.append('Click No to empty the clipboard before loading the next scenario;')
         msg.append('Click Cancel to go back to existing scenario without doing anything.')
 
-        return exec_modal_dialog(title, '\n'.join(msg), QMessageBox.Question,
-                                 buttons=[QMessageBox.Yes, QMessageBox.No, QMessageBox.Cancel])
+        return exec_modal_dialog(title, '\n'.join(msg), QMessageBox.Icon.Question,
+                                 buttons=[QMessageBox.StandardButton.Yes, QMessageBox.StandardButton.No, QMessageBox.StandardButton.Cancel])
 
     def __init_dock_buttons(self):
         """
@@ -726,29 +725,29 @@ class MainWindow(QMainWindow):
         self.__map_dock_widget_to_selected = dict()
 
         for dock_wid in self.findChildren(QDockWidget):
-            dock_wid.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea | Qt.BottomDockWidgetArea)
+            dock_wid.setAllowedAreas(Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea | Qt.DockWidgetArea.BottomDockWidgetArea)
             dock_wid.visibilityChanged.connect(self.__slot_on_dock_widget_visibility_changed)
             self.__update_dock_widget_management_status(dock_wid)
             self.__map_dock_widget_to_visibility[dock_wid] = dock_wid.isVisible() and not dock_wid.isFloating()
 
             self.__update_dock_widget_selection_status(dock_wid)
 
-        for dock_area in [Qt.LeftDockWidgetArea, Qt.RightDockWidgetArea, Qt.BottomDockWidgetArea]:
+        for dock_area in [Qt.DockWidgetArea.LeftDockWidgetArea, Qt.DockWidgetArea.RightDockWidgetArea, Qt.DockWidgetArea.BottomDockWidgetArea]:
             dock_area_status, _ = self.__get_dock_status_by_area(dock_area)
             self.sig_expansion_changed.emit(dock_area, dock_area_status)
 
     def __update_dock_widget_management_status(self, dock_widget: QDockWidget):
         """
-        The expansion change operation should act on only those visible components that are inside dock areas before 
+        The expansion change operation should act on only those visible components that are inside dock areas before
         they are collapsed. This function tracks if the given dock widget is managed.
-        :param dock_widget: The dock widget whose management status is tracked. 
+        :param dock_widget: The dock widget whose management status is tracked.
         """
         self.__map_dock_widget_to_managed[dock_widget] = dock_widget.isVisible() and not dock_widget.isFloating()
 
     def __update_dock_widget_selection_status(self, dock_widget: QDockWidget):
         """
         Tracks if the given dock widget is really visible in a dock area. If the dock widgets are tabbed in a dock area,
-        all of them are visible from Qt's point of view. But we want to know which tab is selected, thus really 
+        all of them are visible from Qt's point of view. But we want to know which tab is selected, thus really
         visible.
         :param dock_widget: The dock widget whose real visibility is tracked.
         """
@@ -788,12 +787,12 @@ class MainWindow(QMainWindow):
                     if self.__is_dock_widget_selected(dock_widget):
                         dock_widget.raise_()
 
-    def __on_toggle_dock_widgets(self, dock_area: int):
+    def __on_toggle_dock_widgets(self, dock_area: Qt.DockWidgetArea):
         """
         Slot of the sig_expansion_change.
 
         Toggles the given dock area. Does nothing if the dock area is empty.
-        :param dock_area: The area where the dock widgets are toggled. The dock_area is defined in 
+        :param dock_area: The area where the dock widgets are toggled. The dock_area is defined in
         enum Qt::DockWidgetArea in C++, but in PyQt, it is just one of the plain int definitions in the Qt class.
         """
         dock_area_status, actions = self.__get_dock_status_by_area(dock_area)
@@ -803,7 +802,7 @@ class MainWindow(QMainWindow):
 
         self.__trigger_docking(dock_area_status == ExpansionStatusEnum.visible, actions)
 
-    def __get_dock_status_by_area(self, req_dock_area: int) -> Tuple[ExpansionStatusEnum, Dict[QDockWidget, QAction]]:
+    def __get_dock_status_by_area(self, req_dock_area: Qt.DockWidgetArea) -> Tuple[ExpansionStatusEnum, Dict[QDockWidget, QAction]]:
         """
         Evaluates the given dock area to determine if the area is empty and visible.
         :param req_dock_area: The area to be evaluated
@@ -858,7 +857,7 @@ class MainWindow(QMainWindow):
         Shows the Alerts panel in the dock.
         """
         alerts_dock_area = self.dockWidgetArea(self.ui.alerts_dock)
-        if alerts_dock_area == Qt.NoDockWidgetArea:
+        if alerts_dock_area == Qt.DockWidgetArea.NoDockWidgetArea:
             return
 
         dock_area_status, _ = self.__get_dock_status_by_area(alerts_dock_area)

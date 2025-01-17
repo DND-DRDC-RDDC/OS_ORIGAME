@@ -22,12 +22,11 @@ from enum import IntEnum, unique
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtCore import QSize, QObject, QTimer, QVariant, QMessageLogContext
-from PyQt5.QtCore import QtCriticalMsg, QtFatalMsg, QtSystemMsg, QtMsgType, QtDebugMsg, QtInfoMsg, QtWarningMsg
-from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt, QModelIndex, QAbstractTableModel
-from PyQt5.QtGui import QIcon, QPixmap, QFont, QFontMetricsF, QColor, QBrush, QShowEvent, QValidator
-from PyQt5.QtWidgets import QMessageBox, QToolButton, QAction, QWidget, QListWidgetItem
-from PyQt5.QtWidgets import QSizePolicy, QLineEdit, QCheckBox
+from PyQt6.QtCore import QSize, QObject, QTimer, QVariant, QMessageLogContext, QtMsgType
+from PyQt6.QtCore import pyqtSlot, pyqtSignal, Qt, QModelIndex, QAbstractTableModel
+from PyQt6.QtGui import QIcon, QPixmap, QFont, QFontMetricsF, QColor, QBrush, QShowEvent, QValidator, QAction
+from PyQt6.QtWidgets import QMessageBox, QToolButton, QWidget, QListWidgetItem
+from PyQt6.QtWidgets import QSizePolicy, QLineEdit, QCheckBox
 
 # [3. local]
 from ..core import override_required, override
@@ -70,8 +69,8 @@ OBJECT_NAME = 0
 
 TEXT_LINK_PRESENT_COLOR = QColor(0, 255, 0).lighter(160)
 TEXT_LINK_MISSING_COLOR = QColor(255, 0, 0).lighter(160)
-LIST_REGULAR_BRUSH = QBrush(QColor(Qt.black))
-UNUSED_LINK_HIGHLIGHTING_BRUSH = QBrush(QColor(Qt.gray))
+LIST_REGULAR_BRUSH = QBrush(QColor(Qt.GlobalColor.black))
+UNUSED_LINK_HIGHLIGHTING_BRUSH = QBrush(QColor(Qt.GlobalColor.gray))
 NEW_LINK_HIGHLIGHTING_BRUSH = QColor(0, 255, 0).darker(120)
 HIGHLIGHTED_BORDER_COLOR = QColor(0, 255, 0, 150)  # Color for the selected part
 DEPRECATION_ALPHA = 128  # Title bar transparency color setting for deprecated parts
@@ -211,12 +210,12 @@ IFX_BACKGROUND_COLOR = {
 }
 
 QT_LOG_MSG_TYPES = {
-    QtDebugMsg: "debug",
-    QtInfoMsg: "info",
-    QtWarningMsg: "warning",
-    QtCriticalMsg: "critical",
-    QtFatalMsg: "fatal",
-    QtSystemMsg: "system"
+    QtMsgType.QtDebugMsg: "debug",
+    QtMsgType.QtInfoMsg: "info",
+    QtMsgType.QtWarningMsg: "warning",
+    QtMsgType.QtCriticalMsg: "critical",
+    QtMsgType.QtFatalMsg: "fatal",
+    QtMsgType.QtSystemMsg: "system"
 }
 
 CheckerFunc = Callable[..., bool]
@@ -245,9 +244,9 @@ def install_default_fonts(default_fnt: QFont, default_fnt_mono: QFont):
     DEFAULT_FONT_MONO = default_fnt_mono
 
     global IFX_PORT_NAME_WIDTH
-    app_font_metrics = get_app_font_metrics(point_size=IFX_TEXT_SIZE, mono=True, stretch=QFont.SemiCondensed)
+    app_font_metrics = get_app_font_metrics(point_size=IFX_TEXT_SIZE, mono=True, stretch=QFont.Stretch.SemiCondensed)
     MAX_NUM_CHARS_IFX_PORT = 8  # ifx ports only show first (left-most) N chars of the associated part name
-    IFX_PORT_NAME_WIDTH = app_font_metrics.width("W" * MAX_NUM_CHARS_IFX_PORT + "  ")
+    IFX_PORT_NAME_WIDTH = app_font_metrics.horizontalAdvance("W" * MAX_NUM_CHARS_IFX_PORT + "  ")
 
 
 def set_default_dialog_frame_flags(win_obj: QWidget):
@@ -255,11 +254,11 @@ def set_default_dialog_frame_flags(win_obj: QWidget):
     Removes context help "?" button from the given object, and adds min and max buttons to it.
     :param win_obj: The object whose window flags will be changed by this function.
     """
-    win_obj.setWindowFlags(win_obj.windowFlags() & ~Qt.WindowContextHelpButtonHint | Qt.WindowMinMaxButtonsHint)
+    win_obj.setWindowFlags(win_obj.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint | Qt.WindowType.WindowMinMaxButtonsHint)
 
 
 def get_scenario_font(point_size: int = None, bold: bool = False, mono: bool = False,
-                      stretch: int = QFont.Unstretched):
+                      stretch: int = QFont.Stretch.Unstretched):
     """Get the non-default font to be used by application"""
     if mono:
         from_default = QFont(DEFAULT_FONT_MONO)
@@ -274,7 +273,7 @@ def get_scenario_font(point_size: int = None, bold: bool = False, mono: bool = F
 
 
 def get_app_font_metrics(point_size: int = None, bold: bool = False, mono: bool = False,
-                         stretch: int = QFont.Unstretched):
+                         stretch: int = QFont.Stretch.Unstretched):
     """Get the non-default font metrics to be used by application"""
     return QFontMetricsF(get_scenario_font(point_size, bold, mono, stretch))
 
@@ -315,7 +314,7 @@ def show_modal_dialog(title_text: str, informative_text: str) -> QMessageBox:
     prompt = QMessageBox()
     prompt.setText(title_text)
     prompt.setInformativeText(informative_text)
-    prompt.setStandardButtons(QMessageBox.NoButton)
+    prompt.setStandardButtons(QMessageBox.StandardButton.NoButton)
     prompt.show()
     return prompt
 
@@ -350,7 +349,7 @@ class CustomMessageBox(QMessageBox):
             # resize it:
             cur_width = text_field.width()
             text_field.setMinimumWidth(self.__width)
-            text_field.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            text_field.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
             # move it so it stays centered:
             new_width = text_field.width()
             self.move(int(self.pos().x() - (new_width - cur_width) / 2), int(self.pos().y()))
@@ -369,14 +368,14 @@ def create_modal_dialog(dialog_title: str,
     Use this dialog to display messages to the user where a user response is required to close the dialog. Since the
     dialog is modal, the user will not be able to interact with the application until the dialog closes. A list of
     StandardButton's may be provided to allow for user interaction with the dialogue. The default button is 'OK' unless
-    the icon specified is a QMessageBox.Question, in which case the default is 'Yes' and 'No'.
+    the icon specified is a QMessageBox.Icon.Question, in which case the default is 'Yes' and 'No'.
 
     :param dialog_title: title to be displayed on the top of the dialog's window.
     :param message: the message to be displayed.
     :param icon: a QMessageBox.Icon: NoIcon, Question, Information, Warning, or Critical. If 'buttons' is
         None, buttons appropriate for the icon are added to the message box.
     :param buttons: [optional] a list of QMessageBox.StandardButton's to be displayed. Default is 'OK' unless the icon
-        specified is a QMessageBox.Question, in which case the default is 'Yes' and 'No'.
+        specified is a QMessageBox.Icon.Question, in which case the default is 'Yes' and 'No'.
     :param buttons_str_role:  [optional] buttons that are added to the box in str and role.
     :param parent: [optional] The widget from which the message box is spawned.
     :param detailed_message: [optional] if provided, the 'Details...'  button will appear and display this text if
@@ -402,14 +401,14 @@ def create_modal_dialog(dialog_title: str,
 
     if buttons is None and buttons_str_role is None:
         default_buttons = []
-        if icon == QMessageBox.Question:
-            msg_box.addButton(QMessageBox.Yes)
-            msg_box.addButton(QMessageBox.No)
-            default_buttons.append(QMessageBox.Yes)
-            default_buttons.append(QMessageBox.No)
+        if icon == QMessageBox.Icon.Question:
+            msg_box.addButton(QMessageBox.StandardButton.Yes)
+            msg_box.addButton(QMessageBox.StandardButton.No)
+            default_buttons.append(QMessageBox.StandardButton.Yes)
+            default_buttons.append(QMessageBox.StandardButton.No)
         else:
-            msg_box.addButton(QMessageBox.Ok)
-            default_buttons.append(QMessageBox.Ok)
+            msg_box.addButton(QMessageBox.StandardButton.Ok)
+            default_buttons.append(QMessageBox.StandardButton.Ok)
 
         if default_button is not None:
             if default_button not in default_buttons:
@@ -419,7 +418,7 @@ def create_modal_dialog(dialog_title: str,
     else:
         if buttons is not None:
             for button in buttons:
-                if button == QMessageBox.NoButton:
+                if button == QMessageBox.StandardButton.NoButton:
                     raise ValueError('NoButton is not a valid button for this dialog.')
                 msg_box.addButton(button)
 
@@ -496,8 +495,8 @@ def exec_modal_input_error_dialog(error: Exception):
     """
     exec_modal_dialog("Input Error",
                       get_input_error_description(error),
-                      QMessageBox.Critical,
-                      default_button=QMessageBox.Ok,
+                      QMessageBox.Icon.Critical,
+                      default_button=QMessageBox.StandardButton.Ok,
                       detailed_message=DETAILED_PARAMETER_SYNTAX_DESCRIPTION)
 
 
@@ -616,10 +615,10 @@ def retrieve_cached_py_expr(model: QAbstractTableModel,
 
 @unique
 class CustomListWidgetItemEnum(IntEnum):
-    undefined, editor_link_item = range(QListWidgetItem.UserType, QListWidgetItem.UserType + 2)
+    undefined, editor_link_item = range(QListWidgetItem.ItemType.UserType, QListWidgetItem.ItemType.UserType + 2)
 
 
-assert CustomListWidgetItemEnum.undefined == QListWidgetItem.UserType
+assert CustomListWidgetItemEnum.undefined == QListWidgetItem.ItemType.UserType
 
 
 class PartAction(QAction):
@@ -1051,18 +1050,18 @@ class PathExprValidator(QValidator):
         """
         if not path_str:
             if self.__accept_empty_expr:
-                return QValidator.Acceptable, path_str, pos
+                return QValidator.State.Acceptable, path_str, pos
             else:
                 self.__validation_target.setStyleSheet('QLineEdit { background-color: red }')
-                return QValidator.Intermediate, path_str, pos
+                return QValidator.State.Intermediate, path_str, pos
 
         if not check_valid_file_path(path_str):
-            return QValidator.Intermediate, path_str, pos
+            return QValidator.State.Intermediate, path_str, pos
 
         if self.__is_relative_to_folder and (not is_path_below_directory(path_str, self.__scenario_folder)):
-            return QValidator.Intermediate, path_str, pos
+            return QValidator.State.Intermediate, path_str, pos
         else:
-            return QValidator.Acceptable, path_str, pos
+            return QValidator.State.Acceptable, path_str, pos
 
     # --------------------------- instance __PRIVATE members-------------------------------------
 
@@ -1072,7 +1071,7 @@ class PathExprValidator(QValidator):
         This is called while the user is typing.
         """
         validity, _, _ = self.validate(self.__validation_target.text(), 0)
-        colors = {QValidator.Invalid: 'red', QValidator.Intermediate: 'red'}
+        colors = {QValidator.State.Invalid: 'red', QValidator.State.Intermediate: 'red'}
         if validity in colors:
             self.__validation_target.setStyleSheet('QLineEdit {{ background-color: {} }}'.format(colors[validity]))
             self.sig_path_valid.emit(self.objectName(), False)
@@ -1123,21 +1122,21 @@ class ImportSourceModuleExprValidator(QValidator):
         """
         if not module_str:
             if self.__accept_empty_expr:
-                return QValidator.Acceptable, module_str, pos
+                return QValidator.State.Acceptable, module_str, pos
             else:
                 self.__validation_target.setStyleSheet('QLineEdit { background-color: red }')
-                return QValidator.Intermediate, module_str, pos
+                return QValidator.State.Intermediate, module_str, pos
 
         try:
             importlib.util.find_spec(module_str)
         except Exception:
             # Exeception when 'xxx.' entered, and 'xxx' is not a package
-            return QValidator.Intermediate, module_str, pos
+            return QValidator.State.Intermediate, module_str, pos
         else:
             if importlib.util.find_spec(module_str) is None:
-                return QValidator.Intermediate, module_str, pos
+                return QValidator.State.Intermediate, module_str, pos
             else:
-                return QValidator.Acceptable, module_str, pos
+                return QValidator.State.Acceptable, module_str, pos
 
     # --------------------------- instance __PRIVATE members-------------------------------------
     def __on_text_changed(self):
@@ -1146,7 +1145,7 @@ class ImportSourceModuleExprValidator(QValidator):
         This is called while the user is typing.
         """
         validity, _, _ = self.validate(self.__validation_target.text(), 0)
-        colors = {QValidator.Invalid: 'red', QValidator.Intermediate: 'red'}
+        colors = {QValidator.State.Invalid: 'red', QValidator.State.Intermediate: 'red'}
         if validity in colors:
             self.__validation_target.setStyleSheet('QLineEdit {{ background-color: {} }}'.format(colors[validity]))
             self.sig_module_valid.emit(self.objectName(), False)
@@ -1197,15 +1196,15 @@ class PythonNameValidator(QValidator):
         """
         if not input_str:
             if self.__accept_empty_expr:
-                return QValidator.Acceptable, input_str, pos
+                return QValidator.State.Acceptable, input_str, pos
             else:
                 self.__validation_target.setStyleSheet('QLineEdit { background-color: red }')
-                return QValidator.Intermediate, input_str, pos
+                return QValidator.State.Intermediate, input_str, pos
 
         if input_str.isidentifier():
-            return QValidator.Acceptable, input_str, pos
+            return QValidator.State.Acceptable, input_str, pos
         else:
-            return QValidator.Intermediate, input_str, pos
+            return QValidator.State.Intermediate, input_str, pos
 
     # --------------------------- instance __PRIVATE members-------------------------------------
     def __on_text_changed(self):
@@ -1214,7 +1213,7 @@ class PythonNameValidator(QValidator):
         This is called while the user is typing.
         """
         validity, _, _ = self.validate(self.__validation_target.text(), 0)
-        colors = {QValidator.Invalid: 'red', QValidator.Intermediate: 'red'}
+        colors = {QValidator.State.Invalid: 'red', QValidator.State.Intermediate: 'red'}
         if validity in colors:
             self.__validation_target.setStyleSheet('QLineEdit {{ background-color: {} }}'.format(colors[validity]))
             self.sig_str_valid.emit(self.objectName(), False)

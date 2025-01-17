@@ -21,13 +21,13 @@ from pathlib import Path
 from enum import IntEnum
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, QObject, pyqtSignal
-from PyQt5.QtCore import QRectF, QPoint, QPointF, QLineF, QSize, QVariant
-from PyQt5.QtGui import QColor, QPen, QPainterPath, QPainter, QBrush, QKeyEvent, QPolygonF, QMouseEvent, QCursor
-from PyQt5.QtWidgets import QGraphicsObject, QGraphicsItem, QStyleOptionGraphicsItem, QWidget
-from PyQt5.QtWidgets import QGraphicsSceneContextMenuEvent, QMenu, QGraphicsScene
-from PyQt5.QtWidgets import QGraphicsSceneMouseEvent, QMessageBox, QGraphicsRectItem
-from PyQt5.QtSvg import QGraphicsSvgItem
+from PyQt6.QtCore import Qt, QObject, pyqtSignal
+from PyQt6.QtCore import QRectF, QPoint, QPointF, QLineF, QSize, QVariant
+from PyQt6.QtGui import QColor, QPen, QPainterPath, QPainter, QBrush, QKeyEvent, QPolygonF, QMouseEvent, QCursor
+from PyQt6.QtWidgets import QGraphicsObject, QGraphicsItem, QStyleOptionGraphicsItem, QWidget
+from PyQt6.QtWidgets import QGraphicsSceneContextMenuEvent, QMenu, QGraphicsScene
+from PyQt6.QtWidgets import QGraphicsSceneMouseEvent, QMessageBox, QGraphicsRectItem
+from PyQt6.QtSvgWidgets import QGraphicsSvgItem
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -148,7 +148,7 @@ class LinkAnchorItem(ICustomItem, QGraphicsObject):
                                                           "Create Missing Link",
                                                           tooltip="Create missing link from link anchor item")
 
-        self.setCursor(QCursor(Qt.ArrowCursor))
+        self.setCursor(Qt.CursorShape.ArrowCursor)
         self._set_flags_item_change_link_anchor()
 
         self.vis_link_anchor_point_item = None
@@ -168,7 +168,7 @@ class LinkAnchorItem(ICustomItem, QGraphicsObject):
         :param new_value: the new value of attribute associated with change
         :returns: False if attempted disallowed selection, or superclass itemChange() otherwise
         """
-        if change == QGraphicsItem.ItemScenePositionHasChanged:
+        if change == QGraphicsItem.GraphicsItemChange.ItemScenePositionHasChanged:
             self.sig_link_anchor_pos_changed.emit()
 
         return super().itemChange(change, new_value)
@@ -276,9 +276,8 @@ class LinkAnchorItem(ICustomItem, QGraphicsObject):
         # Trim link line to anchor boundary
         points = []
         for side in sides:
-            intersect_point = QPointF()
-            intersect_type = link_line.intersect(side, intersect_point)
-            if intersect_type == QLineF.BoundedIntersection:
+            intersect_type, intersect_point = link_line.intersects(side)
+            if intersect_type == QLineF.IntersectionType.BoundedIntersection:
                 # Note that you must copy intersect_point's value into
                 # a new variable before placing it into the list as this
                 # variable behaves like a pointer -> if appended directly
@@ -339,9 +338,8 @@ class LinkAnchorItem(ICustomItem, QGraphicsObject):
         # Search for the side intersecting the link
         sides = [side_top, side_right, side_bottom, side_left]
         for side in sides:
-            intersect_point = QPointF()
-            intersect_type = link_line.intersect(side, intersect_point)
-            if intersect_type == QLineF.BoundedIntersection:
+            intersect_type, intersect_point = link_line.intersects(side)
+            if intersect_type == QLineF.IntersectionType.BoundedIntersection:
                 # Return the mid-point of the side
                 return side.pointAt(0.5)
 
@@ -376,9 +374,9 @@ class LinkAnchorItem(ICustomItem, QGraphicsObject):
         """
         if self.vis_link_anchor_point_item is None:
             self.vis_link_anchor_point_item = QGraphicsRectItem()
-            pen = QPen(Qt.SolidLine)
+            pen = QPen(Qt.PenStyle.SolidLine)
             pen.setWidth(5)
-            pen.setColor(Qt.black)
+            pen.setColor(Qt.GlobalColor.black)
             self.vis_link_anchor_point_item.setPen(pen)
             self.vis_link_anchor_point_item.setZValue(50)
             self.scene().addItem(self.vis_link_anchor_point_item)
@@ -456,7 +454,7 @@ class LinkAnchorItem(ICustomItem, QGraphicsObject):
         call this if they further override itemChange(), otherwise only one of the base class itemChange()
         gets called (this is likely due to a PyQt bug, or to how the Qt library handles this flag).
         """
-        self.setFlag(QGraphicsItem.ItemSendsScenePositionChanges)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges)
 
     @override_optional
     def _disconnect_all_slots(self):
@@ -535,7 +533,7 @@ class LinkSegmentBaseItem(QGraphicsObject):
         self._bounding_rect_path = QPainterPath()
         self._link_path = QPainterPath()
 
-        self._link_pen = QPen(Qt.SolidLine)
+        self._link_pen = QPen(Qt.PenStyle.SolidLine)
         self._link_pen.setWidth(int(self.PEN_WIDTH))
         self._link_pen.setColor(self.COLOR_DEFAULT)
 
@@ -920,11 +918,11 @@ class LinkSegmentItem(IInteractiveItem, LinkSegmentBaseItem):
         IInteractiveItem.__init__(self)
         LinkSegmentBaseItem.__init__(self)
 
-        self.setCursor(QCursor(Qt.ArrowCursor))
+        self.setCursor(Qt.CursorShape.ArrowCursor)
 
         self._set_flags_item_change_interactive()
-        assert self.flags() & (QGraphicsItem.ItemIsFocusable | QGraphicsItem.ItemIsSelectable)
-        assert not (self.flags() & self.ItemIsMovable)
+        assert self.flags() & (QGraphicsItem.GraphicsItemFlag.ItemIsFocusable | QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        assert not (self.flags() & QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
         self.setObjectName(part_link.name)
         self.__link_obj = link_obj
@@ -943,21 +941,21 @@ class LinkSegmentItem(IInteractiveItem, LinkSegmentBaseItem):
         self.COLOR_DEFAULT = PART_ICON_COLORS[part_link.part_type_name].darker(175)
 
         # Fine pen for link arrow
-        self._arrow_pen = QPen(Qt.SolidLine)
+        self._arrow_pen = QPen(Qt.PenStyle.SolidLine)
         self._arrow_pen.setWidthF(int(0.1))
         self._arrow_pen.setColor(self.COLOR_DEFAULT)
 
         # Fine pen for link label
-        self._label_pen = QPen(Qt.SolidLine)
+        self._label_pen = QPen(Qt.PenStyle.SolidLine)
         self._label_pen.setWidthF(int(0.1))
         self._label_pen.setColor(self.COLOR_DEFAULT)
-        self._label_brush = QBrush(self.COLOR_DEFAULT, Qt.SolidPattern)
+        self._label_brush = QBrush(self.COLOR_DEFAULT, Qt.BrushStyle.SolidPattern)
 
         self.label_offset = self.arrow_offset + self.arrow_stem_offset  # Offset label from the link endpoint
 
         # Brushes (for filling shapes)
-        self._default_brush = QBrush(self.COLOR_DEFAULT, Qt.SolidPattern)
-        self._highlight_brush = QBrush(self.COLOR_HIGHLIGHT, Qt.SolidPattern)
+        self._default_brush = QBrush(self.COLOR_DEFAULT, Qt.BrushStyle.SolidPattern)
+        self._highlight_brush = QBrush(self.COLOR_HIGHLIGHT, Qt.BrushStyle.SolidPattern)
 
         # Create context-menu 'actions'
         self.__action_delete = create_action(self, "Delete",
@@ -1002,7 +1000,7 @@ class LinkSegmentItem(IInteractiveItem, LinkSegmentBaseItem):
         :param event: A key press event.
         """
         key_pressed = event.key()
-        if key_pressed == Qt.Key_Delete:
+        if key_pressed == Qt.Key.Key_Delete:
             self.on_action_delete()
 
     @override(QGraphicsObject)
@@ -1011,7 +1009,7 @@ class LinkSegmentItem(IInteractiveItem, LinkSegmentBaseItem):
         log.debug("Link segment for {} got mouse press: {}", self.__part_link, EventStr(event))
         super().mousePressEvent(event)
 
-        right_click = event.button() & Qt.RightButton
+        right_click = event.button() & Qt.MouseButton.RightButton
         if right_click:
             self.scene().set_selection(self)
 
@@ -1092,7 +1090,7 @@ class LinkSegmentItem(IInteractiveItem, LinkSegmentBaseItem):
             msg = 'Some Links are not in view: "{}". Click Yes to delete them anyways, ' \
                   'or No to go back without deletion.'.format(self.__part_link.name)
 
-            if exec_modal_dialog("Delete Link", msg, QMessageBox.Question) != QMessageBox.Yes:
+            if exec_modal_dialog("Delete Link", msg, QMessageBox.Icon.Question) != QMessageBox.StandardButton.Yes:
                 return
 
         self.remove_link()
@@ -1325,7 +1323,7 @@ class LinkSegmentSourceItem(LinkSegmentItem):
         if not self._draw_link:
             return
 
-        painter.setRenderHints(QPainter.TextAntialiasing | QPainter.Antialiasing | QPainter.HighQualityAntialiasing)
+        painter.setRenderHints(QPainter.RenderHint.TextAntialiasing | QPainter.RenderHint.Antialiasing)
 
         #DRWA
 
@@ -1349,7 +1347,7 @@ class LinkSegmentSourceItem(LinkSegmentItem):
             grey = QColor(200,200,200)
             self._link_pen.setColor(grey)
             self._arrow_pen.setColor(grey)
-            painter.setBrush(QBrush(grey, Qt.SolidPattern))
+            painter.setBrush(QBrush(grey, Qt.BrushStyle.SolidPattern))
             self._label_pen.setColor(grey)
             self._label_brush.setColor(grey)
         else:
@@ -1396,10 +1394,10 @@ class LinkSegmentSourceItem(LinkSegmentItem):
 
             if self.is_highlighted:
                 # Highlight the background field
-                painter.fillRect(rect_f, QBrush(self.COLOR_HIGHLIGHT, Qt.SolidPattern))
+                painter.fillRect(rect_f, QBrush(self.COLOR_HIGHLIGHT, Qt.BrushStyle.SolidPattern))
             else:
                 # Default 'white' background field
-                painter.fillRect(rect_f, QBrush(Qt.white, Qt.SolidPattern))
+                painter.fillRect(rect_f, QBrush(Qt.GlobalColor.white, Qt.BrushStyle.SolidPattern))
 
             # Draw the label
             painter.setPen(self._label_pen)
@@ -1594,7 +1592,8 @@ class LinkSegmentSourceItem(LinkSegmentItem):
         target_edges = [left_edge, top_edge, right_edge, bottom_edge]
         intersect_point = None
         for edge in target_edges:
-            if edge.intersect(src_decluttered_link_line, intersect_point) == QLineF.BoundedIntersection:
+            does_intersect, intersect_point = edge.intersects(src_decluttered_link_line)
+            if does_intersect == QLineF.IntersectionType.BoundedIntersection:
                 # the source decluttered link line touches the target, so return False
                 return False
 
@@ -1653,7 +1652,7 @@ class LinkSegmentTargetItem(LinkSegmentItem):
         if not self._draw_link:
             return
 
-        painter.setRenderHints(QPainter.TextAntialiasing | QPainter.Antialiasing | QPainter.HighQualityAntialiasing)
+        painter.setRenderHints(QPainter.RenderHint.TextAntialiasing | QPainter.RenderHint.Antialiasing)
 
         if self.is_highlighted:
             self.setZValue(ZLevelsEnum.link_selected)
@@ -1748,11 +1747,11 @@ class LinkSegmentWaypointItem(LinkSegmentItem):
         self.set_target_anchor_item(target_anchor)
 
         self.setZValue(ZLevelsEnum.link)
-        self.setFlags(QGraphicsItem.ItemIsFocusable | QGraphicsItem.ItemIsSelectable)
+        self.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsFocusable | QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
     @override(QGraphicsItem)
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget = None):
-        painter.setRenderHints(QPainter.TextAntialiasing | QPainter.Antialiasing | QPainter.HighQualityAntialiasing)
+        painter.setRenderHints(QPainter.RenderHint.TextAntialiasing | QPainter.RenderHint.Antialiasing)
 
         if self.is_highlighted:
             self.setZValue(ZLevelsEnum.link_selected)
@@ -1826,17 +1825,17 @@ class LinkWaypointItem(IInteractiveItem, LinkAnchorItem):
         LinkAnchorItem.__init__(self, parent=parent)
         self._set_flags_item_change_link_anchor()
         self._set_flags_item_change_interactive()
-        assert self.flags() & (QGraphicsItem.ItemIsFocusable | QGraphicsItem.ItemIsSelectable | self.ItemIsMovable)
-        assert self.flags() & QGraphicsItem.ItemSendsScenePositionChanges
+        assert self.flags() & (QGraphicsItem.GraphicsItemFlag.ItemIsFocusable | QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        assert self.flags() & QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges
 
         self.__waypoint = waypoint
         self.__waypoint_size = QSize(WAYPOINT_SIZE_PIX, WAYPOINT_SIZE_PIX)
 
         # Drawing objects
         #DRWA
-        #self.__default_brush = QBrush(LinkWaypointItem.COLOR_DEFAULT, Qt.SolidPattern)
-        self.__default_brush = QBrush(PART_ICON_COLORS[waypoint.part_type_name].darker(175), Qt.SolidPattern)
-        self.__highlight_brush = QBrush(LinkWaypointItem.COLOR_HIGHLIGHT, Qt.SolidPattern)
+        #self.__default_brush = QBrush(LinkWaypointItem.COLOR_DEFAULT, Qt.BrushStyle.SolidPattern)
+        self.__default_brush = QBrush(PART_ICON_COLORS[waypoint.part_type_name].darker(175), Qt.BrushStyle.SolidPattern)
+        self.__highlight_brush = QBrush(LinkWaypointItem.COLOR_HIGHLIGHT, Qt.BrushStyle.SolidPattern)
 
         # Waypoint bounds and shape
         self.__bounding_rect_path = QPainterPath()
@@ -1883,8 +1882,8 @@ class LinkWaypointItem(IInteractiveItem, LinkAnchorItem):
 
     @override(QGraphicsItem)
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget = None):
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing)
-        painter.setPen(Qt.NoPen)
+        painter.setRenderHints(QPainter.RenderHint.Antialiasing)
+        painter.setPen(Qt.PenStyle.NoPen)
 
         if self.is_highlighted:
             self.setZValue(ZLevelsEnum.waypoint_selected)
@@ -2500,8 +2499,8 @@ class PartLinkTargetSelLineItem(ICustomItem, LinkSegmentBaseItem):
     @override(QGraphicsItem)
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget = None):
         painter.setPen(self._link_pen)
-        painter.setBrush(QBrush(self.COLOR_DEFAULT, Qt.SolidPattern))
-        painter.setRenderHints(QPainter.TextAntialiasing | QPainter.Antialiasing | QPainter.HighQualityAntialiasing)
+        painter.setBrush(QBrush(self.COLOR_DEFAULT, Qt.BrushStyle.SolidPattern))
+        painter.setRenderHints(QPainter.RenderHint.TextAntialiasing | QPainter.RenderHint.Antialiasing)
         painter.drawPath(self._link_path)
 
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
@@ -2638,7 +2637,7 @@ class WaypointMarkerItem(LinkAnchorItem):
         LinkAnchorItem.__init__(self, parent=None)
 
         self.__waypoint_size = QSize(WAYPOINT_SIZE_PIX, WAYPOINT_SIZE_PIX)
-        self.__default_brush = QBrush(WaypointMarkerItem.COLOR_DEFAULT, Qt.SolidPattern)
+        self.__default_brush = QBrush(WaypointMarkerItem.COLOR_DEFAULT, Qt.BrushStyle.SolidPattern)
 
         # Waypoint bounds and shape
         self.__bounding_rect_path = QPainterPath()
@@ -2679,8 +2678,8 @@ class WaypointMarkerItem(LinkAnchorItem):
 
     @override(QGraphicsItem)
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget: QWidget = None):
-        painter.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing)
-        painter.setPen(Qt.NoPen)
+        painter.setRenderHints(QPainter.RenderHint.Antialiasing)
+        painter.setPen(Qt.PenStyle.NoPen)
         self.setZValue(ZLevelsEnum.waypoint)
         painter.setBrush(self.__default_brush)
         painter.drawPath(self.__waypoint_path)

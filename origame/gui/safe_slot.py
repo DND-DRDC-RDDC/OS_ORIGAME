@@ -113,8 +113,8 @@ import traceback
 import typing
 
 # [2. third-party]
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtCore import pyqtSlot
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSlot
 
 # [3. local]
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -173,13 +173,15 @@ def set_safe_slot_exception_handler(func: SafeSlotExcHandlerCallable):
         __handle_safe_slot_exception = func
 
 
-def safe_slot(func: SlotFunc, arg_types=None, __allow_decorator: bool = False) -> pyqtSignal:
+def safe_slot(func: SlotFunc, arg_types=None, __allow_decorator: bool = False, ignore_types:bool = False) -> pyqtSignal:
     """
     :param func: the callable to wrap; if arg_types is None, func's parameters must be annotated
     :param arg_types: the argument types of the slot; if not specified, these are inferred from func's
         signature, which is usually adequate.
     :param __allow_decorator: used ONLY by the testing package's safe_slot_decorator, to enable decorating test
         methods as slots (purely for convenience)
+    :param ignore_types: use this in a situation to force safe slot to ignore argument types for a specific slot
+        use as a last resort
     """
     # Oliver TODO build 3: implement a metaclass that is required in order for safe_slot to be used (note:
     # the metaclass can add a property to the wrapper; the wrapper checks for this the first time called; if not
@@ -189,19 +191,21 @@ def safe_slot(func: SlotFunc, arg_types=None, __allow_decorator: bool = False) -
     # define the wrapper that traps exceptions; don't use functools.wraps, not what we want;
     slot_wrapper = __get_safe_slot_wrapper(func, __allow_decorator)
 
-    # finally ready to return pyqtSlotted wrapper:
-    # WARNING: decorating the wrapper with pyqtSlot() does not work! Need to do it after defined.
-    # pyqtSlot()(func) returns func when func is free func; if func is a method, it must be of a class derived
-    # from QObject because pyqtSlot adds an entry to the QObject instance's metaobject()
-    arg_types = __get_checked_arg_types(func, arg_types)
-    try:
-        pyqt_slot = pyqtSlot(*arg_types)(slot_wrapper)
-    except TypeError: # TypeError: bytes or ASCII string expected not '_GenericAlias'
-        for x in range(len(arg_types)):
-            if typing.get_origin(arg_types[x]) != None:
-                arg_types[x] = typing.get_origin(arg_types[x])
-
-        pyqt_slot = pyqtSlot(*arg_types)(slot_wrapper)
+    if ignore_types:
+        pyqt_slot = pyqtSlot()(slot_wrapper)
+    else:
+        # finally ready to return pyqtSlotted wrapper:
+        # WARNING: decorating the wrapper with pyqtSlot() does not work! Need to do it after defined.
+        # pyqtSlot()(func) returns func when func is free func; if func is a method, it must be of a class derived
+        # from QObject because pyqtSlot adds an entry to the QObject instance's metaobject()
+        arg_types = __get_checked_arg_types(func, arg_types)
+        try:
+            pyqt_slot = pyqtSlot(*arg_types)(slot_wrapper)
+        except TypeError: # TypeError: bytes or ASCII string expected not '_GenericAlias'
+            for x in range(len(arg_types)):
+                if typing.get_origin(arg_types[x]) != None:
+                    arg_types[x] = typing.get_origin(arg_types[x])
+            pyqt_slot = pyqtSlot(*arg_types)(slot_wrapper)
 
     assert pyqt_slot is slot_wrapper  # wrapper gets spit out but pyqtSlot still got to do its job, as tests prove
 

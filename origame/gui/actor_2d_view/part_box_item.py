@@ -19,11 +19,11 @@ import logging
 import webbrowser
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, pyqtSignal, QRectF, QSizeF, QSize, QPointF, QMarginsF, QVariant, QObject
-from PyQt5.QtGui import QCursor, QBrush, QPainter, QPen, QPainterPath, QPolygonF, QKeyEvent
-from PyQt5.QtWidgets import QAction, QMenu, QWidget, QGraphicsProxyWidget, QGraphicsItem
-from PyQt5.QtWidgets import QGraphicsObject, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent
-from PyQt5.QtWidgets import QGraphicsSceneMouseEvent, QGraphicsSceneHoverEvent, QMessageBox
+from PyQt6.QtCore import Qt, pyqtSignal, QRectF, QSizeF, QSize, QPointF, QMarginsF, QVariant, QObject
+from PyQt6.QtGui import QCursor, QBrush, QPainter, QPen, QPainterPath, QPolygonF, QKeyEvent, QAction
+from PyQt6.QtWidgets import QMenu, QWidget, QGraphicsProxyWidget, QGraphicsItem
+from PyQt6.QtWidgets import QGraphicsObject, QStyleOptionGraphicsItem, QGraphicsSceneContextMenuEvent
+from PyQt6.QtWidgets import QGraphicsSceneMouseEvent, QGraphicsSceneHoverEvent, QMessageBox
 
 # [3. local]
 from ...core import override, override_optional, override_required
@@ -113,8 +113,8 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         # Flags
         self._set_flags_item_change_interactive()
         self._set_flags_item_change_link_anchor()
-        assert self.flags() & (QGraphicsItem.ItemIsFocusable | QGraphicsItem.ItemIsSelectable | self.ItemIsMovable)
-        assert self.flags() & QGraphicsItem.ItemSendsScenePositionChanges
+        assert self.flags() & (QGraphicsItem.GraphicsItemFlag.ItemIsFocusable | QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        assert self.flags() & QGraphicsItem.GraphicsItemFlag.ItemSendsScenePositionChanges
         self.setAcceptHoverEvents(True)
 
         self.__has_editor = get_part_editor_class(the_part.PART_TYPE_NAME) is not None
@@ -242,9 +242,9 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         """
         if self.__part.SHOW_FRAME:
             # Paint the part's frame
-            painter.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing)
+            painter.setRenderHints(QPainter.RenderHint.Antialiasing)
             #DRWA
-            painter.setPen(QPen(QBrush(PART_ICON_COLORS[self.__part.PART_TYPE_NAME]), PART_ITEM_BORDER_WIDTH, join = Qt.MiterJoin))
+            painter.setPen(QPen(QBrush(PART_ICON_COLORS[self.__part.PART_TYPE_NAME]), PART_ITEM_BORDER_WIDTH, join = Qt.PenJoinStyle.MiterJoin))
             painter.setBrush(QBrush(PART_ICON_COLORS[self.__part.PART_TYPE_NAME]))
             painter.drawPath(self.__part_border_path)
         else:
@@ -321,7 +321,7 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         :param event: a key press event
         """
         key_pressed = event.key()
-        if key_pressed == Qt.Key_Delete:
+        if key_pressed == Qt.Key.Key_Delete:
             if self.__part.parent_actor_part:
                 self.on_delete_part_request()
             else:
@@ -402,12 +402,12 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         """
         log.debug('DeleteLater of PartBoxItem for part {}', self.__part)
 
-        """ 
+        """
         Commented the following line to avoid an Access Violation Error when deleting items from
-        the scene. The main cause of this crash is that deleting a QObject while it is handling 
+        the scene. The main cause of this crash is that deleting a QObject while it is handling
         an event delivered to it can cause a crash. This may introduce a memory leak.
-        The PartBoxItem is explicitly removed from the scene which reduces chance of memory leak, 
-        but we leave this comment here as a reference for any future detected memory leak to be fixed. 
+        The PartBoxItem is explicitly removed from the scene which reduces chance of memory leak,
+        but we leave this comment here as a reference for any future detected memory leak to be fixed.
         """
         # super().deleteLater()
 
@@ -543,7 +543,7 @@ class PartBoxItem(IInteractiveItem, LinkAnchorItem):
         if not self.scene().is_item_visible(self):
             msg = 'Some waypoints are not in view: "{}". Click Yes to delete them anyways, ' \
                   'or No to go back without deletion.'.format(self.part_frame.name)
-            if exec_modal_dialog("Delete Part", msg, QMessageBox.Question) != QMessageBox.Yes:
+            if exec_modal_dialog("Delete Part", msg, QMessageBox.Icon.Question) != QMessageBox.StandardButton.Yes:
                 return
 
         assert self.parentItem() is None
@@ -764,9 +764,9 @@ class IBoxedPartItem(ICustomItem):
     @override_optional
     def populate_data(self):
         """
-        Some boxed items may have data that slow down the __init__. That will block the boxing process, such as 
+        Some boxed items may have data that slow down the __init__. That will block the boxing process, such as
         QGraphicsWidget.setWidget().
-        
+
         The derived class may override this function to populate data after the __init__ so that it can be completed
         and added to the scene as soon as possible.
         """

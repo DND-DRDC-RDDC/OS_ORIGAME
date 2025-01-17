@@ -18,8 +18,8 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtWidgets import QWidget
 
 # [3. local]
 from ...scenario.defn_parts import InfoPart
@@ -56,14 +56,14 @@ def function_example(a: int, b: float = 0) -> bool:
     """
     [EDIT:]Docstring summary line is a short one-line description of the function.
     [EDIT:]
-    [EDIT:]Detailed description of function. Do not repeat what is in param/returns/raises, where these 
+    [EDIT:]Detailed description of function. Do not repeat what is in param/returns/raises, where these
     [EDIT:]are described individually. In this paragraph, focus on what is not obvious from param/returns/
-    [EDIT:]raises: when is it valid to call this function; is it an optional function, or it must be 
-    [EDIT:]called; in the case of a method, what does it do to the object state; etc. 
+    [EDIT:]raises: when is it valid to call this function; is it an optional function, or it must be
+    [EDIT:]called; in the case of a method, what does it do to the object state; etc.
     [EDIT:]
-    [EDIT:]:param ARG1: Describe ARG1 function call argument, including conditions for validity. 
+    [EDIT:]:param ARG1: Describe ARG1 function call argument, including conditions for validity.
     [EDIT:]:param ARG2: Describe ARG2 function call argument... ....... ......... ........ .......... ........ ....
-    [EDIT:]    Indent long lines by usual 4 spaces. 
+    [EDIT:]    Indent long lines by usual 4 spaces.
     [EDIT:]:returns: Describe what the function returns (remove if not return value)
     [EDIT:]:raises EXCEPTION_TYPE_1: Describe under what conditions this exception is raised
     [EDIT:]:raises EXCEPTION_TYPE_2: Describe under what conditions this exception is raised
@@ -114,7 +114,7 @@ class InfoPart2dContent(QWidget):
         self.ui_info_part.setupUi(self)
 
         p = self.ui_info_part.textBrowser.palette()
-        p.setColor(QPalette.Base, QColor(231, 222, 209))
+        p.setColor(QPalette.ColorRole.Base, QColor(231, 222, 209))
         self.ui_info_part.textBrowser.setPalette(p)
         self.ui_info_part.textBrowser.setAutoFillBackground(True)
 

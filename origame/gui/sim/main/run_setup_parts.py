@@ -20,11 +20,10 @@ from inspect import signature, Parameter
 from enum import IntEnum
 
 # [2. third-party]
-from PyQt5.QtWidgets import QDialog, QWidget, QTreeWidgetItem, QFileDialog, QMessageBox, QStyledItemDelegate, QLineEdit
-from PyQt5.QtWidgets import QStyleOptionViewItem, QDialogButtonBox
-from PyQt5.QtGui import QPixmap, QIcon, QBrush, QColor, QValidator
-from PyQt5.Qt import Qt, QSettings
-from PyQt5.QtCore import QModelIndex
+from PyQt6.QtWidgets import QDialog, QWidget, QTreeWidgetItem, QFileDialog, QMessageBox, QStyledItemDelegate, QLineEdit
+from PyQt6.QtWidgets import QStyleOptionViewItem, QDialogButtonBox
+from PyQt6.QtGui import QPixmap, QIcon, QBrush, QColor, QValidator
+from PyQt6.QtCore import QModelIndex, Qt, QSettings
 
 # [3. local]
 from ....core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -67,10 +66,10 @@ SignatureInfo = List[Tuple[int, str, signature]]
 
 NUM_COLUMNS = 4
 INDEX_COLUMN_PATH, INDEX_COLUMN_ARG_NAME, INDEX_COLUMN_VALUE, INDEX_COLUMN_RESULTS = range(NUM_COLUMNS)
-USER_ROLE_DEFAULT_VAL = Qt.UserRole + 2
-USER_ROLE_VALIDATOR_NAME = Qt.UserRole + 3
-USER_ROLE_EDITOR_TYPE = Qt.UserRole + 4
-USER_ROLE_ARG_REQUIRED = Qt.UserRole + 5
+USER_ROLE_DEFAULT_VAL = Qt.ItemDataRole.UserRole + 2
+USER_ROLE_VALIDATOR_NAME = Qt.ItemDataRole.UserRole + 3
+USER_ROLE_EDITOR_TYPE = Qt.ItemDataRole.UserRole + 4
+USER_ROLE_ARG_REQUIRED = Qt.ItemDataRole.UserRole + 5
 
 
 # -- Function definitions -----------------------------------------------------------------------
@@ -89,7 +88,7 @@ class ArgumentsDelegate(QStyledItemDelegate):
     """
     Qt out-of-the-box editor does not fit column width and it changes automatically its width even beyond the column
     width when the user types a lot of text. That seems undesirable.
-    
+
     The purpose of this class is to replace the out-of-the-box editor with a standard QLineEdit. The editor is needed
     only for the column indexed as INDEX_COLUMN_VALUE.
     """
@@ -99,7 +98,7 @@ class ArgumentsDelegate(QStyledItemDelegate):
     def __init__(self, delegate_client: Decl.RunSetupPartsDialog):
         """
         Constructs a delegate for the client to create editors for its cell.
-        
+
         Note: This is to satisfy the Qt contract. The actual editors are actually maintained in the delegate client.
         :param delegate_client: The client that gets the editors from this delegate
         """
@@ -148,8 +147,8 @@ class RunSetupPartsDialog(QDialog):
     DIALOG_TOP_MARGIN = 80  # pixels, for the instructions, etc.
     DIALOG_BOTTOM_MARGIN = 50  # pixels, for the OK, Cancel buttons, etc.
 
-    USER_ROLE_PART_ID = Qt.UserRole
-    USER_ROLE_PARAMS = Qt.UserRole + 1
+    USER_ROLE_PART_ID = Qt.ItemDataRole.UserRole
+    USER_ROLE_PARAMS = Qt.ItemDataRole.UserRole + 1
 
     MANDATORY_INPUT_BRUSH = QBrush(QColor(255, 0, 0))
 
@@ -191,13 +190,13 @@ class RunSetupPartsDialog(QDialog):
     def accept(self):
         """
         We want to control the show-and-hide of the dialog. But the Qt Designer generated code connects OK to accept()
-        automatically. 
+        automatically.
         """
         # 1. Check the mandatory input fields
         try:
             self.__get_call_args_dict()
         except ValueError as exc:
-            exec_modal_dialog("Missing Data", str(exc), QMessageBox.Critical)
+            exec_modal_dialog("Missing Data", str(exc), QMessageBox.Icon.Critical)
             return
 
         # 2. Check other validity of the input
@@ -265,7 +264,7 @@ class RunSetupPartsDialog(QDialog):
 
                 arg_param_item.setText(INDEX_COLUMN_ARG_NAME, annotation_label)
 
-                arg_param_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+                arg_param_item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
                 for i in range(NUM_COLUMNS):
                     arg_param_item.setFont(i, get_scenario_font())
 
@@ -283,7 +282,7 @@ class RunSetupPartsDialog(QDialog):
 
         self.__make_pretty_presentation(keep_dialog_intact=False)
 
-        ok_button = self.ui.button_box_ok_cancel.button(QDialogButtonBox.Ok)
+        ok_button = self.ui.button_box_ok_cancel.button(QDialogButtonBox.StandardButton.Ok)
         all_present = all(required_values_present)
         ok_button.setEnabled(all_present)
         tooltip = "" if all_present else REQUIRED_ARG_ABSENT
@@ -291,10 +290,10 @@ class RunSetupPartsDialog(QDialog):
 
     def on_params_valid(self, validator_name: str = None, valid: bool = True):
         """
-        Disables the OK button if any one of the arguments is invalid or any one of the required arguments 
-        does not have a value. 
+        Disables the OK button if any one of the arguments is invalid or any one of the required arguments
+        does not have a value.
         """
-        ok_button = self.ui.button_box_ok_cancel.button(QDialogButtonBox.Ok)
+        ok_button = self.ui.button_box_ok_cancel.button(QDialogButtonBox.StandardButton.Ok)
         if valid:
             self.__check_each_mandatory_arg_expr(validator_name)
         else:
@@ -313,13 +312,13 @@ class RunSetupPartsDialog(QDialog):
     def __check_each_mandatory_arg_expr(self, validator_name: str = None):
         """
         Checks if all the required fields are filled in. If the current field that is being validated requires a value
-        but it is blank and if the editor of the field has passed the validation, we consider that field has been 
+        but it is blank and if the editor of the field has passed the validation, we consider that field has been
         filled, even though the field is still blank until the editing is finished. The reason to do that is to make
         the user experiences more pleasant - when the user fills in a required blank field, he can now move the cursor
         over the OK button to click it.
         :param validator_name: The validator name used by the editor for the current field.
         """
-        ok_button = self.ui.button_box_ok_cancel.button(QDialogButtonBox.Ok)
+        ok_button = self.ui.button_box_ok_cancel.button(QDialogButtonBox.StandardButton.Ok)
         for top_level_idx in range(self.ui.arguments.topLevelItemCount()):
             top_level_item = self.ui.arguments.topLevelItem(top_level_idx)
             params = top_level_item.data(INDEX_COLUMN_PATH, self.USER_ROLE_PARAMS)
@@ -481,7 +480,7 @@ class RunSetupPartsDialog(QDialog):
                     if annotation_label in map_parameters_to_arguments:
                         val = map_parameters_to_arguments.get(annotation_label)
                         val_acceptable, _, _ = validator.validate(val, 0)
-                        if val_acceptable == QValidator.Acceptable:
+                        if val_acceptable == QValidator.State.Acceptable:
                             child_item.setText(INDEX_COLUMN_VALUE, val)
                         else:
                             log.warning("The loaded value {} for {} of {} is invalid; thus discarded.",
@@ -531,7 +530,7 @@ class RunSetupPartsDialog(QDialog):
         total_height = self.DIALOG_TOP_MARGIN + self.DIALOG_BOTTOM_MARGIN
         for i in range(self.ui.arguments.topLevelItemCount()):
             top = self.ui.arguments.topLevelItem(i)
-            top.setTextAlignment(INDEX_COLUMN_PATH, Qt.AlignTop)
+            top.setTextAlignment(INDEX_COLUMN_PATH, Qt.AlignmentFlag.AlignTop)
             total_height += self.ui.arguments.visualItemRect(top).height()
             for j in range(top.childCount()):
                 child = top.child(j)
@@ -550,13 +549,13 @@ class RunSetupPartsDialog(QDialog):
     def __edit_item(self, item: QTreeWidgetItem, edit: bool):
         """
         Edits the item or makes it not editable but enabled and selectable
-        :param edit: True - edit it; otherwise, make it not editable but enabled and selectable 
+        :param edit: True - edit it; otherwise, make it not editable but enabled and selectable
         """
         if edit:
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable)
             self.ui.arguments.editItem(item, INDEX_COLUMN_VALUE)
         else:
-            item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
 
     def __on_item_clicked(self, item: QTreeWidgetItem, col: int):
         """
@@ -596,7 +595,7 @@ class RunSetupPartsDialog(QDialog):
         except Exception as exc:
             msg_title = 'Failed to Load Arguments'
             error_msg = str(exc) + '\nAn error occurred while loading the arguments.'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
 
     def __on_save_arguments(self):
@@ -624,7 +623,7 @@ class RunSetupPartsDialog(QDialog):
         except Exception as exc:
             msg_title = 'Failed to Save Arguments'
             error_msg = str(exc) + '\nAn error occurred while saving the arguments.'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
 
     __slot_on_item_clicked = safe_slot(__on_item_clicked)

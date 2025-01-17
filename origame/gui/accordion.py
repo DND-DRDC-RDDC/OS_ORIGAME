@@ -23,9 +23,9 @@ import logging
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.QtCore import QSettings, QTimer
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QWidget, QScrollArea, QPushButton, QVBoxLayout
+from PyQt6.QtCore import QSettings, QTimer
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QWidget, QScrollArea, QPushButton, QVBoxLayout
 
 # [3. local]
 from .gui_utils import get_icon_path
@@ -62,8 +62,8 @@ class ArrowIcon(QIcon):
         arrow_down = get_icon_path("arrow_down.png")
         arrow_right = get_icon_path("arrow_right.png")
 
-        self.addFile(str(arrow_down), state=QIcon.On)
-        self.addFile(str(arrow_right), state=QIcon.Off)
+        self.addFile(str(arrow_down), state=QIcon.State.On)
+        self.addFile(str(arrow_right), state=QIcon.State.Off)
 
 
 class Pleat(QWidget):

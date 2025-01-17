@@ -24,7 +24,7 @@ from copy import deepcopy
 from collections import OrderedDict
 
 # [2. third-party]
-import pypyodbc
+import pyodbc
 
 # [3. local]
 from ...core import override, BridgeEmitter, BridgeSignal
@@ -188,13 +188,13 @@ def import_from_msaccess(path: PathType,
     return columns, data_array
 
 
-def connect_ms_access_db(path: PathType) -> pypyodbc.Connection:
+def connect_ms_access_db(path: PathType) -> pyodbc.Connection:
     """Connect to an MS Access database. Tries multiple times until gives up. """
     path = Path(path)
 
     def attempt_import(num_attempt):
         try:
-            return pypyodbc.connect(MS_ACCESS_DRIVER_STR + str(path))
+            return pyodbc.connect(MS_ACCESS_DRIVER_STR + str(path))
 
         except Exception as exc:
             log.debug("Import failed: path={}, num_attempt={}", path, num_attempt)
@@ -229,7 +229,7 @@ def export_to_msaccess(column_names: List[str], column_types: List[str], array: 
     db_file_path, db_file_path_str = Path(db_file_path), str(db_file_path)
     to_table_name = normalize_name(to_table_name)
     if db_file_path.exists():
-        database = pypyodbc.connect(MS_ACCESS_DRIVER_STR + db_file_path_str)
+        database = pyodbc.connect(MS_ACCESS_DRIVER_STR + db_file_path_str)
         cursor = database.cursor()
 
         # drop the table if it already exists in the database
@@ -238,7 +238,7 @@ def export_to_msaccess(column_names: List[str], column_types: List[str], array: 
                 try:
                     cursor.execute("DROP TABLE {}".format(to_table_name))
                     break
-                except pypyodbc.ProgrammingError as exc:
+                except pyodbc.ProgrammingError as exc:
                     log.warning("DROP Error during export: {}", exc)
                     break
 
@@ -247,8 +247,7 @@ def export_to_msaccess(column_names: List[str], column_types: List[str], array: 
             msg = "Database '{}' does not exist and cannot be created (ODBC can only create .MDB database for Access)"
             raise ValueError(msg.format(db_file_path))
 
-        pypyodbc.win_create_mdb(db_file_path_str)
-        database = pypyodbc.connect(MS_ACCESS_DRIVER_STR + db_file_path_str)
+        database = pyodbc.connect(MS_ACCESS_DRIVER_STR + db_file_path_str)
         cursor = database.cursor()
 
     converter = SQLiteMsAccessColumnMapper()
@@ -290,7 +289,7 @@ def export_to_msaccess(column_names: List[str], column_types: List[str], array: 
             cursor.execute(sql, row)
         cursor.commit()
 
-    except pypyodbc.Error as exc:
+    except pyodbc.Error as exc:
         log.warning("Error during export: {}", exc)
         raise
 
@@ -325,7 +324,7 @@ def verify_table_exists(path: PathType, check_table: str) -> bool:
         nonlocal exist_check_failed
         if num_attempt < DATABASE_MAX_ATTEMPTS:
             try:
-                data_base = pypyodbc.connect(MS_ACCESS_DRIVER_STR + str(path))
+                data_base = pyodbc.connect(MS_ACCESS_DRIVER_STR + str(path))
                 cursor = data_base.cursor()
 
                 # get MS Access tables from DB:

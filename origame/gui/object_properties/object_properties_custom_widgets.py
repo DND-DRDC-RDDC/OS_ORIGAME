@@ -18,9 +18,9 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget, QTextEdit, QLineEdit
-from PyQt5.QtGui import QKeyEvent, QFocusEvent
+from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtWidgets import QWidget, QTextEdit, QLineEdit
+from PyQt6.QtGui import QKeyEvent, QFocusEvent
 
 # [3. local]
 from ...core import override
@@ -63,8 +63,8 @@ class PartNameLineEdit(QLineEdit):
         super().__init__(parent)
 
         self._editing_mode = True
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.valid_keys = (int(Qt.Key_Tab), int(Qt.Key_Return), int(Qt.Key_Enter))
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.valid_keys = (int(Qt.Key.Key_Tab), int(Qt.Key.Key_Return), int(Qt.Key.Key_Enter))
 
     @override(QLineEdit)
     def keyPressEvent(self, key_event: QKeyEvent):
@@ -103,8 +103,8 @@ class CommentTextBox(QTextEdit):
         super().__init__(parent)
 
         self._editing_mode = True
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.valid_keys = (int(Qt.Key_Tab), int(Qt.Key_Enter))
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.valid_keys = (int(Qt.Key.Key_Tab), int(Qt.Key.Key_Enter))
 
     @override(QTextEdit)
     def keyPressEvent(self, key_event: QKeyEvent):

@@ -5,16 +5,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>5.1.7. Function Part &#8212; ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation</title>
-    
+
+    <title>5.1.7. Function Part &#8212; ORIGAME User Manual (115471-005) 0.9.0 beta (2025-01-16) documentation</title>
+
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
+
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.8.0 beta (2023-03-02)',
+        VERSION:     '0.9.0 beta (2025-01-16)',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  false
@@ -23,25 +23,25 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="ORIGAME User Manual (115471-005) 0.8.0 beta (2023-03-02) documentation" href="index.html" />
+    <link rel="top" title="ORIGAME User Manual (115471-005) 0.9.0 beta (2025-01-16) documentation" href="index.html" />
     <link rel="up" title="5. USING PARTS" href="using parts.html" />
     <link rel="next" title="5.1.8. Hub Part" href="hub_part_ref.html" />
     <link rel="prev" title="5.1.6. File Part" href="file_part_ref.html" />
-   
+
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
+
+
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
   <body role="document">
-  
+
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
-            
+
   <div class="section" id="function-part">
 <span id="function-part-ref"></span><h1>5.1.7. Function Part<a class="headerlink" href="#function-part" title="Permalink to this headline">¶</a></h1>
 <p>Function parts are used to define the events that occur in the simulation and are the most fundamental part used to build models. The main component, or body, of the function part is a Python script that represents the instructions to be carried out during an event. The function part can define parameters that are used to pass information to the function body, and the function may return a value. The function part can be linked to any other part type such as a data part or a clock part. To create a link to another part, right-click and choose &#8220;Create Link&#8221; and then click on the other part. If a function part is linked to another part, its body has access to that part using the alias specified by the link. In other words, aliases of the links that connect a function part to other parts constitute the namespace of the function part. Code completion reveals the contents of the namespace as the user writes the script.</p>
@@ -56,7 +56,7 @@
 <p>where <em>eventRef</em> is the reference object of the event to be edited, <em>target</em> is the new alias of the target function part to be scheduled for future execution, <em>args</em> is a tuple consisting of the new parameters to be passed to the target function part, <em>time</em> is the new time when the target function part will execute, and <em>priority</em> is the new priority of the signal. If any of the arguments are not provided when calling <em>update</em>, the old value of that argument will be used instead.</p>
 <p>Examples of accepted <em>args</em> include:<ul>
 <li><em>args="hello world"</em></li>
-<li><em>args=0.2</em></li> 
+<li><em>args=0.2</em></li>
 <li><em>args=(['i0000110'], 'TOUR_02')</em></li>
 <li><em>args=((1, 2), 'hello world')</em></li>
 </ul></p>
@@ -113,15 +113,15 @@
     </div>
     <div class="footer">
       &copy;2016, Her Majesty the Queen in Right of Canada, as represented by the Minister of National Defence.
-      
+
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.6</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
-      
+
     </div>
 
-    
 
-    
+
+
   </body>
 </html>

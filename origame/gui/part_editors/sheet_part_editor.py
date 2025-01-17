@@ -22,11 +22,11 @@ from pathlib import Path, WindowsPath
 from copy import deepcopy
 
 # [2. third-party]
-from PyQt5.QtCore import pyqtSignal, QItemSelectionModel, QItemSelection, Qt, QAbstractTableModel, QVariant, QModelIndex
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QAbstractItemView, QWidget, QHeaderView, QMessageBox, QInputDialog, QLineEdit, QDialog
-from PyQt5.QtWidgets import QFileDialog, QDialogButtonBox
-from PyQt5.QtGui import QIcon
+from PyQt6.QtCore import pyqtSignal, QItemSelectionModel, QItemSelection, Qt, QAbstractTableModel, QVariant, QModelIndex
+from PyQt6.QtCore import QSettings
+from PyQt6.QtWidgets import QAbstractItemView, QWidget, QHeaderView, QMessageBox, QInputDialog, QLineEdit, QDialog
+from PyQt6.QtWidgets import QFileDialog, QDialogButtonBox
+from PyQt6.QtGui import QIcon
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -79,7 +79,7 @@ def on_excel_error(title, excel_error: str, optional_msg: str = None):
     if optional_msg is not None:
         error_msg += "\n\n{}".format(optional_msg)
 
-    exec_modal_dialog(title, error_msg, QMessageBox.Critical)
+    exec_modal_dialog(title, error_msg, QMessageBox.Icon.Critical)
     log.error('{}: {}', title, error_msg)
 
 
@@ -114,7 +114,7 @@ class SheetEditorDialog(EditorDialog):
 
     @override(QDialog)
     def done(self, result: int):
-        if result != QDialog.Rejected:
+        if result != QDialog.DialogCode.Rejected:
             isvalid = self._validate_user_input()
             if not isvalid:
                 # For invalid results, return the user to the original dialog to correct mistakes
@@ -193,7 +193,7 @@ class SheetEditorDialog(EditorDialog):
         Enable or disable the OK button.
         :param enabled: The enable status to set.
         """
-        self.ui.button_box.button(QDialogButtonBox.Ok).setEnabled(enabled)
+        self.ui.button_box.button(QDialogButtonBox.StandardButton.Ok).setEnabled(enabled)
 
     # --------------------------- instance __PRIVATE members-------------------------------------
 
@@ -248,7 +248,7 @@ class ImportExcelDialog(SheetEditorDialog):
             self.ui.filepath_linedit.setText(last_sheet_import_path)
             self._on_filepath_changed()
             self._on_sheet_list_requested(True)
-            self.ui.sheet_combobox.setFocus(Qt.OtherFocusReason)
+            self.ui.sheet_combobox.setFocus(Qt.FocusReason.OtherFocusReason)
 
     @override(SheetEditorDialog)
     def get_user_input(self) -> Tuple[str, str, str]:
@@ -307,7 +307,7 @@ class ImportExcelDialog(SheetEditorDialog):
 
         # if the file does not exist, can't import
         if not excel_path.exists():
-            exec_modal_dialog("File Not Found", "The file path entered does not exist.", QMessageBox.Information)
+            exec_modal_dialog("File Not Found", "The file path entered does not exist.", QMessageBox.Icon.Information)
             return
 
         QSettings().setValue(self.LAST_IMPORT_DIR, str(excel_path.parent))
@@ -326,7 +326,7 @@ class ImportExcelDialog(SheetEditorDialog):
         except Exception as exc:
             msg_title = 'Sheet List Error'
             error_msg = 'The list of sheets could not be retrieved from Excel file \'{}\'.\n{}'.format(excel_path, exc)
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             return
 
         self.ui.sheet_combobox.insertItems(0, sheets)
@@ -388,7 +388,7 @@ class ExportExcelDialog(SheetEditorDialog):
             self.ui.filepath_linedit.setText(last_sheet_export_path)
             self._on_filepath_changed()
             self._on_sheet_list_requested(True)
-            self.ui.sheet_combobox.setFocus(Qt.OtherFocusReason)
+            self.ui.sheet_combobox.setFocus(Qt.FocusReason.OtherFocusReason)
 
     @override(SheetEditorDialog)
     def get_user_input(self) -> Tuple[str, str, str]:
@@ -428,7 +428,7 @@ class ExportExcelDialog(SheetEditorDialog):
         select_file_dialog = QFileDialog(self, "Export to Excel: select or create file",
                                          QSettings().value(self.LAST_EXPORT_DIR),
                                          "Excel (*.xls)")
-        select_file_dialog.setFileMode(QFileDialog.AnyFile)
+        select_file_dialog.setFileMode(QFileDialog.FileMode.AnyFile)
         path_selected = select_file_dialog.exec()
         if not path_selected:
             return
@@ -466,7 +466,7 @@ class ExportExcelDialog(SheetEditorDialog):
         except Exception as exc:
             msg_title = 'Sheet List Error'
             error_msg = 'The list of sheets could not be retrieved from Excel file \'{}\'.\n{}'.format(excel_path, exc)
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             return
 
         # create a new blank default sheet - ensure its name is not in the current list of sheets
@@ -527,8 +527,8 @@ class ExportExcelDialog(SheetEditorDialog):
         if not excel_path.parent.exists():
             title = 'Directory Does Not Exist'
             msg = 'The specified directory does not exist. Press OK to create the directory or Cancel to go back.'
-            ok = exec_modal_dialog(title, msg, QMessageBox.Information, buttons=[QMessageBox.Ok, QMessageBox.Cancel])
-            if ok == QMessageBox.Ok:
+            ok = exec_modal_dialog(title, msg, QMessageBox.Icon.Information, buttons=[QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Cancel])
+            if ok == QMessageBox.StandardButton.Ok:
                 log.info('Creating export directory: {}', Path(excel_path).parent)
                 Path.mkdir(excel_path.parent, parents=True)
             else:
@@ -606,34 +606,34 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
 
     # noinspection PyUnresolvedReferences
     @override(QAbstractTableModel)
-    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole) -> Either[str, None]:
+    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.ItemDataRole.DisplayRole) -> Either[str, None]:
         """
         Gets the current horizontal (column) and vertical (row) header data from the Sheet Part at the index 'section'.
         See the Qt documentation for method parameter definitions.
         """
-        if role != Qt.DisplayRole:
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
 
-        if orientation == Qt.Horizontal and section < self.__cols:
+        if orientation == Qt.Orientation.Horizontal and section < self.__cols:
             try:
                 return str(self.__col_name_cache[section])
             except IndexError:
                 return None
 
-        if orientation == Qt.Vertical and section < self.__rows:
+        if orientation == Qt.Orientation.Vertical and section < self.__rows:
             return str(section + 1)
 
         return None
 
     # noinspection PyUnresolvedReferences
     @override(QAbstractTableModel)
-    def setHeaderData(self, section: int, orientation: Qt.Orientation, header: QVariant, role=Qt.EditRole) -> bool:
+    def setHeaderData(self, section: int, orientation: Qt.Orientation, header: QVariant, role=Qt.ItemDataRole.EditRole) -> bool:
         """
         Sets the horizontal (column) header data into the Sheet Part at index 'section'. Only column headers can be set.
         See the Qt documentation for method parameter definitions.
         """
 
-        if role == Qt.EditRole and orientation == Qt.Horizontal:
+        if role == Qt.ItemDataRole.EditRole and orientation == Qt.Orientation.Horizontal:
 
             col_index = section
             new_name = header.value()
@@ -687,7 +687,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
         return self.__cols
 
     @override(QAbstractTableModel)
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> str:
+    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> str:
         """
         This method returns the Sheet Part data located at 'index' to the Sheet Part's View (class SheetPart2dContent).
 
@@ -709,7 +709,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
         row_index = index.row()
         col_index = index.column()
 
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
 
             # Check if there is something in the cache to return
             try:
@@ -722,10 +722,10 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
                 # somehow the view is asking for data not in the cache, so nothing to return:
                 return QVariant()
 
-        if role == Qt.TextAlignmentRole:
-            return Qt.AlignHCenter | Qt.AlignVCenter
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
 
-        if role == Qt.ToolTipRole:
+        if role == Qt.ItemDataRole.ToolTipRole:
             val_wrapper = retrieve_cached_py_expr(self,
                                                   self.__py_expr_cache,
                                                   index,
@@ -735,7 +735,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
         return QVariant()
 
     @override(QAbstractTableModel)
-    def setData(self, index: QModelIndex, value: QVariant, role: int = Qt.EditRole):
+    def setData(self, index: QModelIndex, value: QVariant, role: int = Qt.ItemDataRole.EditRole):
         """
         Sets data from the Sheet Part editor.
 
@@ -745,7 +745,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
         The base class implementation returns false. This function and data() must be reimplemented for editable models.
         :param index: a QModelIndex for the item being changed.
         :param value: the new value to set.
-        :param role: the data role (default Qt.EditRole)
+        :param role: the data role (default Qt.ItemDataRole.EditRole)
         :return: returns true if successful; otherwise returns false.
         """
 
@@ -753,7 +753,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
             # the index is the "root" of sheet, which has no data
             return False
 
-        if role == Qt.EditRole:
+        if role == Qt.ItemDataRole.EditRole:
 
             row_index = index.row()
             col_index = index.column()
@@ -780,14 +780,14 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
 
     # noinspection PyUnresolvedReferences
     @override(QAbstractTableModel)
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         """
         Sets all items in the sheet's view to be 'selectable', 'editable', and 'enabled'.
 
         See the Qt documentation for method parameter definitions.
         """
         if not index.isValid():
-            return Qt.NoItemFlags
+            return Qt.ItemFlag.NoItemFlags
 
         row_index = index.row()
         col_index = index.column()
@@ -797,9 +797,9 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
                                               self.__data_cache[row_index][col_index])
 
         if val_wrapper.is_representable():
-            return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
         else:
-            return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled
 
     # noinspection PyMethodOverriding
     @override(QAbstractTableModel)
@@ -1030,7 +1030,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
             self.__cols += num_cols_to_add
             self.insertColumns(col_start_index, num_cols_to_add)
             # noinspection PyUnresolvedReferences
-            self.headerDataChanged.emit(Qt.Horizontal, col_start_index, col_start_index + num_cols_to_add - 1)
+            self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_start_index, col_start_index + num_cols_to_add - 1)
 
         else:  # Handle 'Insert After' button presses
 
@@ -1066,7 +1066,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
             self.__cols += num_cols_to_add
             self.insertColumns(col_start_index, num_cols_to_add)
             # noinspection PyUnresolvedReferences
-            self.headerDataChanged.emit(Qt.Horizontal, col_start_index, col_start_index + num_cols_to_add - 1)
+            self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_start_index, col_start_index + num_cols_to_add - 1)
 
     def remove_columns(self, col_start_index: int, num_cols: int = 1):
         """
@@ -1104,7 +1104,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
         # Inform the sheet view of the change
         self.removeColumns(col_start_index, num_cols)
         # noinspection PyUnresolvedReferences
-        self.headerDataChanged.emit(Qt.Horizontal, col_start_index, col_start_index + num_cols)
+        self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_start_index, col_start_index + num_cols)
 
         # Refresh sheet
         top_left_index = self.index(0, 0)
@@ -1202,7 +1202,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
         if num_rows_copied > num_rows_can_paste or num_cols_copied > num_cols_can_paste:
             msg_title = 'Table Dimensions Error'
             error_msg = 'Attempting to update sheet values beyond current sheet dimensions.'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
             return
 
@@ -1245,7 +1245,7 @@ class SheetPartTableModelForEditing(QAbstractTableModel):
             set_name = get_col_header(col_index, self.__custom_name_cache, self.__index_style)
             set_name = set_name[:self.__sheet_part.col_widths[col_index]]
 
-        is_name_changed = self.setHeaderData(col_index, Qt.Horizontal, QVariant(set_name))
+        is_name_changed = self.setHeaderData(col_index, Qt.Orientation.Horizontal, QVariant(set_name))
 
         if not is_name_changed:
             log.error('Column name did not update successfully.')
@@ -1336,16 +1336,16 @@ class SheetPartEditorPanel(BaseContentEditor, SpecialValueDisplay):
         self.__selection_model = QItemSelectionModel(self.__sheet_model)
         self.ui.sheet_view.setModel(self.__sheet_model)
         self.ui.sheet_view.setSelectionModel(self.__selection_model)
-        self.ui.sheet_view.setSelectionMode(QAbstractItemView.ContiguousSelection)
+        self.ui.sheet_view.setSelectionMode(QAbstractItemView.SelectionMode.ContiguousSelection)
         self.__sheet_model.sig_rows_changed.connect(self.__slot_on_row_number_model_update)
         self.__sheet_model.sig_cols_changed.connect(self.__slot_on_column_number_model_update)
         self.__selection_model.currentChanged.connect(self.__slot_on_item_changed)
         self.__selection_model.selectionChanged.connect(self.__slot_on_selection_changed)
 
         # Set table header options and slots
-        header = QHeaderView(Qt.Horizontal)
+        header = QHeaderView(Qt.Orientation.Horizontal)
         header.setSectionsClickable(True)
-        header.setSectionResizeMode(QHeaderView.Interactive)
+        header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         self.ui.sheet_view.setHorizontalHeader(header)
         header.sectionDoubleClicked.connect(self.__slot_on_change_column_name)
 
@@ -1692,8 +1692,8 @@ class SheetPartEditorPanel(BaseContentEditor, SpecialValueDisplay):
 
         :param col_index: the index of the column to update.
         """
-        current_name = self.__sheet_model.headerData(col_index, Qt.Horizontal)
-        new_name, ok = QInputDialog.getText(self.parent(), 'Edit Field Name', 'Name:', QLineEdit.Normal, current_name)
+        current_name = self.__sheet_model.headerData(col_index, Qt.Orientation.Horizontal)
+        new_name, ok = QInputDialog.getText(self.parent(), 'Edit Field Name', 'Name:', QLineEdit.EchoMode.Normal, current_name)
 
         if ok:
             try:
@@ -1702,7 +1702,7 @@ class SheetPartEditorPanel(BaseContentEditor, SpecialValueDisplay):
             except Exception as exc:
                 msg_title = 'Python Name Error'
                 error_msg = str(exc)
-                exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+                exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
                 log.error('{}: {}', msg_title, error_msg)
 
     def __on_row_number_changed_by_model(self, new_number_of_rows: int):

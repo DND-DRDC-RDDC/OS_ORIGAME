@@ -25,9 +25,9 @@ from argparse import ArgumentParser
 from textwrap import indent, dedent
 
 # [2. third-party]
-from PyQt5.QtCore import QThread, QSettings, QObject, Qt, qInstallMessageHandler, QTimer
-from PyQt5.QtWidgets import QMessageBox, QApplication
-from PyQt5.QtGui import QIcon, QFontDatabase
+from PyQt6.QtCore import QThread, QSettings, QObject, Qt, qInstallMessageHandler, QTimer
+from PyQt6.QtWidgets import QMessageBox, QApplication
+from PyQt6.QtGui import QIcon, QFontDatabase
 
 import appdirs
 
@@ -101,8 +101,8 @@ def load_font_defaults():
     if font_loading_result == -1:
         log.warning("Cannot load the font {}", DEFAULT_FONT_MONO_PATH)
     else:
-        fdb = QFontDatabase()
-        install_default_fonts(fdb.font('Consolas', 'Normal', 10), fdb.font('DejaVu Sans Mono', 'Normal', 10))
+        install_default_fonts(QFontDatabase.font('Consolas', 'Normal', 10),
+                              QFontDatabase.font('DejaVu Sans Mono', 'Normal', 10))
 
 
 # -- Class Definitions --------------------------------------------------------------------------
@@ -123,7 +123,7 @@ class SafeSlotExcHandler:
             Continue with caution!'''
         msg = dedent(msg_template).format(slot.__qualname__, indent(traceback_str, 4 * ' '))
 
-        exec_modal_dialog("SafeSlot Error", msg, QMessageBox.Critical)
+        exec_modal_dialog("SafeSlot Error", msg, QMessageBox.Icon.Critical)
 
 
 class GlobalAsyncErrorHandler(IAsyncErrorHandler):
@@ -142,14 +142,14 @@ class GlobalAsyncErrorHandler(IAsyncErrorHandler):
         log.error(exc.traceback)
 
         ui_msg = 'Error in async operation: {} (the log view may have more info).'.format(exc.msg)
-        exec_modal_dialog("Async Call Error (global)", ui_msg, QMessageBox.Critical, parent=self._main_win)
+        exec_modal_dialog("Async Call Error (global)", ui_msg, QMessageBox.Icon.Critical, parent=self._main_win)
 
     @override(IAsyncErrorHandler)
     def on_response_cb_error(self, exc: AsyncErrorInfo):
         msg = 'BUG: Error in async response callback {}: {}'.format(exc.response_cb, exc.msg)
         log.error(msg)
         log.error(exc.traceback)
-        exec_modal_dialog("Async Response Callback Error", msg, QMessageBox.Critical, parent=self._main_win)
+        exec_modal_dialog("Async Response Callback Error", msg, QMessageBox.Icon.Critical, parent=self._main_win)
 
 
 class GuiCmdLineArgs(BaseCmdLineArgsParser):
@@ -182,7 +182,7 @@ def exception_hook(*exc_info):
         gui_app = QApplication(sys.argv)
     exec_modal_dialog("Origame Application Error",
                       msg.format(tb_msg),
-                      QMessageBox.Critical)
+                      QMessageBox.Icon.Critical)
 
 
 class GuiMain(QObject):
@@ -307,20 +307,20 @@ class GuiMain(QObject):
             self.__main_window = MainWindow(self.__backend_thread, self.__settings,
                                             settings_dir=self.settings_dir(), log_cacher=log_cacher)
             self.__main_window.ui.action_restore_default_view.triggered.connect(self.__slot_on_restore_default_view)
-            self.__main_window.sig_exit.connect(self.__slot_on_shutdown, Qt.QueuedConnection)
+            self.__main_window.sig_exit.connect(self.__slot_on_shutdown, Qt.ConnectionType.QueuedConnection)
             AsyncRequest.set_global_error_handler(GlobalAsyncErrorHandler(self.__main_window))
 
         except Exception as exc:
             from traceback import format_exc
             exec_modal_dialog('Startup Failed', 'Exception on GUI creation: {}'.format(format_exc()),
-                              QMessageBox.Critical)
+                              QMessageBox.Icon.Critical)
             raise
 
         # Moves the application window to the main monitor when switching from dual to single monitors.
-        desktop = QApplication.desktop()
-        desktop_width = desktop.screenGeometry().width()
-        desktop_height = desktop.screenGeometry().height()
-        desktop_top_left = desktop.screenGeometry().topLeft()
+        desktop = QApplication.primaryScreen()
+        desktop_width = desktop.geometry().width()
+        desktop_height = desktop.geometry().height()
+        desktop_top_left = desktop.geometry().topLeft()
         main_win_width = self.__main_window.width()
         main_win_height = self.__main_window.height()
         self.__main_window.move(int((desktop_width - main_win_width) / 2), int((desktop_height - main_win_height) / 2))
@@ -424,7 +424,7 @@ class GuiMain(QObject):
             raise
 
         # load settings from INI file into non-singleton QSettings
-        default_settings = QSettings(str(user_settings_filename), QSettings.IniFormat)
+        default_settings = QSettings(str(user_settings_filename), QSettings.Format.IniFormat)
 
         # blank out all previous app settings and copy settings into QSettings singleton so available everywhere in GUI
         current_settings = QSettings()

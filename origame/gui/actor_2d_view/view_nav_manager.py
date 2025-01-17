@@ -23,8 +23,8 @@ import logging
 from enum import IntEnum
 
 # [2. third-party]
-from PyQt5.QtWidgets import QUndoStack, QUndoCommand
-from PyQt5.QtCore import QObject, QTimer
+from PyQt6.QtGui import QUndoStack, QUndoCommand
+from PyQt6.QtCore import QObject, QTimer
 
 # [3. local]
 from ...core import override
@@ -67,12 +67,12 @@ class NavToViewCmdTypeEnum(IntEnum):
     Commands need an id to accomplish merging. The enum is used as an id. For example, the mouse wheeling will
     generate successive view changes. We want to merge those changes into one change to make the undo/redo
     user experiences better.
-    
+
     Examples:
         In the Actor2dView class, if a view navigation happens due to one of the reasons defined in the enum, we
         set the correspondent enum to the self.__command_type. The viewportEvent() is driven by the Qt framework for
         any kinds of view port events, which include those events we are interested in. If it sees None in
-        self.__command_type, it does nothing; otherwise, it process the command, then resets the 
+        self.__command_type, it does nothing; otherwise, it process the command, then resets the
         self.__command_type to None.
     """
     (fit_content_in_view,

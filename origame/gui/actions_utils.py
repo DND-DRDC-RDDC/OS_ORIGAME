@@ -19,8 +19,8 @@ import logging
 from os import path, listdir
 
 # [2. third-party]
-from PyQt5.QtGui import QPixmap, QIcon, QKeySequence
-from PyQt5.QtWidgets import QWidget, QAction, QToolButton, QMessageBox
+from PyQt6.QtGui import QPixmap, QIcon, QKeySequence, QAction
+from PyQt6.QtWidgets import QWidget, QToolButton, QMessageBox
 
 # [3. local]
 from ..core import override_required, override_optional
@@ -108,7 +108,7 @@ def config_action(
 
     if pix_path is not None:
         icon = QIcon()
-        icon.addPixmap(QPixmap(pix_path), QIcon.Normal, QIcon.Off)
+        icon.addPixmap(QPixmap(pix_path), QIcon.Mode.Normal, QIcon.State.Off)
         action.setIcon(icon)
 
     if tooltip is not None:
@@ -178,10 +178,10 @@ def verify_ifx_level_change_ok(part: BasePart, ifx_level: int):
         msg += ''.join('(out) {}\n'.format(link) for link in sorted(invalid.outgoing, key=PartLink.__str__))
         msg += ''.join('(in) {}\n'.format(link) for link in sorted(invalid.incoming, key=PartLink.__str__))
         msg += '\nClick OK to break the links and change the level, or CANCEL to go back.'
-        user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
-                                       buttons=[QMessageBox.Ok, QMessageBox.Cancel])
+        user_input = exec_modal_dialog(title, msg, QMessageBox.Icon.Question,
+                                       buttons=[QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Cancel])
 
-        if user_input != QMessageBox.Ok:
+        if user_input != QMessageBox.StandardButton.Ok:
             # user cancelled the operation
             return False
 

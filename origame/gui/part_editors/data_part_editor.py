@@ -21,10 +21,10 @@ from collections import OrderedDict
 from copy import deepcopy
 
 # [2. third-party]
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QSortFilterProxyModel, QItemSelection, QItemSelectionModel
-from PyQt5.QtCore import Qt, QCoreApplication, QVariant
-from PyQt5.QtWidgets import QAbstractItemView, QMessageBox, QHeaderView, QWidget
-from PyQt5.QtGui import QIcon
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, QSortFilterProxyModel, QItemSelection, QItemSelectionModel
+from PyQt6.QtCore import Qt, QCoreApplication, QVariant
+from PyQt6.QtWidgets import QAbstractItemView, QMessageBox, QHeaderView, QWidget
+from PyQt6.QtGui import QIcon
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -133,7 +133,7 @@ class DataPartTableModelForEditing(QAbstractTableModel):
         data_dict['_data'] = part_data
 
     @override(QAbstractTableModel)
-    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole) -> QVariant:
+    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.ItemDataRole.DisplayRole) -> QVariant:
         """
         Returns the data for the given role and section in the header with the specified orientation.
         :param section: the row number
@@ -141,12 +141,12 @@ class DataPartTableModelForEditing(QAbstractTableModel):
         :param role: the role of the data - display in this instance
         :return: a QVariant containing the header data item requested
         """
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             if section in range(DataPartTableModelForEditing.NUM_COLUMN):
                 return self.__header[section]
 
     @override(QAbstractTableModel)
-    def setHeaderData(self, section: int, orientation: Qt.Orientation, value: QVariant, role=Qt.EditRole) -> bool:
+    def setHeaderData(self, section: int, orientation: Qt.Orientation, value: QVariant, role=Qt.ItemDataRole.EditRole) -> bool:
         """
         Sets the data for the given role and section in the header with the specified orientation to the value supplied.
         :param section: the row number
@@ -155,7 +155,7 @@ class DataPartTableModelForEditing(QAbstractTableModel):
         :param role: the role of the data - display in this instance
         :return: returns true if the header's data was updated; otherwise returns false.
         """
-        if role != Qt.EditRole or orientation != Qt.Horizontal:
+        if role != Qt.ItemDataRole.EditRole or orientation != Qt.Orientation.Horizontal:
             return False
 
         if section in range(DataPartTableModelForEditing.NUM_COLUMN):
@@ -197,7 +197,7 @@ class DataPartTableModelForEditing(QAbstractTableModel):
         return DataPartTableModelForEditing.NUM_COLUMN
 
     @override(QAbstractTableModel)
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> str:
+    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> str:
         """
         Returns the data identified by the index from the back-end data part.
 
@@ -205,7 +205,7 @@ class DataPartTableModelForEditing(QAbstractTableModel):
         in the back-end.
         Note: If you do not have a value to return, return an invalid QVariant instead of returning 0.
         :param index: an data item to display in the table view
-        :param role: the data role (default Qt.DisplayRole)
+        :param role: the data role (default Qt.ItemDataRole.DisplayRole)
         :return: The indexed data from the back-end part
         """
         if not index.isValid():
@@ -217,7 +217,7 @@ class DataPartTableModelForEditing(QAbstractTableModel):
         if col > (DataPartTableModelForEditing.NUM_COLUMN - 1):
             return QVariant()
 
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             try:
                 if col == DataPartTableModelForEditing.COL_KEY_INDEX:
                     return QVariant(self.__records[row][FieldIndexEnum.idx_key.value])
@@ -228,43 +228,43 @@ class DataPartTableModelForEditing(QAbstractTableModel):
             except IndexError:
                 return QVariant()
 
-        if role == Qt.TextAlignmentRole:
-            return Qt.AlignLeft | Qt.AlignVCenter
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
 
-        if role == Qt.ToolTipRole:
+        if role == Qt.ItemDataRole.ToolTipRole:
             if col == DataPartTableModelForEditing.COL_VALUE_INDEX:
                 return self.__records[row][FieldIndexEnum.idx_value.value].get_edit_tooltip()
 
         return QVariant()
 
     @override(QAbstractTableModel)
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         """
         Returns the item flags for the given index.
-        This method returns Qt.ItemIsEnabled if the column is the 'Value' column and Qt.NoItemFlags,
+        This method returns Qt.ItemFlag.ItemIsEnabled if the column is the 'Value' column and Qt.ItemFlag.NoItemFlags,
         otherwise. This set-up causes data part to display the data in a similar way to the Prototype. The keys listed
         in the 'Key' column to appear greyed out while the values in the 'Value' column appear in normal black text.
         :param index: the index corresponding to the table item
         :return: a Qt item flag (integer value)
         """
         if not index.isValid():
-            return Qt.NoItemFlags
+            return Qt.ItemFlag.NoItemFlags
 
         col = index.column()
 
         if col == 0:
-            return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled
         elif col == DataPartTableModelForEditing.COL_KEY_INDEX:
-            return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
 
         assert col == DataPartTableModelForEditing.COL_VALUE_INDEX
         # This must be the value column
 
         val_wrapper = self.__records[index.row()][FieldIndexEnum.idx_value]
         if val_wrapper.is_representable():
-            return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
         else:
-            return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled
 
     @override(QAbstractTableModel)
     def insertColumns(self, insert_at_col: int, num_columns: int, parent=QModelIndex()) -> bool:
@@ -354,7 +354,7 @@ class DataPartTableModelForEditing(QAbstractTableModel):
         return True
 
     @override(QAbstractTableModel)
-    def setData(self, model_index: QModelIndex, value: QVariant, role: int = Qt.EditRole):
+    def setData(self, model_index: QModelIndex, value: QVariant, role: int = Qt.ItemDataRole.EditRole):
         """
         Sets data from the data part editor.
 
@@ -364,7 +364,7 @@ class DataPartTableModelForEditing(QAbstractTableModel):
         The base class implementation returns false. This function and data() must be reimplemented for editable models.
         :param model_index: a QModelIndex for the item being changed.
         :param value: the new value to set.
-        :param role: the data role (default Qt.EditRole)
+        :param role: the data role (default Qt.ItemDataRole.EditRole)
         :return: returns true if successful; otherwise returns false.
         """
         row = model_index.row()
@@ -489,7 +489,7 @@ class DataPartEditorPanel(BaseContentEditor, SpecialValueDisplay):
         self._data_model = DataPartTableModelForEditing(parent)
         self._data_model.modelReset.connect(self._slot_model_reset)
 
-        self.ui.tableView.setSelectionMode(QAbstractItemView.ContiguousSelection)
+        self.ui.tableView.setSelectionMode(QAbstractItemView.SelectionMode.ContiguousSelection)
 
         self.ui.insert_before_button.setText("")
         self.ui.insert_after_button.setText("")
@@ -787,7 +787,7 @@ class DataPartEditorPanel(BaseContentEditor, SpecialValueDisplay):
                 self._current_rows.append(sel_row)
 
         # If sorted reverse-alphabetical, reverse order of selection so table model operations work correctly
-        if self._sort_order == Qt.DescendingOrder:
+        if self._sort_order == Qt.SortOrder.DescendingOrder:
             self._current_rows.reverse()
 
     def _section_clicked(self, logical_index: int):
@@ -803,24 +803,24 @@ class DataPartEditorPanel(BaseContentEditor, SpecialValueDisplay):
         if self._sort_order == DataPartEditorPanel.NO_SORT:
             self.ui.tableView.setModel(self._proxy_model)
             self.ui.tableView.setSortingEnabled(True)
-            self.ui.tableView.sortByColumn(DataPartTableModelForEditing.COL_KEY_INDEX, Qt.AscendingOrder)
-            self._sort_order = Qt.AscendingOrder
+            self.ui.tableView.sortByColumn(DataPartTableModelForEditing.COL_KEY_INDEX, Qt.SortOrder.AscendingOrder)
+            self._sort_order = Qt.SortOrder.AscendingOrder
             self._sel_proxy_model = QItemSelectionModel(self._proxy_model)
             self.ui.tableView.setSelectionModel(self._sel_proxy_model)
             self._sel_proxy_model.clearSelection()
             self._sel_proxy_model.selectionChanged.connect(self._slot_selection_changed)
             self._control_buttons(False)
-        elif self._sort_order == Qt.AscendingOrder:
+        elif self._sort_order == Qt.SortOrder.AscendingOrder:
             self.ui.tableView.setModel(self._proxy_model)
             self.ui.tableView.setSortingEnabled(True)
-            self.ui.tableView.sortByColumn(DataPartTableModelForEditing.COL_KEY_INDEX, Qt.DescendingOrder)
-            self._sort_order = Qt.DescendingOrder
+            self.ui.tableView.sortByColumn(DataPartTableModelForEditing.COL_KEY_INDEX, Qt.SortOrder.DescendingOrder)
+            self._sort_order = Qt.SortOrder.DescendingOrder
             self._sel_proxy_model = QItemSelectionModel(self._proxy_model)
             self.ui.tableView.setSelectionModel(self._sel_proxy_model)
             self._sel_proxy_model.clearSelection()
             self._sel_proxy_model.selectionChanged.connect(self._slot_selection_changed)
             self._control_buttons(False)
-        elif self._sort_order == Qt.DescendingOrder:
+        elif self._sort_order == Qt.SortOrder.DescendingOrder:
             self.ui.tableView.setModel(self._data_model)
             self.ui.tableView.setSortingEnabled(False)
             self._sort_order = DataPartEditorPanel.NO_SORT
@@ -848,14 +848,14 @@ class DataPartEditorPanel(BaseContentEditor, SpecialValueDisplay):
         if self._data_model.display_order == DisplayOrderEnum.alphabetical:
             self.ui.tableView.setModel(self._proxy_model)
             self.ui.tableView.setSortingEnabled(True)
-            self.ui.tableView.sortByColumn(DataPartTableModelForEditing.COL_KEY_INDEX, Qt.AscendingOrder)
+            self.ui.tableView.sortByColumn(DataPartTableModelForEditing.COL_KEY_INDEX, Qt.SortOrder.AscendingOrder)
             self.ui.tableView.setSelectionModel(self._sel_proxy_model)
             self._sel_proxy_model.selectionChanged.connect(self._slot_selection_changed)
             self._control_buttons(False)
         elif self._data_model.display_order == DisplayOrderEnum.reverse_alphabetical:
             self.ui.tableView.setModel(self._proxy_model)
             self.ui.tableView.setSortingEnabled(True)
-            self.ui.tableView.sortByColumn(DataPartTableModelForEditing.COL_KEY_INDEX, Qt.DescendingOrder)
+            self.ui.tableView.sortByColumn(DataPartTableModelForEditing.COL_KEY_INDEX, Qt.SortOrder.DescendingOrder)
             self.ui.tableView.setSelectionModel(self._sel_proxy_model)
             self._sel_proxy_model.selectionChanged.connect(self._slot_selection_changed)
             self._control_buttons(False)
@@ -904,7 +904,7 @@ class DataPartEditorPanel(BaseContentEditor, SpecialValueDisplay):
         """
         self.ui.tableView.resizeColumnsToContents()
         self.ui.tableView.horizontalHeader().setSectionResizeMode(DataPartTableModelForEditing.COL_VALUE_INDEX,
-                                                                  QHeaderView.Stretch)
+                                                                  QHeaderView.ResizeMode.Stretch)
 
     def __map_rows_to_sorted_model(self, src_row_indexes: List[QModelIndex]) -> List[QModelIndex]:
         """

@@ -20,8 +20,8 @@ from pathlib import Path
 from inspect import signature
 
 # [2. third-party]
-from PyQt5.QtCore import QObject, pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QDialog, QAbstractItemView, QMessageBox
+from PyQt6.QtCore import QObject, pyqtSignal, Qt
+from PyQt6.QtWidgets import QWidget, QTableWidgetItem, QDialog, QAbstractItemView, QMessageBox
 
 # [3. local]
 from ...core import override
@@ -129,7 +129,7 @@ class RowItem(QObject):
         self._path_table_widget.setFont(get_scenario_font())
 
         # Set text to display in each widget
-        self._id_table_widget.setData(Qt.DisplayRole, self._id)
+        self._id_table_widget.setData(Qt.ItemDataRole.DisplayRole, self._id)
         self._time_table_widget.setText(self._time)
         self._priority_table_widget.setText(self._priority)
         self._part_name_table_widget.setText(self._part_name)
@@ -272,7 +272,7 @@ class EventQueueDialog(SimDialog):
         Method used to validate teh inputs by the user in teh Event Queue Dialog.
         :param result: The button role that the user clicked.
         """
-        if result == QDialog.Accepted:
+        if result == QDialog.DialogCode.Accepted:
 
             # Time
             days = int(self.ui.days_spinbox.value())
@@ -299,7 +299,7 @@ class EventQueueDialog(SimDialog):
                 is_valid_str = CallInfo.repr_evaluatable(self._args_str)
                 if not is_valid_str:
                     exec_modal_dialog('Syntax Error', 'Arguments list contains invalid Python syntax.',
-                                      QMessageBox.Critical)
+                                      QMessageBox.Icon.Critical)
 
                     # Do not set validity to true
                     return
@@ -311,7 +311,7 @@ class EventQueueDialog(SimDialog):
 
         # Check input validity - skip the super() method if invalid
         # to keep the dialog open so user can enter valid inputs
-        if not self._isvalid and result != QDialog.Rejected:
+        if not self._isvalid and result != QDialog.DialogCode.Rejected:
             return
 
         # Otherwise dialog is accepted with valid inputs or rejected
@@ -322,7 +322,7 @@ class EventQueueDialog(SimDialog):
         Shows the event priority spinbox if ASAP is not checked and hides it otherwise.
         :param state: the checked state (checked, unchecked)
         """
-        if state == Qt.Unchecked:
+        if state == Qt.CheckState.Unchecked:
             self.ui.priority_double_spin_box.setVisible(True)
             self.ui.days_spinbox.setEnabled(True)
             self.ui.hours_spinbox.setEnabled(True)
@@ -365,7 +365,7 @@ class CreateEventDialog(EventQueueDialog):
         self.ui.path_line_edit.setText(part.path)
         self.ui.name_line_edit.setText(part.name)
         self.ui.asap_check_box.setChecked(True)
-        self._on_asap_checked(Qt.Checked)
+        self._on_asap_checked(Qt.CheckState.Checked)
 
         def ui_init_from_backend():
             sim_controller = part.shared_scenario_state.sim_controller
@@ -503,7 +503,7 @@ class SimEventQueuePanel(QWidget, IHasAnimationMode, IScenarioMonitor):
 
         # Set column headers to left-aligned
         for col in range(0, self.ui.event_queue_table_widget.columnCount()):
-            self.ui.event_queue_table_widget.horizontalHeaderItem(col).setTextAlignment(Qt.AlignLeft)
+            self.ui.event_queue_table_widget.horizontalHeaderItem(col).setTextAlignment(Qt.AlignmentFlag.AlignLeft)
 
         # Set the delete icon
         icon_file = BUTTON_ICON_PIXMAPS['delete']
@@ -521,9 +521,9 @@ class SimEventQueuePanel(QWidget, IHasAnimationMode, IScenarioMonitor):
         self.ui.clear_queue_tool_button.setEnabled(False)
 
         # Limit selection to one row at a time, no cell edits
-        self.ui.event_queue_table_widget.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.ui.event_queue_table_widget.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.ui.event_queue_table_widget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.event_queue_table_widget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.ui.event_queue_table_widget.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.ui.event_queue_table_widget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
 
         # Connect buttons
         self.ui.edit_tool_button.clicked.connect(self._slot_on_user_event_edit_dialog)

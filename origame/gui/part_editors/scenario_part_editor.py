@@ -21,9 +21,9 @@ from copy import deepcopy
 import webbrowser
 
 # [2. third-party]
-from PyQt5.QtWidgets import QMessageBox, QDialogButtonBox, QPushButton, QAbstractButton, QWidget, QDialog, qApp
-from PyQt5.QtGui import QKeyEvent, QIcon, QCursor
-from PyQt5.QtCore import QSortFilterProxyModel, QSize, pyqtSignal, Qt
+from PyQt6.QtWidgets import QMessageBox, QDialogButtonBox, QPushButton, QAbstractButton, QWidget, QDialog, QApplication
+from PyQt6.QtGui import QKeyEvent, QIcon, QCursor
+from PyQt6.QtCore import QSortFilterProxyModel, QSize, pyqtSignal, Qt
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -142,7 +142,7 @@ class BaseContentEditor(QWidget):
                 part_type = self._part.PART_TYPE_NAME
                 title = "Cancel {} Editor".format(part_type.title())
                 msg = "All changes will be lost. Are you sure you want to cancel?"
-                if exec_modal_dialog(title, msg, QMessageBox.Question) != QMessageBox.Yes:
+                if exec_modal_dialog(title, msg, QMessageBox.Icon.Question) != QMessageBox.StandardButton.Yes:
                     return False
                 else:
                     self.parent().set_dirty(False)
@@ -205,21 +205,21 @@ class BaseContentEditor(QWidget):
         """
         def _on_submit_success():
             self.set_wait_mode(False)
-            if box_role == QDialogButtonBox.AcceptRole or box_role == QDialogButtonBox.ApplyRole:
+            if box_role == QDialogButtonBox.ButtonRole.AcceptRole or box_role == QDialogButtonBox.ButtonRole.ApplyRole:
                 self.parent().set_dirty(False)
-                if box_role == QDialogButtonBox.AcceptRole:
+                if box_role == QDialogButtonBox.ButtonRole.AcceptRole:
                     self.parent().accept()
                 submit_order = self._SUBMIT_ORDER  # need to use "self" instead of class to get the most derived list
                 cmd = PartEditorApplyChangesCommand(self._part, self._initial_data, new_data, submit_order)
                 scene_undo_stack().push(cmd)
-                if box_role == QDialogButtonBox.ApplyRole:
+                if box_role == QDialogButtonBox.ButtonRole.ApplyRole:
                     self._snapshot_initial_data(new_data)
 
         def _on_submit_error(exc_info: AsyncErrorInfo):
             self.set_wait_mode(False)
             exec_modal_dialog("Edit Error",
                               "One or more of the edits are not valid (specifically: '{}'). "
-                              "Please try again.".format(exc_info.msg), QMessageBox.Critical)
+                              "Please try again.".format(exc_info.msg), QMessageBox.Icon.Critical)
 
         try:
             self.__validate_data_for_submission()
@@ -229,9 +229,9 @@ class BaseContentEditor(QWidget):
 
         new_data = self.check_unapplied_changes()
         if not new_data:
-            if box_role == QDialogButtonBox.AcceptRole:
+            if box_role == QDialogButtonBox.ButtonRole.AcceptRole:
                 self.parent().accept()
-            elif box_role == QDialogButtonBox.ApplyRole:
+            elif box_role == QDialogButtonBox.ButtonRole.ApplyRole:
                 # Remove the star from the title bar
                 self.parent().set_dirty(False)
 
@@ -257,7 +257,7 @@ class BaseContentEditor(QWidget):
         :param wait: The mode of the panel.
         """
         if wait:
-            self.setCursor(QCursor(Qt.WaitCursor))
+            self.setCursor(Qt.CursorShape.WaitCursor)
         else:
             self.unsetCursor()
 
@@ -356,10 +356,10 @@ class BaseContentEditor(QWidget):
         except DataSubmissionValidationError as ex:
             exec_modal_dialog(ex.title,
                               ex.message,
-                              QMessageBox.Critical,
+                              QMessageBox.Icon.Critical,
                               detailed_message=ex.detailed_message,
-                              buttons=[QMessageBox.Cancel],
-                              default_button=QMessageBox.Cancel)
+                              buttons=[QMessageBox.StandardButton.Cancel],
+                              default_button=QMessageBox.StandardButton.Cancel)
 
             # Raise a ValueError for any exception to trigger the handling logic in the super class
             raise ValueError()
@@ -447,13 +447,13 @@ class ScenarioPartEditorDlg(EditorDialog):
     def keyPressEvent(self, evt: QKeyEvent):
         # Override the keyPressEvent so that pressing Enter or Return does not close the editor panel
         # but accepts the changes made during editing of part values in the editor.
-        if evt.key() == int(Qt.Key_Enter) or evt.key() == int(Qt.Key_Return):
+        if evt.key() == int(Qt.Key.Key_Enter) or evt.key() == int(Qt.Key.Key_Return):
             return
         super().keyPressEvent(evt)
 
     @override(QDialog)
     def done(self, result: int):
-        if result == QDialog.Rejected:
+        if result == QDialog.DialogCode.Rejected:
             if not self.__force_close:
                 confirmed = self.content_editor.on_close_requested()
                 if not confirmed:
@@ -512,10 +512,10 @@ class ScenarioPartEditorDlg(EditorDialog):
         :param button:  The button that was clicked.
         """
         button_role = self.ui.button_box.buttonRole(button)
-        if button_role == QDialogButtonBox.RejectRole:
+        if button_role == QDialogButtonBox.ButtonRole.RejectRole:
             self.reject()
-        elif button_role == QDialogButtonBox.AcceptRole or button_role == QDialogButtonBox.ApplyRole:
-            if button_role == QDialogButtonBox.AcceptRole:
+        elif button_role == QDialogButtonBox.ButtonRole.AcceptRole or button_role == QDialogButtonBox.ButtonRole.ApplyRole:
+            if button_role == QDialogButtonBox.ButtonRole.AcceptRole:
                 self.content_editor.disconnect_all_slots()
             self.content_editor.submit_data(button_role)
 
@@ -524,7 +524,7 @@ class ScenarioPartEditorDlg(EditorDialog):
             log.warning("Part {} removed from scenario, closing editor (abandoning any changes)", self.__part)
             self.content_editor.disconnect_all_slots()
             self.sig_editor_dialog_closed.emit(self.__part.SESSION_ID)
-            super().done(QDialog.Rejected)
+            super().done(QDialog.DialogCode.Rejected)
 
     def __check_name(self):
         """
@@ -532,12 +532,12 @@ class ScenarioPartEditorDlg(EditorDialog):
         """
         if len(self.ui.part_name.text().strip()) == 0:
             self.ui.part_name.setStyleSheet('QLineEdit { background-color: red }')
-            self.ui.button_box.button(QDialogButtonBox.Ok).setEnabled(False)
-            self.ui.button_box.button(QDialogButtonBox.Apply).setEnabled(False)
+            self.ui.button_box.button(QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+            self.ui.button_box.button(QDialogButtonBox.StandardButton.Apply).setEnabled(False)
         else:
             self.ui.part_name.setStyleSheet('QLineEdit { background-color: white }')
-            self.ui.button_box.button(QDialogButtonBox.Ok).setEnabled(True)
-            self.ui.button_box.button(QDialogButtonBox.Apply).setEnabled(True)
+            self.ui.button_box.button(QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+            self.ui.button_box.button(QDialogButtonBox.StandardButton.Apply).setEnabled(True)
 
     def __set_tab_order(self):
         """
@@ -545,9 +545,9 @@ class ScenarioPartEditorDlg(EditorDialog):
         """
         tab_order = [self.ui.part_name] + self.content_editor.get_tab_order() + \
                     [self.ui.part_help_button,
-                     self.ui.button_box.button(QDialogButtonBox.Ok),
-                     self.ui.button_box.button(QDialogButtonBox.Cancel),
-                     self.ui.button_box.button(QDialogButtonBox.Apply)]
+                     self.ui.button_box.button(QDialogButtonBox.StandardButton.Ok),
+                     self.ui.button_box.button(QDialogButtonBox.StandardButton.Cancel),
+                     self.ui.button_box.button(QDialogButtonBox.StandardButton.Apply)]
 
         total_len = len(tab_order)
         for idx, obj in enumerate(tab_order):
@@ -583,8 +583,8 @@ class ScenarioPartEditorDlg(EditorDialog):
         Notified by the content editor of the validity of its data
         :param valid: True - valid
         """
-        self.ui.button_box.button(QDialogButtonBox.Ok).setEnabled(valid)
-        self.ui.button_box.button(QDialogButtonBox.Apply).setEnabled(valid)
+        self.ui.button_box.button(QDialogButtonBox.StandardButton.Ok).setEnabled(valid)
+        self.ui.button_box.button(QDialogButtonBox.StandardButton.Apply).setEnabled(valid)
 
     __slot_on_part_help_clicked = safe_slot(__on_part_help_clicked)
     __slot_check_name = safe_slot(__check_name)

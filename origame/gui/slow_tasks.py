@@ -19,9 +19,9 @@ import logging
 from enum import IntEnum
 
 # [2. third-party]
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import QWidget, qApp
-from PyQt5.QtGui import QCursor
+from PyQt6.QtCore import QTimer, Qt
+from PyQt6.QtWidgets import QWidget, QApplication
+from PyQt6.QtGui import QCursor
 
 # [3. local]
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -185,7 +185,7 @@ class ProgressBar(QWidget):
             self.__state = ProgressStatusEnum.visible_after_stop
             self.__start_params = None
 
-            qApp.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
 
             if self.__linger_after_stop_timer is not None:
                 self.__linger_after_stop_timer.stop()
@@ -263,7 +263,7 @@ class ProgressBar(QWidget):
         if self.__state != ProgressStatusEnum.visible:
             self.__state = ProgressStatusEnum.visible
             # only override the cursor while visible:
-            qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
+            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
 
         if self.__main_win is not None:
             self.__main_win.set_busy(True)

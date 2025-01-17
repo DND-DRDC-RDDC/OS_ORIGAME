@@ -11,8 +11,6 @@
 
 Version History: See SVN log.
 """
-from enum import IntEnum
-
 # -- Imports ------------------------------------------------------------------------------------
 
 # [1. standard library]
@@ -21,8 +19,8 @@ from pathlib import Path
 from enum import IntEnum
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QDialog
-from PyQt5.Qt import Qt
+from PyQt6.QtWidgets import QWidget, QDialog
+from PyQt6.QtCore import Qt
 
 # [3. local]
 from ...core import override_required

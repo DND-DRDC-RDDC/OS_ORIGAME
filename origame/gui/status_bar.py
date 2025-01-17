@@ -22,7 +22,7 @@ import logging
 import weakref
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QMessageBox, QStatusBar
+from PyQt6.QtWidgets import QWidget, QMessageBox, QStatusBar
 
 # [3. local]
 from ..core import get_enum_val_name, override
@@ -126,7 +126,7 @@ class MainSimulationStatusSubBar(IScenarioMonitor, QWidget):
                 self.ui.label_alert_indicator.setToolTip(last_step_error_info.msg)
                 self.ui.label_alert_indicator.show()
                 self.ui.label_alert.show()
-                exec_modal_dialog("Sim Step Error", last_step_error_info.msg, QMessageBox.Critical)
+                exec_modal_dialog("Sim Step Error", last_step_error_info.msg, QMessageBox.Icon.Critical)
 
     def __on_state_changed(self, state_id: int):
         state_str = get_enum_val_name(MainSimStatesEnum(state_id)).capitalize()

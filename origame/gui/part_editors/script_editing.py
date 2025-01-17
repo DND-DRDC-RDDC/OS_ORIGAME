@@ -21,13 +21,13 @@ from importlib import import_module
 from textwrap import dedent
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, QCoreApplication
-from PyQt5.QtGui import QIcon, QGuiApplication
-from PyQt5.QtWidgets import QWidget, qApp, QListWidgetItem, QAbstractItemView, QListWidget, QMessageBox
-from PyQt5.QtWidgets import QTableWidgetItem
+from PyQt6.QtCore import Qt, QCoreApplication
+from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtWidgets import QWidget, QApplication, QListWidgetItem, QAbstractItemView, QListWidget, QMessageBox
+from PyQt6.QtWidgets import QTableWidgetItem
 
 # [3. local]
-from ...core.typing import Any 
+from ...core.typing import Any
 from ...core.typing import List, Tuple, Dict
 
 from ...core import override
@@ -77,7 +77,7 @@ def no_applicable_links_found(msg: str):
     :param msg: A detailed message describing why the links are not applicable
     """
     log.info(msg)
-    exec_modal_dialog('Info - no applicable links', msg, QMessageBox.Information)
+    exec_modal_dialog('Info - no applicable links', msg, QMessageBox.Icon.Information)
 
 
 # -- Class Definitions --------------------------------------------------------------------------
@@ -224,7 +224,7 @@ class ScriptEditor(BaseContentEditor):
         self.ui.code_editor.textChanged.connect(self._slot_update_undo_redo_button_status)
 
         # Link management
-        self.ui.code_editor.indicatorDefine(self.ui.code_editor.FullBoxIndicator, self.INDICATOR_NUM_HIGHLIGHTING)
+        self.ui.code_editor.indicatorDefine(self.ui.code_editor.IndicatorStyle.FullBoxIndicator, self.INDICATOR_NUM_HIGHLIGHTING)
         self.ui.code_editor.setIndicatorDrawUnder(True, self.INDICATOR_NUM_HIGHLIGHTING)
         self.ui.unhighlight_button.clicked.connect(self.__slot_on_unhighlight)
         self.ui.highlight_missing_button.clicked.connect(self.__slot_on_highlight_missing)
@@ -234,7 +234,7 @@ class ScriptEditor(BaseContentEditor):
         self.ui.rename_button.clicked.connect(self.__slot_on_rename_link)
         self.ui.links_list.itemChanged.connect(self.__slot_on_item_changed)
         self.ui.links_list.itemSelectionChanged.connect(self.__slot_on_item_selection_changed)
-        self.ui.links_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.ui.links_list.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         part.part_frame.signals.sig_link_chain_changed.connect(self.__slot_on_link_chain_changed)
 
         # Used to track the differences between the links before addition and those after addition
@@ -262,7 +262,7 @@ class ScriptEditor(BaseContentEditor):
             self.ui.symbol_table.itemDoubleClicked.connect(self.__slot_add_imported_symbol_to_code)
         else:
             self.ui.available_tabs.removeTab(2)
-        
+
         # Remove Database connection settings widget for Python script editor
         if not self.ADD_DATABASE_WIDGET:
             self.ui.databae_settings_widget.setVisible(False)
@@ -270,8 +270,8 @@ class ScriptEditor(BaseContentEditor):
         self.code_editor.enable_breakpoint_marking(True)
 
         button_icon = QIcon()
-        button_icon.addFile(str(get_icon_path("arrow_left.png")), state=QIcon.Off)
-        button_icon.addFile(str(get_icon_path("arrow_right.png")), state=QIcon.On)
+        button_icon.addFile(str(get_icon_path("arrow_left.png")), state=QIcon.State.Off)
+        button_icon.addFile(str(get_icon_path("arrow_right.png")), state=QIcon.State.On)
 
         self.ui.toggle_button.setCheckable(True)
         self.ui.toggle_button.setChecked(True)
@@ -367,7 +367,7 @@ class ScriptEditor(BaseContentEditor):
 
     # --------------------------- instance __SPECIAL__ method overrides -------------------------
     # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
-    
+
     @override(BaseContentEditor)
     def _get_data_for_submission(self) -> Dict[str, Any]:
         # no data needs submitting NOW but could change in future yet derived classes call this
@@ -383,7 +383,7 @@ class ScriptEditor(BaseContentEditor):
             self.ui.code_editor.setText(data['script'])
         if 'sql_script' in data.keys():
             self.ui.code_editor.setText(data['sql_script'])
-        
+
         self._update_undo_redo_button_status()  # Disable the Undo button
 
     def _enable_clipboard_buttons(self, enable: bool):
@@ -394,7 +394,7 @@ class ScriptEditor(BaseContentEditor):
         self.ui.del_button.setEnabled(enable)
         self.ui.cut_button.setEnabled(enable)
         self.ui.copy_button.setEnabled(enable)
-        mime_data = qApp.clipboard().mimeData()
+        mime_data = QApplication.clipboard().mimeData()
         self.ui.paste_button.setEnabled(mime_data.hasText())
 
     def _update_undo_redo_button_status(self):
@@ -431,7 +431,7 @@ class ScriptEditor(BaseContentEditor):
         :param col: The column index in the table.
         """
         item = QTableWidgetItem(content)
-        # item.setFlags(Qt.ItemIsEnabled)
+        # item.setFlags(Qt.ItemFlag.ItemIsEnabled)
         item.setFont(get_scenario_font())
         self.ui.symbol_table.setItem(row, col, item)
 
@@ -456,7 +456,7 @@ class ScriptEditor(BaseContentEditor):
         Get text associated with the specified list 'item', format and insert it at the cursor position.
         :param item: The list item that was double-clicked.
         """
-        text = item.data(Qt.DisplayRole)
+        text = item.data(Qt.ItemDataRole.DisplayRole)
 
         self.ui.code_editor.setFocus()
         line, index = self.ui.code_editor.getCursorPosition()
@@ -467,7 +467,7 @@ class ScriptEditor(BaseContentEditor):
 
         elif item.listWidget() is self.ui.links_list:
             link_ref = text
-            if QGuiApplication.keyboardModifiers() == Qt.ControlModifier:
+            if QGuiApplication.keyboardModifiers() == Qt.KeyboardModifier.ControlModifier:
                 link_ref = get_frame_repr(text, sep=".")
 
             insert_text = "{0}.{1}".format(LINKS_SCRIPT_OBJ_NAME, link_ref)
@@ -491,7 +491,7 @@ class ScriptEditor(BaseContentEditor):
         # No matter which column is clicked, we are interested in only the first column (Symbol)
         row = item.row()
         symbol_item = self.ui.symbol_table.item(row, self.SYMBOLS_COL_INDEX)
-        text = symbol_item.data(Qt.DisplayRole)
+        text = symbol_item.data(Qt.ItemDataRole.DisplayRole)
         self.__replace_or_insert_text(text)
 
     def __replace_or_insert_text(self, text: str):
@@ -509,7 +509,7 @@ class ScriptEditor(BaseContentEditor):
 
     def __symbol_selected(self, list_item: QListWidgetItem):
         if self.__code_assist is not None:
-            text = list_item.data(Qt.DisplayRole)
+            text = list_item.data(Qt.ItemDataRole.DisplayRole)
             new_docstring = self.__code_assist.get_useful_keyword_docstring(text)
             if new_docstring:
                 self.ui.docstring_display.setPlainText(dedent(new_docstring).strip())
@@ -627,7 +627,7 @@ class ScriptEditor(BaseContentEditor):
 
         assert current_link_item.is_direct_link
 
-        current_link_item.setFlags(current_link_item.flags() | Qt.ItemIsEditable)
+        current_link_item.setFlags(current_link_item.flags() | Qt.ItemFlag.ItemIsEditable)
         self.ui.links_list.editItem(current_link_item)
 
     def __on_item_changed(self, item: QListWidgetItem):
@@ -651,14 +651,14 @@ class ScriptEditor(BaseContentEditor):
         except Exception as exc:
             msg_title = 'Python Name Error'
             error_msg = str(exc)
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             item.setText(old_name)
             return
 
         if self._part.part_frame.is_link_temp_name_taken(new_name):
             msg_title = 'Link Name Error'
             error_msg = "The link name has already been taken. Please choose another name."
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Warning)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Warning)
             item.setText(old_name)
             return
 
@@ -882,6 +882,8 @@ class PythonScriptEditor(ScriptEditor):
     _SUBMIT_ORDER = ScriptEditor._SUBMIT_ORDER + ['script', 'breakpoints']
 
     def __init__(self, part: BasePart, parent: QWidget = None):
+        self.__symbol_name_list = []
+        self.__symbol_object_list = []
         super().__init__(part, parent=parent)
         self.__init_import_tab()
         self.set_coding_assistant(PyCodingAssistant(part))
@@ -941,9 +943,6 @@ class PythonScriptEditor(ScriptEditor):
         self.ui.add_symbol.pressed.connect(self.__slot_add_symbol)
         self.ui.delete_symbol.pressed.connect(self.__slot_delete_symbol)
 
-        self.__symbol_name_list = []
-        self.__symbol_object_list = []
-
     def __set_symbol_table_item(self, content: str, row: int, col: int):
         """
         Creates a table widget item from 'content' and sets it into the symbols table.
@@ -952,7 +951,7 @@ class PythonScriptEditor(ScriptEditor):
         :param col: The column index in the table.
         """
         item = QTableWidgetItem(content)
-        # item.setFlags(Qt.ItemIsEnabled)
+        # item.setFlags(Qt.ItemFlag.ItemIsEnabled)
         item.setFont(get_scenario_font())
         self.ui.symbol_table.setItem(row, col, item)
 

@@ -14,9 +14,9 @@ Version History: See SVN log.
 
 import logging
 
-from PyQt5.QtWidgets import QDialog, QWidget, QDialogButtonBox, QTreeWidgetItem
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPalette
+from PyQt6.QtWidgets import QDialog, QWidget, QDialogButtonBox, QTreeWidgetItem
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPalette
 
 from ..core import override, validate_python_name
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -77,7 +77,7 @@ class LinkRenameDialog(QDialog):
         set_default_dialog_frame_flags(self)
         self.__valid_name_palette = self.ui.new_name_edit.palette()
         self.__invalid_name_palette = QPalette()
-        self.__invalid_name_palette.setColor(QPalette.Base, self.INVALID_NAME_HIGHLIGHT_COLOR)
+        self.__invalid_name_palette.setColor(QPalette.ColorRole.Base, self.INVALID_NAME_HIGHLIGHT_COLOR)
         self.validate_new_name("")
 
     # --------------------------- instance PUBLIC properties and safe_slots ---------------------
@@ -86,7 +86,7 @@ class LinkRenameDialog(QDialog):
         """
         Populates the tree widget with the path of the referencing part and the lines, in the part, that reference
         the link.
-        
+
         :param ref_part_info: A list of tuples, each of which contains a part path and the lines that reference
         the link.
         """
@@ -127,7 +127,7 @@ class LinkRenameDialog(QDialog):
         else:
             self.ui.new_name_edit.setPalette(self.__invalid_name_palette)
 
-        self.ui.button_box_ok_cancel.button(QDialogButtonBox.Ok).setEnabled(is_valid)
+        self.ui.button_box_ok_cancel.button(QDialogButtonBox.StandardButton.Ok).setEnabled(is_valid)
 
     # --------------------------- instance __PRIVATE members-------------------------------------
 

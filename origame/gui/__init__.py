@@ -16,11 +16,11 @@ Version History: See SVN log.
 
 import logging
 
-from PyQt5.QtCore import QMetaObject
+from PyQt6.QtCore import QMetaObject
 import matplotlib
 
-if matplotlib.get_backend() != 'Qt5Agg':
-    matplotlib.use('Qt5Agg')
+if matplotlib.get_backend() != 'QtAgg':
+    matplotlib.use('QtAgg')
 matplotlib.interactive(True)
 
 from .backend_bridge import bridge_signal, BridgeEmitter

@@ -19,8 +19,8 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QDialog
-from PyQt5.QtCore import Qt
+from PyQt6.QtWidgets import QWidget, QDialog
+from PyQt6.QtCore import Qt
 
 # [3. local]
 from ...core import override_required
@@ -88,7 +88,7 @@ class SpecialValueDisplay:
             return
 
         self.__special_value_editor.special_value = the_cell
-        if self.__special_value_editor.exec() == QDialog.Accepted:
+        if self.__special_value_editor.exec() == QDialog.DialogCode.Accepted:
             self._set_special_value(self.__special_value_editor.special_value)
 
 

@@ -19,10 +19,9 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QHeaderView, QMenu, QWidgetAction, QCheckBox, QTableWidget, QAbstractItemView
-from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtCore import QSize, pyqtSignal
-from PyQt5.Qt import Qt
+from PyQt6.QtWidgets import QWidget, QLabel, QTableWidgetItem, QHeaderView, QMenu, QWidgetAction, QCheckBox, QTableWidget, QAbstractItemView
+from PyQt6.QtGui import QPixmap, QFont
+from PyQt6.QtCore import QSize, pyqtSignal, Qt
 
 # [3. local]
 from ...core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -49,7 +48,7 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 # -- Module-level objects -----------------------------------------------------------------------
 
-__all__ = [  
+__all__ = [
     # public API of module: one line per string
     'AlertsPanel'
 ]
@@ -66,7 +65,7 @@ MAP_ALERT_LEVEL_TO_IMG = {
 }
 
 ALERT_COL_TYPE, ALERT_COL_COMPONENT, ALERT_COL_CATEGORY = range(3)
-USER_ROLE_ALERT_INFO = Qt.UserRole
+USER_ROLE_ALERT_INFO = Qt.ItemDataRole.UserRole
 
 
 # -- Function definitions -----------------------------------------------------------------------
@@ -83,10 +82,10 @@ def pretty_details_in_html(alert_info: ScenAlertInfo) -> str:
             <body>
             <h3>{manage} Alert</h3>
             <p>{msg}</p>
-            
+
             {err_data}
-            </body> 
-        </html> 
+            </body>
+        </html>
         """
 
     err_data_template = """
@@ -148,7 +147,7 @@ class AlertFilterMenu(QMenu):
         # All items in the menu except for "Select All"
         items = self.actions()
         del items[0]
- 
+
         # Get the item that triggered this call
         item = self.sender()
 
@@ -274,8 +273,8 @@ class AlertsTableWidget(QTableWidget):
         super().__init__(parent)
         header = AlertTableHeader(self)
         self.setHorizontalHeader(header)
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.setColumnCount(3)
 
     def setHorizontalHeaderItem(self, column: int, widget: QWidget):
@@ -430,7 +429,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
         _font.setBold(False)
         self.ui.label_component.setFont(_font)
         self.ui.label_component.setText(ALERTS_TABLE_HEADER_NAMES[ALERT_COL_COMPONENT])
-    
+
     def _reset_label_category(self):
         """
         Resets the Category label back to default
@@ -550,7 +549,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
             # Type
             type_col = QLabel()
             type_col.setPixmap(MAP_ALERT_LEVEL_TO_IMG[alert.level])
-            type_col.setAlignment(Qt.AlignCenter)
+            type_col.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.alert_table_widget.setCellWidget(row, ALERT_COL_TYPE, type_col)
 
             if not alert.level.name in [a.defaultWidget().text() for a in self.alert_type_filter.actions()]:
@@ -559,7 +558,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
             # Component
             # Use QTableWidgetItem because we want to use it to store some business data
             component_item = QTableWidgetItem(alert.source.source_name)
-            component_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            component_item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
             component_item.setData(USER_ROLE_ALERT_INFO, alert)
             self.alert_table_widget.setItem(row, ALERT_COL_COMPONENT, component_item)
 
@@ -637,7 +636,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
 
         self.__ensure_clear_filters_button_states()
 
-    def __on_category_filter_update(self): 
+    def __on_category_filter_update(self):
         filters = self.alert_category_filter.filter_items
 
         if filters == []:
@@ -645,7 +644,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
 
             # Reset the font and column name
             self._reset_label_category()
-        
+
             # Remove all row indices that were hidden because of the category filter
             for i in self.__hidden_rows[ALERT_COL_CATEGORY]:
                 self.alert_table_widget.setRowHidden(i, False)
@@ -678,7 +677,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
     def __on_component_filter_update(self):
         filters = self.alert_component_filter.filter_items
 
-        if filters == []:    
+        if filters == []:
             self.__component_filter = None
 
             # Reset the font and column name
@@ -687,7 +686,7 @@ class AlertsPanel(IScenarioMonitor, QWidget):
             # Remove all row indices that were hidden because of the component filter
             for i in self.__hidden_rows[ALERT_COL_COMPONENT]:
                 self.alert_table_widget.setRowHidden(i, False)
-            self.__hidden_rows[ALERT_COL_COMPONENT] = []    
+            self.__hidden_rows[ALERT_COL_COMPONENT] = []
 
         else:
             self.__component_filter = filters

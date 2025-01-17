@@ -19,9 +19,9 @@ import logging
 import weakref
 
 # [2. third-party]
-from PyQt5.QtCore import QItemSelection, pyqtSignal, QPoint, QItemSelectionModel, QModelIndex, Qt, QObject
-from PyQt5.QtGui import QMouseEvent, QKeyEvent
-from PyQt5.QtWidgets import QMenu, QMessageBox, QTreeView, QWidget, QSplitter, QAction, QVBoxLayout, QListWidgetItem
+from PyQt6.QtCore import QItemSelection, pyqtSignal, QPoint, QItemSelectionModel, QModelIndex, Qt, QObject
+from PyQt6.QtGui import QMouseEvent, QKeyEvent, QAction
+from PyQt6.QtWidgets import QMenu, QMessageBox, QTreeView, QWidget, QSplitter, QVBoxLayout, QListWidgetItem
 
 # [3. local]
 from ...core import override, internal
@@ -71,8 +71,8 @@ class ActorHierarchyView(IMenuActionsProvider, QTreeView):
 
         self.setFont(get_scenario_font())
 
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.setSelectionMode(self.SingleSelection)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.setSelectionMode(self.SelectionMode.SingleSelection)
         self.customContextMenuRequested.connect(self.__slot_show_context_menu)
         self.context_menu = QMenu(self)
 
@@ -99,7 +99,7 @@ class ActorHierarchyView(IMenuActionsProvider, QTreeView):
 
         if selected_items.indexes():
             self.__current_selection_index = selected_items.indexes()[0]
-            selected_part = self.__current_selection_index.data(Qt.UserRole)
+            selected_part = self.__current_selection_index.data(Qt.ItemDataRole.UserRole)
             log.debug('Browser hierarchy view selected {}', selected_part)
 
         else:
@@ -109,14 +109,14 @@ class ActorHierarchyView(IMenuActionsProvider, QTreeView):
     @override(QTreeView)
     def mousePressEvent(self, event: QMouseEvent):
         """Must only emit selection change signal if user-initiated"""
-        current_selection = self.__current_selection_index.data(Qt.UserRole)
+        current_selection = self.__current_selection_index.data(Qt.ItemDataRole.UserRole)
         super().mousePressEvent(event)
         self.__check_user_selection_change(current_selection)
 
     @override(QTreeView)
     def keyPressEvent(self, event: QKeyEvent):
         """Must only emit selection change signal if user-initiated"""
-        current_selection = self.__current_selection_index.data(Qt.UserRole)
+        current_selection = self.__current_selection_index.data(Qt.ItemDataRole.UserRole)
         super().keyPressEvent(event)
         self.__check_user_selection_change(current_selection)
 
@@ -131,7 +131,7 @@ class ActorHierarchyView(IMenuActionsProvider, QTreeView):
         if self.__current_selection_index is None:
             deletable = False
         else:
-            selected_part = self.__current_selection_index.data(Qt.UserRole)
+            selected_part = self.__current_selection_index.data(Qt.ItemDataRole.UserRole)
             deletable = (selected_part.parent_actor_part is not None)
             # log.debug('Browser hierarchy view part deletion allowed: {}', deletable)
 
@@ -160,7 +160,7 @@ class ActorHierarchyView(IMenuActionsProvider, QTreeView):
         Check to see if the user has changed selection. If so, emit sig_user_selected_part.
         :param previous_selection: the previous user selection
         """
-        new_selection = self.__current_selection_index.data(Qt.UserRole)
+        new_selection = self.__current_selection_index.data(Qt.ItemDataRole.UserRole)
         if previous_selection is not new_selection:
             assert new_selection is not None
             self.sig_user_selected_part.emit(new_selection)
@@ -350,11 +350,11 @@ class SearchHitItem(QListWidgetItem):
             self.setText(self.__part.get_path())
             self.setForeground(self.default_font_color)
             self.setToolTip("")
-            self.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            self.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable)
         else:
-            self.setForeground(Qt.red)
+            self.setForeground(Qt.GlobalColor.red)
             self.setToolTip("Part has been deleted or cut from scenario")
-            self.setFlags(Qt.NoItemFlags)
+            self.setFlags(Qt.ItemFlag.NoItemFlags)
 
 
 class ScenarioSearchPanel(IScenarioMonitor, QWidget):
@@ -416,7 +416,7 @@ class ScenarioSearchPanel(IScenarioMonitor, QWidget):
         text = self.ui.text_pattern.text()
 
         if not text:
-            exec_modal_dialog("Search Error", "Please enter a text string in the search box.", QMessageBox.Warning)
+            exec_modal_dialog("Search Error", "Please enter a text string in the search box.", QMessageBox.Icon.Warning)
             return
 
         self.__current_search_text = text
@@ -546,7 +546,7 @@ class ActorHierarchyPanel(IScenarioMonitor, QWidget):
             return
 
         sel_model = self.actor_hierarchy_view.selectionModel()
-        sel_model.setCurrentIndex(index, QItemSelectionModel.ClearAndSelect)
+        sel_model.setCurrentIndex(index, QItemSelectionModel.SelectionFlag.ClearAndSelect)
 
     slot_on_actor_part_opened = safe_slot(on_actor_part_opened)
 
@@ -571,17 +571,17 @@ class ActorHierarchyPanel(IScenarioMonitor, QWidget):
         """
         index = self.__select_root_item()
         self.actor_hierarchy_view.expandAll()
-        self.sig_user_selected_part.emit(index.data(Qt.UserRole))
+        self.sig_user_selected_part.emit(index.data(Qt.ItemDataRole.UserRole))
 
     def __on_hovered(self, index: QModelIndex):
         """When mouse hovers over an item, context help must be notified"""
-        self.sig_context_help_changed.emit(index.data(Qt.UserRole))
+        self.sig_context_help_changed.emit(index.data(Qt.ItemDataRole.UserRole))
 
     def __select_root_item(self) -> QModelIndex:
         """Select the root actor and return its index"""
         PART_NAME_COLUMN = 0
         index = self.actor_hierarchy_model.index(0, PART_NAME_COLUMN)
-        self.actor_hierarchy_view.selectionModel().select(index, QItemSelectionModel.ClearAndSelect)
+        self.actor_hierarchy_view.selectionModel().select(index, QItemSelectionModel.SelectionFlag.ClearAndSelect)
         return index
 
     __slot_on_hovered = safe_slot(__on_hovered)
@@ -604,7 +604,7 @@ class ScenarioBrowserPanel(IMenuActionsProvider, QWidget):
         self.actor_hierarchy_panel = ActorHierarchyPanel(scenario_manager)
         self.scenario_search_panel = ScenarioSearchPanel(scenario_manager)
 
-        panel_splitter = QSplitter(Qt.Vertical)
+        panel_splitter = QSplitter(Qt.Orientation.Vertical)
         panel_splitter.addWidget(self.actor_hierarchy_panel)
         panel_splitter.addWidget(self.scenario_search_panel)
 

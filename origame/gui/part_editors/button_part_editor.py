@@ -18,9 +18,9 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtCore import QDir, QSettings
-from PyQt5.QtWidgets import QMessageBox, QWidget, QFileDialog
-from PyQt5.QtGui import QImageReader, QResizeEvent
+from PyQt6.QtCore import QDir, QSettings
+from PyQt6.QtWidgets import QMessageBox, QWidget, QFileDialog
+from PyQt6.QtGui import QImageReader, QResizeEvent
 
 # [3. local]
 from ...core import override
@@ -248,9 +248,9 @@ class ButtonPartEditorPanel(BaseContentEditor):
                                      QDir.currentPath())
 
         dialog = QFileDialog(None, "Select Image", location)
-        dialog.setAcceptMode(QFileDialog.AcceptOpen)
+        dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
         dialog.setMimeTypeFilters(dialog_filter)
-        while dialog.exec() == QFileDialog.Accepted \
+        while dialog.exec() == QFileDialog.DialogLabel.Accept \
                 and not self.__load_img(dialog.selectedFiles()[0], self.sender() == self.ui.switch_on_select):
             pass
 
@@ -272,7 +272,7 @@ class ButtonPartEditorPanel(BaseContentEditor):
                 trk_key_suffix = self.__class__.__name__ + self.ui.switch_off_select.objectName()
 
         except FileNotFoundError:
-            exec_modal_dialog("Invalid File", "Invalid image file selection.", QMessageBox.Critical)
+            exec_modal_dialog("Invalid File", "Invalid image file selection.", QMessageBox.Icon.Critical)
             return False
 
         self.__manage_image_size()

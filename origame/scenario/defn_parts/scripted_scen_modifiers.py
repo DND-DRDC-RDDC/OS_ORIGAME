@@ -46,15 +46,8 @@ from .part_types_info import get_scripting_constants
 from .part_link import TypeReferencingParts, PartLink, TypeMissingLinkInfo
 from .scripted_part import IScriptedPart
 
-# DRDC prototype uses pyodbc which has same API as pypyodbc so re-direct theirs to
-# the one used by Origame:
-import pypyodbc
-import sys
-
-sys.modules['pyodbc'] = pypyodbc
 import pyodbc
-
-assert pyodbc is pypyodbc
+import sys
 
 # -- Meta-data ----------------------------------------------------------------------------------
 

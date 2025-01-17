@@ -19,7 +19,7 @@ import logging
 from datetime import timedelta
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QDialogButtonBox
+from PyQt6.QtWidgets import QWidget, QDialogButtonBox
 
 # [3. local]
 from ...core import override
@@ -135,7 +135,7 @@ class TimePartEditorPanel(BaseContentEditor):
         self.ui.hours_edit.setValue(0)
         self.ui.minutes_edit.setValue(0)
         self.ui.seconds_edit.setValue(0)
-        self.parent().ui.button_box.button(QDialogButtonBox.Apply).click()
+        self.parent().ui.button_box.button(QDialogButtonBox.StandardButton.Apply).click()
 
     __slot_on_reset = safe_slot(__on_reset)
 

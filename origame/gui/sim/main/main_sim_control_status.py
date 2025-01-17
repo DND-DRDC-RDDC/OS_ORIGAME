@@ -23,10 +23,9 @@ from enum import IntEnum, unique
 from inspect import signature
 
 # [2. third-party]
-from PyQt5.QtCore import pyqtSignal, QSize, QObject
-from PyQt5.QtWidgets import QWidget, QMessageBox, QDialog, QDialogButtonBox
-from PyQt5.Qt import Qt
-from PyQt5.QtGui import QIcon
+from PyQt6.QtCore import pyqtSignal, QSize, QObject, Qt
+from PyQt6.QtWidgets import QWidget, QMessageBox, QDialog, QDialogButtonBox
+from PyQt6.QtGui import QIcon
 
 # [3. local]
 from ....core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -45,11 +44,13 @@ from ...safe_slot import safe_slot
 from ...async_methods import AsyncRequest, AsyncErrorInfo
 from ...conversions import convert_string_to_float, convert_time_components_to_days, SECONDS_PER_DAY
 from ...conversions import convert_seconds_to_string, convert_float_days_to_string, convert_days_to_time_components
+from ... import gui_rc # This needs to be included before the Ui_MainWindow, so that it has access to it
 from ...Ui_mainwindow import Ui_MainWindow
 
 from ..common import SimDialog
 
 from .main_simulation_settings import MainSimulationSettingsDialog
+from . import main_sim_control_rc # This needs to be included before the Ui_MainSimulationControlWidget, so that it has access to it
 from .Ui_main_sim_control_status import Ui_MainSimulationControlWidget
 from .Ui_edit_time_dialog import Ui_EditTimeDialog
 from .Ui_edit_seed_dialog import Ui_EditSeedDialog
@@ -203,7 +204,7 @@ class EditSeedDialog(SimDialog):
         self.__use_reset_seed = False
 
         # Disable OK until a verified seed has been entered
-        ok_button = self.ui.buttonBox.button(QDialogButtonBox.Ok)
+        ok_button = self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok)
         ok_button.setEnabled(False)
 
         if use_reset_seed:
@@ -246,7 +247,7 @@ class EditSeedDialog(SimDialog):
         :param seed: A string from the dialog's line edit containing the user-specified seed.
         """
 
-        ok_button = self.ui.buttonBox.button(QDialogButtonBox.Ok)
+        ok_button = self.ui.buttonBox.button(QDialogButtonBox.StandardButton.Ok)
 
         try:
             seed = int(seed)
@@ -545,7 +546,7 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
     def __on_reset_sim_time_clicked(self):
         """Requests the Sim Controller to zero the elapsed simulation time."""
         msg = "The elapsed simulation time will be set to 000000000 00:00:00.  Are you sure you wish to proceed?"
-        if exec_modal_dialog("Zero Simulation Time", msg, icon=QMessageBox.Question) == QMessageBox.Yes:
+        if exec_modal_dialog("Zero Simulation Time", msg, icon=QMessageBox.Icon.Question) == QMessageBox.StandardButton.Yes:
             AsyncRequest.call(self.__sim_controller.reset_sim_time)
 
     def __update_panel_wall_clock_time(self, wall_clock_time: float):
@@ -561,7 +562,7 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
     def __on_reset_wall_clock_time_clicked(self):
         """Requests the Sim Controller to zero the elapsed wall clock time."""
         msg = "The elapsed wall clock time will be set to 000000000 00:00:00.  Are you sure you wish to proceed?"
-        if exec_modal_dialog("Zero Wall Clock Time", msg, icon=QMessageBox.Question) == QMessageBox.Yes:
+        if exec_modal_dialog("Zero Wall Clock Time", msg, icon=QMessageBox.Icon.Question) == QMessageBox.StandardButton.Yes:
             AsyncRequest.call(self.__sim_controller.reset_wall_clock_time)
 
     def __update_panel_num_events(self, num_scheduled: int, num_asap: int):
@@ -642,7 +643,7 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
         def sim_run(has_changes: bool):
             if has_changes:
                 msg = "Scenario has unsaved changes.  Are you sure you wish to start the simulation?"
-                if exec_modal_dialog("Modified Scenario", msg, icon=QMessageBox.Question) == QMessageBox.No:
+                if exec_modal_dialog("Modified Scenario", msg, icon=QMessageBox.Icon.Question) == QMessageBox.StandardButton.No:
                     return
 
             AsyncRequest.call(self.__sim_controller.sim_run)
@@ -681,7 +682,7 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
 
     def __prepare_run_setup_parts(self, signature_info: SignatureInfo):
         """
-        Pops up a RunSetupPartsDialog to collect the user input. 
+        Pops up a RunSetupPartsDialog to collect the user input.
         :param signature_info: The info of part id, part path and its signature
         """
         self.__run_setup_parts_dialog.initialize_gui(signature_info)
@@ -819,9 +820,9 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
     def __on_setup_input_ready(self, call_args_dict: CallArgs):
         """
         This is a call-back function for the RunSetupPartsDialog.
-        
+
         After the user clicks OK button, this function sends the collected information from the dialog to
-        the backend to run the parts. 
+        the backend to run the parts.
 
         If the execution has errors, the RunSetupPartsDialog will stay open until the user cancels it or re-runs
         succeed eventually.
@@ -829,8 +830,8 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
         """
         def __on_run_setup_parts_completed():
             get_progress_bar().stop_progress()
-            exec_modal_dialog("Success", "All Setup parts have been run successfully.", QMessageBox.Information)
-            self.__run_setup_parts_dialog.done(QDialog.Accepted)
+            exec_modal_dialog("Success", "All Setup parts have been run successfully.", QMessageBox.Icon.Information)
+            self.__run_setup_parts_dialog.done(QDialog.DialogCode.Accepted)
 
         def __on_run_setup_parts_failed(error_info: AsyncErrorInfo):
             get_progress_bar().stop_progress()
@@ -841,7 +842,7 @@ class MainSimulationControlPanel(IScenarioMonitor, QWidget):
             exec_modal_dialog("Failure",
                               ("At least one Setup part failed to run successfully. "
                                "Click OK to try again (fix the argument values) or click Cancel to abort the run."),
-                              QMessageBox.Critical,
+                              QMessageBox.Icon.Critical,
                               detailed_message=error_info.traceback)
 
         get_progress_bar().start_busy_progress("Run Setup Parts...")
@@ -939,7 +940,7 @@ class MainSimSharedButtonStates(QObject):
             path_to_image = get_icon_path("button_pausesim.svg")
             set_button_image(self.__ui_main_sim_control.play_pause_sim_toolbutton,
                              str(path_to_image), size=PLAY_PAUSE_BUTTON_SIZE,
-                             text='Pause', style=Qt.ToolButtonTextUnderIcon)
+                             text='Pause', style=Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             self.__ui_main_win.action_play_pause_sim.setText('Pause')
             self.__ui_main_win.action_play_pause_sim.setIcon(QIcon(get_icon_path("pause.png")))
 
@@ -956,7 +957,7 @@ class MainSimSharedButtonStates(QObject):
             path_to_image = get_icon_path("button_playsim.svg")
             set_button_image(self.__ui_main_sim_control.play_pause_sim_toolbutton,
                              str(path_to_image), size=PLAY_PAUSE_BUTTON_SIZE,
-                             text='Play', style=Qt.ToolButtonTextUnderIcon)
+                             text='Play', style=Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             self.__ui_main_win.action_play_pause_sim.setText('Play')
             self.__ui_main_win.action_play_pause_sim.setIcon(QIcon(get_icon_path("play.png")))
 

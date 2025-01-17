@@ -19,9 +19,8 @@ import logging
 from pathlib import Path
 
 # [2. third-party]
-from PyQt5.Qt import Qt
-from PyQt5.QtCore import QSettings
-from PyQt5.QtWidgets import QDialog, QFileDialog, QSpinBox, QMessageBox, QWidget, QDialogButtonBox
+from PyQt6.QtCore import QSettings, Qt
+from PyQt6.QtWidgets import QDialog, QFileDialog, QSpinBox, QMessageBox, QWidget, QDialogButtonBox
 
 # [3. local]
 from ...core import override
@@ -53,7 +52,7 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 # -- Module-level objects -----------------------------------------------------------------------
 
-__all__ = [  
+__all__ = [
     # public API of module: one line per string
     'FilePartEditorPanel'
 ]
@@ -166,7 +165,7 @@ class FilePartEditorPanel(BaseContentEditor):
         """
         file_path_folder = QFileDialog.getExistingDirectory(self, "Select a file part folder",
                                                             self.__scen_path,
-                                                            options=QFileDialog.ShowDirsOnly)
+                                                            options=QFileDialog.Option.ShowDirsOnly)
 
         if not file_path_folder:
             return
@@ -181,7 +180,7 @@ class FilePartEditorPanel(BaseContentEditor):
         # Need to notify the validator to re-evaluate the path string
         self.__path_validator.set_relative_to_folder(checked)
 
-        if checked == Qt.Checked:
+        if checked == Qt.CheckState.Checked:
             self.__relative_to_folder = True
         else:
             self.__relative_to_folder = False

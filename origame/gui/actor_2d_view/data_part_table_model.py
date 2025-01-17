@@ -21,8 +21,8 @@ import logging
 from collections import OrderedDict
 
 # [2. third-party]
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant, QObject, pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget, QTableView
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, QVariant, QObject, pyqtSignal, Qt
+from PyQt6.QtWidgets import QWidget, QTableView
 
 # [3. local]
 from ...core import override
@@ -106,7 +106,7 @@ class DataPartTableModel(QAbstractTableModel):
         part.signals.sig_data_reset.connect(self.__slot_reset_data)
 
     @override(QAbstractTableModel)
-    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole) -> Either[str, None]:
+    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.ItemDataRole.DisplayRole) -> Either[str, None]:
         """
         Returns the data for the given role and section in the header with the specified orientation.
         :param section: the row number
@@ -114,7 +114,7 @@ class DataPartTableModel(QAbstractTableModel):
         :param role: the role of the data - display in this instance
         :return: a QVariant containing the header data item requested
         """
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             if section in range(DataPartTableModel.NUM_COLUMN):
                 return self._header[section]
 
@@ -159,7 +159,7 @@ class DataPartTableModel(QAbstractTableModel):
         return DataPartTableModel.NUM_COLUMN
 
     @override(QAbstractTableModel)
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> str:
+    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> str:
         """
         Returns the data identified by the index from the back-end data part.
 
@@ -167,7 +167,7 @@ class DataPartTableModel(QAbstractTableModel):
         in the back-end.
         Note: If you do not have a value to return, return an invalid QVariant instead of returning 0.
         :param index: an data item to display in the table view
-        :param role: the data role (default Qt.DisplayRole)
+        :param role: the data role (default Qt.ItemDataRole.DisplayRole)
         :return: The indexed data from the back-end part
         """
         if not index.isValid():
@@ -176,7 +176,7 @@ class DataPartTableModel(QAbstractTableModel):
         col = index.column()
         row = index.row()
 
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             if col > (DataPartTableModel.NUM_COLUMN - 1):
                 return QVariant()
 
@@ -192,10 +192,10 @@ class DataPartTableModel(QAbstractTableModel):
             except IndexError:
                 return QVariant()
 
-        if role == Qt.TextAlignmentRole:
-            return Qt.AlignLeft | Qt.AlignVCenter
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
 
-        if role == Qt.ToolTipRole:
+        if role == Qt.ItemDataRole.ToolTipRole:
             if col == DataPartTableModel.COL_VALUE_INDEX:
                 return retrieve_cached_py_expr(self,
                                                self.__py_expr_cache,
@@ -205,10 +205,10 @@ class DataPartTableModel(QAbstractTableModel):
         return QVariant()
 
     @override(QAbstractTableModel)
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         """
         Returns the item flags for the given index.
-        This method returns Qt.ItemIsEnabled if the column is the 'Value' column and Qt.NoItemFlags,
+        This method returns Qt.ItemFlag.ItemIsEnabled if the column is the 'Value' column and Qt.ItemFlag.NoItemFlags,
         otherwise. This set-up causes data part to display the data in a similar way to the Prototype. The keys listed
         in the 'Key' column to appear greyed out while the values in the 'Value' column appear in normal black text.
         :param index: the index corresponding to the table item
@@ -216,9 +216,9 @@ class DataPartTableModel(QAbstractTableModel):
         """
         col = index.column()
         if col == DataPartTableModel.COL_VALUE_INDEX:
-            return Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsEnabled
 
-        return Qt.NoItemFlags
+        return Qt.ItemFlag.NoItemFlags
 
     @override(QAbstractTableModel)
     def insertColumns(self, insert_at_col: int, num_columns: int, parent=QModelIndex()) -> bool:

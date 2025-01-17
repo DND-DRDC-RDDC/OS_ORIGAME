@@ -24,12 +24,12 @@ from pathlib import Path
 from random import random
 
 # [2. third-party]
-from PyQt5.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
-from PyQt5.QtCore import QSettings
-from PyQt5.QtCore import pyqtSignal, QItemSelectionModel, QItemSelection
-from PyQt5.QtGui import QIcon, QBrush
-from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QMessageBox, QDialog
-from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QFileDialog, QDialogButtonBox, QListWidgetItem
+from PyQt6.QtCore import QAbstractTableModel, QModelIndex, QVariant, Qt
+from PyQt6.QtCore import QSettings
+from PyQt6.QtCore import pyqtSignal, QItemSelectionModel, QItemSelection
+from PyQt6.QtGui import QIcon, QBrush
+from PyQt6.QtWidgets import QAbstractItemView, QHeaderView, QMessageBox, QDialog
+from PyQt6.QtWidgets import QWidget, QTableWidgetItem, QFileDialog, QDialogButtonBox, QListWidgetItem
 
 # [3. local]
 from ...core import override, override_optional, override_required
@@ -94,7 +94,7 @@ def on_database_error(title, db_error: str, optional_msg: str = None):
     if optional_msg is not None:
         error_msg += "\n\n{}".format(optional_msg)
 
-    exec_modal_dialog(title, error_msg, QMessageBox.Critical)
+    exec_modal_dialog(title, error_msg, QMessageBox.Icon.Critical)
     log.error('{}: {}', title, error_msg)
 
 
@@ -151,7 +151,7 @@ class TableEditorDialog(EditorDialog):
     The base class for Table Editor dialogs sets up the UI features and interface with the table editor.
     """
 
-    # --------------------------- instance (self) PUBLIC methods --------------------------------  
+    # --------------------------- instance (self) PUBLIC methods --------------------------------
 
     def __init__(self, table_part: TablePart, ui: Any, parent: QWidget = None):
         super().__init__(parent)
@@ -164,7 +164,7 @@ class TableEditorDialog(EditorDialog):
     @override(QDialog)
     def done(self, result: int):
 
-        if result != QDialog.Rejected:
+        if result != QDialog.DialogCode.Rejected:
             isvalid = self._validate_user_input()
             if not isvalid:
                 # For invalid results, return the user to the orignal dialog to correct mistakes
@@ -188,7 +188,7 @@ class TableEditorDialog(EditorDialog):
         """
         pass
 
-    # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------    
+    # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
     @override_optional
     def _validate_user_input(self) -> bool:
@@ -234,7 +234,7 @@ class TableImportExportDialog(TableEditorDialog):
     Base class for the table import and export dialog.
     """
 
-    # --------------------------- instance (self) PUBLIC methods --------------------------------  
+    # --------------------------- instance (self) PUBLIC methods --------------------------------
 
     def __init__(self, table_part: TablePart, ui: Any, parent: QWidget = None):
         super().__init__(table_part, ui, parent)
@@ -308,7 +308,7 @@ class TableImportExportDialog(TableEditorDialog):
         Enable or disable the OK button.
         :param enabled: The enable status to set.
         """
-        self.ui.button_box.button(QDialogButtonBox.Ok).setEnabled(enabled)
+        self.ui.button_box.button(QDialogButtonBox.StandardButton.Ok).setEnabled(enabled)
 
     # --------------------------- instance __PRIVATE members-------------------------------------
 
@@ -332,7 +332,7 @@ class ImportDatabaseDialog(TableImportExportDialog):
     DB_SUFFIX = ['.mdb', '.accdb']
     LAST_IMPORT_DIR = 'part_editors.table_part_editor.LAST_IMPORT_DIR'
 
-    # --------------------------- instance (self) PUBLIC methods --------------------------------    
+    # --------------------------- instance (self) PUBLIC methods --------------------------------
 
     def __init__(self, table_part: TablePart,
                  last_db_import_path: str = None,
@@ -371,7 +371,7 @@ class ImportDatabaseDialog(TableImportExportDialog):
             self._on_table_list_requested(True)
             # put focus here so user doesn't have to click out of filepath_linedit
             # which triggers editingFinished signal that resets dialog elements
-            self.ui.table_combobox.setFocus(Qt.OtherFocusReason)
+            self.ui.table_combobox.setFocus(Qt.FocusReason.OtherFocusReason)
 
         if db_filter is not None:
             self.ui.filter_linedit.setText(db_filter)
@@ -384,7 +384,7 @@ class ImportDatabaseDialog(TableImportExportDialog):
         db_filter = self.ui.filter_linedit.text()
         return db_path, db_table, db_selected_fields, db_filter
 
-    # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------    
+    # --------------------------- instance _PROTECTED and _INTERNAL methods ---------------------
 
     @override(TableEditorDialog)
     def _validate_user_input(self) -> bool:
@@ -398,12 +398,12 @@ class ImportDatabaseDialog(TableImportExportDialog):
         self.__db_selected_fields = []
         for idx in range(num_fields):
             field_item = self.ui.fields_listwidget.item(idx)
-            if field_item.checkState() == Qt.Checked:
+            if field_item.checkState() == Qt.CheckState.Checked:
                 self.__db_selected_fields.append(field_item.text())
 
         if not self.__db_selected_fields:
             msg = "There is nothing to import since no fields were selected."
-            exec_modal_dialog("No Fields Selected", msg, QMessageBox.Information)
+            exec_modal_dialog("No Fields Selected", msg, QMessageBox.Icon.Information)
             return False
 
         return True
@@ -447,11 +447,11 @@ class ImportDatabaseDialog(TableImportExportDialog):
 
         if db_path.suffix not in self.DB_SUFFIX:
             msg = 'The file must be specified with an ".accdb" or ".mdb" extension.'
-            exec_modal_dialog("Invalid File Extension", msg, QMessageBox.Critical)
+            exec_modal_dialog("Invalid File Extension", msg, QMessageBox.Icon.Critical)
             return
 
         if not db_path.exists():
-            exec_modal_dialog("File Not Found", "The file path entered does not exist.", QMessageBox.Critical)
+            exec_modal_dialog("File Not Found", "The file path entered does not exist.", QMessageBox.Icon.Critical)
             return
 
         QSettings().setValue(self.LAST_IMPORT_DIR, str(db_path.parent))
@@ -470,7 +470,7 @@ class ImportDatabaseDialog(TableImportExportDialog):
         except Exception as exc:
             msg_title = 'Table List Error'
             error_msg = 'The list of tables could not be retrieved from database \'{}\'.\n{}'.format(db_path, exc)
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             return
 
         tables = [table for table in self._tables.keys()]
@@ -480,7 +480,7 @@ class ImportDatabaseDialog(TableImportExportDialog):
             self._enable_ok(True)
 
         else:
-            exec_modal_dialog('No Tables Found', "No tables were found in the database.", QMessageBox.Information)
+            exec_modal_dialog('No Tables Found', "No tables were found in the database.", QMessageBox.Icon.Information)
 
     # --------------------------- instance _PROTECTED properties and safe slots -----------------
 
@@ -504,8 +504,8 @@ class ImportDatabaseDialog(TableImportExportDialog):
         fields = self._tables[table_name]
         for field in fields:
             field_item = QListWidgetItem(field)
-            field_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-            field_item.setCheckState(Qt.Checked)
+            field_item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            field_item.setCheckState(Qt.CheckState.Checked)
             self.ui.fields_listwidget.addItem(field_item)
 
     __slot_on_table_selected = safe_slot(__on_table_selected)
@@ -577,7 +577,7 @@ class ExportDatabaseDialog(TableImportExportDialog):
             self._on_table_list_requested(True)
             # put focus here so user doesn't have to click out of filepath_linedit
             # which triggers editingFinished signal that resets dialog elements
-            self.ui.table_combobox.setFocus(Qt.OtherFocusReason)
+            self.ui.table_combobox.setFocus(Qt.FocusReason.OtherFocusReason)
 
         if table_part.filter_string:
             self.ui.filter_linedit.setText(table_part.filter_string)
@@ -606,12 +606,12 @@ class ExportDatabaseDialog(TableImportExportDialog):
         self.__db_selected_fields = []
         for idx in range(num_fields):
             field_item = self.ui.fields_listwidget.item(idx)
-            if field_item.checkState() == Qt.Checked:
+            if field_item.checkState() == Qt.CheckState.Checked:
                 self.__db_selected_fields.append(field_item.text())
 
         if not self.__db_selected_fields:
             msg = "There is nothing to export since no fields were selected."
-            exec_modal_dialog("No Fields Selected", msg, QMessageBox.Information)
+            exec_modal_dialog("No Fields Selected", msg, QMessageBox.Icon.Information)
             return False
 
         # make required modifications to the selected table name
@@ -638,7 +638,7 @@ class ExportDatabaseDialog(TableImportExportDialog):
         select_file_dialog = QFileDialog(self, "Export to Access: select or create file",
                                          QSettings().value(self.LAST_EXPORT_DIR),
                                          "Access (*.mdb *.accdb)")
-        select_file_dialog.setFileMode(QFileDialog.AnyFile)
+        select_file_dialog.setFileMode(QFileDialog.FileMode.AnyFile)
         path_selected = select_file_dialog.exec()
         if not path_selected:
             return
@@ -677,7 +677,7 @@ class ExportDatabaseDialog(TableImportExportDialog):
         except Exception as exc:
             msg_title = 'Table List Error'
             error_msg = 'The list of tables could not be retrieved from database \'{}\'.\n{}'.format(db_path, exc)
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             return
 
         # Pull out the table names (do not need associated fields already in the db)
@@ -734,8 +734,8 @@ class ExportDatabaseDialog(TableImportExportDialog):
         self.ui.fields_listwidget.clear()  # remove all previous entries
         for field in fields:
             field_item = QListWidgetItem(field)
-            field_item.setFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled)
-            field_item.setCheckState(Qt.Checked)
+            field_item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            field_item.setCheckState(Qt.CheckState.Checked)
             self.ui.fields_listwidget.addItem(field_item)
 
     def __is_table_name_used(self, new_table_name: str) -> bool:
@@ -775,9 +775,9 @@ class ExportDatabaseDialog(TableImportExportDialog):
         if not db_path.parent.exists():
             title = 'Directory Does Not Exist'
             msg = 'The specified directory does not exist. Press OK to create the directory or Cancel to go back.'
-            ok = exec_modal_dialog(title, msg, QMessageBox.Information,
-                                   buttons=[QMessageBox.Ok, QMessageBox.Cancel])
-            if ok == QMessageBox.Ok:
+            ok = exec_modal_dialog(title, msg, QMessageBox.Icon.Information,
+                                   buttons=[QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Cancel])
+            if ok == QMessageBox.StandardButton.Ok:
                 log.info('Creating export directory: {}', db_path.parent)
                 Path.mkdir(db_path.parent, parents=True)
             else:
@@ -844,7 +844,7 @@ class ColumnIndexDialog(TableEditorDialog):
 
         # Init index table widget
         self.ui.table_widget.setRowCount(0)
-        self.ui.table_widget.setSelectionBehavior(QAbstractItemView.SelectItems)
+        self.ui.table_widget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectItems)
 
         self.__table_model = table_model
         self.__col_indices = None
@@ -940,7 +940,7 @@ class ColumnIndexDialog(TableEditorDialog):
                     msg_title = 'Column Name Error'
                     error_msg = 'Column name "{}" not found in the table. Index at row #{} could not be created.'
                     error_msg = error_msg.format(col_name, row + 1)
-                    exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+                    exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
                     log.error('{}: {}', msg_title, error_msg)
                     return None
 
@@ -966,8 +966,8 @@ class ColumnIndexDialog(TableEditorDialog):
             msg.append('Do you wish to continue with only a single index for each set of duplicates?')
             msg.append('Click Yes to proceed or No to go back.')
 
-            answer = exec_modal_dialog(msg_title, '\n'.join(msg), QMessageBox.Question)
-            if answer == QMessageBox.No:
+            answer = exec_modal_dialog(msg_title, '\n'.join(msg), QMessageBox.Icon.Question)
+            if answer == QMessageBox.StandardButton.No:
                 return None
 
         return list(col_indices.keys())
@@ -1042,15 +1042,15 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         self.__rec_filtered_data_in_column_copied = {}
 
     @override(QAbstractTableModel)
-    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.DisplayRole) -> Either[str, None]:
+    def headerData(self, section: int, orientation: Qt.Orientation, role=Qt.ItemDataRole.DisplayRole) -> Either[str, None]:
         """
         Gets the current horizontal (column) and vertical (row) header data from the Table Part at the index 'section'.
         See the Qt documentation for method parameter definitions.
         """
-        if role != Qt.DisplayRole:
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
 
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             try:
                 col_name = self.__get_displayed_col_name(self.__col_name_cache[section])
                 col_type = self.__col_types[section]
@@ -1061,18 +1061,18 @@ class TablePartTableModelForEditing(QAbstractTableModel):
                 # a refresh of the table data.
                 return None
 
-        if orientation == Qt.Vertical and section < self.__rows:
+        if orientation == Qt.Orientation.Vertical and section < self.__rows:
             return str(section + 1)  # The first row is row '1'
 
         return None
 
     @override(QAbstractTableModel)
-    def setHeaderData(self, section: int, orientation: Qt.Orientation, header: QVariant, role=Qt.EditRole) -> bool:
+    def setHeaderData(self, section: int, orientation: Qt.Orientation, header: QVariant, role=Qt.ItemDataRole.EditRole) -> bool:
         """
         Sets the horizontal (column) header data into the Table Part at index 'section'. Only column headers can be set.
         See the Qt documentation for method parameter definitions.
         """
-        if role == Qt.EditRole and orientation == Qt.Horizontal:
+        if role == Qt.ItemDataRole.EditRole and orientation == Qt.Orientation.Horizontal:
             col_index = section
             header_label = header.value()
             col_name, col_type = self.__parse_column_label(header_label)
@@ -1126,7 +1126,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         return self.__cols
 
     @override(QAbstractTableModel)
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> Optional[TableCellData]:
+    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Optional[TableCellData]:
         """
         This method returns the Table Part data located at 'index' to the Table Part's View (class TablePart2dContent).
 
@@ -1145,7 +1145,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         # This ensures that while editing, the original value is preserved until setData() is called to update to the
         # new value (otherwise this method will return None during editing which clears the original cell value even
         # when the user does not edit the value).
-        if role == Qt.DisplayRole or role == Qt.EditRole:
+        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
 
             # Access the record ID and column name from the dictionary
             row_index = index.row()
@@ -1158,10 +1158,10 @@ class TablePartTableModelForEditing(QAbstractTableModel):
                 else:
                     record = self.__record_cache[row_index]
 
-                if role == Qt.DisplayRole:
+                if role == Qt.ItemDataRole.DisplayRole:
                     # For display purposes show the value as a string to prevent auto-formatting by Qt display delegate
                     return str(record[col_index])
-                elif role == Qt.EditRole:
+                elif role == Qt.ItemDataRole.EditRole:
                     # Otherwise, return the value formatted to the correct type for editing
                     return record[col_index]
 
@@ -1170,10 +1170,10 @@ class TablePartTableModelForEditing(QAbstractTableModel):
                 # a refresh of the table data.
                 return None
 
-        if role == Qt.TextAlignmentRole:
-            return Qt.AlignHCenter | Qt.AlignVCenter
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
 
-        if role == Qt.BackgroundRole:
+        if role == Qt.ItemDataRole.BackgroundRole:
             row_index = index.row()
             col_index = index.column()
 
@@ -1182,7 +1182,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         return None
 
     @override(QAbstractTableModel)
-    def setData(self, index: QModelIndex, value: QVariant, role: int = Qt.EditRole):
+    def setData(self, index: QModelIndex, value: QVariant, role: int = Qt.ItemDataRole.EditRole):
         """
         Sets data from the Table Part editor.
 
@@ -1192,14 +1192,14 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         The base class implementation returns false. This function and data() must be reimplemented for editable models.
         :param index: a QModelIndex for the item being changed.
         :param value: the new value to set.
-        :param role: the data role (default Qt.EditRole)
+        :param role: the data role (default Qt.ItemDataRole.EditRole)
         :return: returns true if successful; otherwise returns false.
         """
         if not index.isValid():
             # the index is the "root" of table, which has no data
             return False
 
-        if role == Qt.EditRole:
+        if role == Qt.ItemDataRole.EditRole:
             # Access the record ID and column name from the dictionary
             row_index = index.row()
             col_index = index.column()
@@ -1225,15 +1225,15 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         return False
 
     @override(QAbstractTableModel)
-    def flags(self, index: QModelIndex) -> Qt.ItemFlags:
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         """
         Sets all items in the Table's view to be 'selectable', 'editable', and 'enabled'.
         See the Qt documentation for method parameter definitions.
         """
         if not index.isValid():
-            return Qt.NoItemFlags
+            return Qt.ItemFlag.NoItemFlags
 
-        return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
+        return Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled
 
     @override(QAbstractTableModel)
     def insertColumns(self, insert_index: int, num_columns: int, parent=QModelIndex()) -> bool:
@@ -1488,7 +1488,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
             col_start_index = col_indexes_to_insert[0]
             self.__cols += num_cols_to_add
             self.insertColumns(col_start_index, num_cols_to_add)
-            self.headerDataChanged.emit(Qt.Horizontal, col_start_index, col_start_index + num_cols_to_add - 1)
+            self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_start_index, col_start_index + num_cols_to_add - 1)
 
         else:
             # Shift the indexes to the end of the selection
@@ -1519,7 +1519,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
             num_cols_to_add = shift
             self.__cols += num_cols_to_add
             self.insertColumns(col_start_index, num_cols_to_add)
-            self.headerDataChanged.emit(Qt.Horizontal, col_start_index, col_start_index + num_cols_to_add - 1)
+            self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_start_index, col_start_index + num_cols_to_add - 1)
 
     def remove_columns(self, col_start_index: int, num_cols: int = 1):
         """
@@ -1547,7 +1547,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         # inform the Table View of the change
         self.__cols -= num_cols
         self.removeColumns(col_start_index, num_cols)
-        self.headerDataChanged.emit(Qt.Horizontal, col_start_index, col_start_index + num_cols)
+        self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_start_index, col_start_index + num_cols)
 
         # refresh table
         top_left_index = self.index(0, 0)
@@ -1731,7 +1731,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         if num_rows_copied > num_rows_can_paste or num_cols_copied > num_cols_can_paste:
             msg_title = 'Table Dimensions Error'
             error_msg = 'Attempting to update sheet values beyond current sheet dimensions.'
-            exec_modal_dialog(msg_title, error_msg, QMessageBox.Critical)
+            exec_modal_dialog(msg_title, error_msg, QMessageBox.Icon.Critical)
             log.error('{}: {}', msg_title, error_msg)
             return
 
@@ -1756,7 +1756,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
             self.__augment_indexed_columns([self.__col_name_cache[col_index]])
 
         column_label = self.__create_column_label(new_name, SqliteDataTypesEnum[new_col_type])
-        is_name_changed = self.setHeaderData(col_index, Qt.Horizontal, QVariant(column_label))
+        is_name_changed = self.setHeaderData(col_index, Qt.Orientation.Horizontal, QVariant(column_label))
         if not is_name_changed:
             log.error('Column name did not update successfully.')
 
@@ -1765,7 +1765,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         Returns the column name and type components that make up the header label of the given column.
         :param col_index: the index of the column.
         """
-        header_data = self.headerData(col_index, Qt.Horizontal)
+        header_data = self.headerData(col_index, Qt.Orientation.Horizontal)
         return self.__parse_column_label(header_data)
 
     def move_column(self, init_col_index: int, dest_col_index: int):
@@ -1876,7 +1876,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         for col_index in indexed_columns:
             for col_name in col_index:
                 col_idx = self.__col_name_cache.index(col_name)
-                self.headerDataChanged.emit(Qt.Horizontal, col_idx, col_idx)
+                self.headerDataChanged.emit(Qt.Orientation.Horizontal, col_idx, col_idx)
 
     def get_display_order(self) -> DisplayOrderEnum:
         """
@@ -1966,7 +1966,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
 
             def on_filtered_error(exc: AsyncErrorInfo):
                 msg = 'The following error occurred while filtering the data: {}.'.format(exc.msg)
-                exec_modal_dialog('Filter Error', msg, QMessageBox.Critical)
+                exec_modal_dialog('Filter Error', msg, QMessageBox.Icon.Critical)
 
             AsyncRequest.call(get_filtered_data, sql_filter=sql_filter,
                               response_cb=on_filtered_data_received, error_cb=on_filtered_error)
@@ -2320,7 +2320,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
 
         # validate that the type of data in the column matches the column type
         if expected_sql_type != self.__col_types[col_index]:
-            return QBrush(Qt.red)
+            return QBrush(Qt.GlobalColor.red)
 
         return None
 
@@ -2333,7 +2333,7 @@ class TablePartTableModelForEditing(QAbstractTableModel):
         """
         msg = 'The value(s) entered does not match the {} type of column {}. ' \
               'The table cells with incorrect type are highlighted in red.'.format(col_type, col_name)
-        exec_modal_dialog('Data Type Error', msg, QMessageBox.Critical)
+        exec_modal_dialog('Data Type Error', msg, QMessageBox.Icon.Critical)
 
     def __get_displayed_col_name(self, col_name: str) -> str:
         """
@@ -2425,24 +2425,24 @@ class TablePartEditorPanel(BaseContentEditor):
         self.__table_model = TablePartTableModelForEditing(part, parent)
         self.__selection_model = QItemSelectionModel(self.__table_model)
         self.__table_model.modelReset.connect(self.__slot_init_model_sort_order)
-        self.ui.table_view.setSelectionMode(QAbstractItemView.ContiguousSelection)
+        self.ui.table_view.setSelectionMode(QAbstractItemView.SelectionMode.ContiguousSelection)
         self.__table_model.sig_rows_changed.connect(self.__slot_on_row_number_changed_by_model)
         self.__table_model.sig_cols_changed.connect(self.__slot_on_column_number_changed_by_model)
         self.__table_model.sig_filter_changed.connect(self.__slot_on_filter_changed_by_model)
 
         # Set table header options and slots
-        horizontal_header = QHeaderView(Qt.Horizontal)
+        horizontal_header = QHeaderView(Qt.Orientation.Horizontal)
         horizontal_header.setSectionsClickable(True)
         horizontal_header.setSectionsMovable(True)
-        horizontal_header.setSectionResizeMode(QHeaderView.Interactive)
+        horizontal_header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         self.ui.table_view.setHorizontalHeader(horizontal_header)
         horizontal_header.sectionMoved.connect(self.__slot_on_column_moved)
         horizontal_header.sectionDoubleClicked.connect(self.__slot_on_change_column_properties)
         horizontal_header.sectionPressed.connect(self.__slot_on_column_header_clicked)
 
-        vertical_header = QHeaderView(Qt.Vertical)
+        vertical_header = QHeaderView(Qt.Orientation.Vertical)
         vertical_header.setSectionsClickable(True)
-        vertical_header.setSectionResizeMode(QHeaderView.Interactive)
+        vertical_header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
         self.ui.table_view.setVerticalHeader(vertical_header)
         vertical_header.sectionClicked.connect(self.__slot_on_row_header_clicked)
 
@@ -2693,7 +2693,7 @@ class TablePartEditorPanel(BaseContentEditor):
                     self.__selected_cols.append(col)
 
         # If sorted reverse-alphabetical, reverse order of selection so table model operations work correctly
-        if self.__sort_order == Qt.DescendingOrder:
+        if self.__sort_order == Qt.SortOrder.DescendingOrder:
             self.__selected_rows.reverse()
 
         # General selection -> no need to go further if these are None
@@ -2706,7 +2706,7 @@ class TablePartEditorPanel(BaseContentEditor):
             rows = self.__map_rows_to_sorted_model(rows)
 
             # If sorted reverse-alphabetical, reverse order of selection so table model operations work correctly
-            if self.__sort_order == Qt.DescendingOrder:
+            if self.__sort_order == Qt.SortOrder.DescendingOrder:
                 rows.reverse()
 
             top_row, bottom_row = rows
@@ -3024,11 +3024,11 @@ class TablePartEditorPanel(BaseContentEditor):
         enabled = False
 
         # self.ui.tool_ribbon.setStyleSheet('')
-        tab_bar.setTabTextColor(tab_index, Qt.black)
+        tab_bar.setTabTextColor(tab_index, Qt.GlobalColor.black)
 
         if filter_applied:
             # self.ui.tool_ribbon.setStyleSheet('QTabBar{font: bold;}')
-            tab_bar.setTabTextColor(tab_index, Qt.red)
+            tab_bar.setTabTextColor(tab_index, Qt.GlobalColor.red)
             tab_label += ' (filtered)'
             enabled = True
 
@@ -3223,7 +3223,7 @@ class TablePartEditorPanel(BaseContentEditor):
 
         else:
             # Enable sorting
-            self.__set_proxy_model(sorted_column=self.__sorted_column[self.ZERO_IDX], sort_order=Qt.AscendingOrder)
+            self.__set_proxy_model(sorted_column=self.__sorted_column[self.ZERO_IDX], sort_order=Qt.SortOrder.AscendingOrder)
             self.ui.change_row_count_spin_box.setEnabled(False)
             self.ui.change_column_count_spin_box.setEnabled(False)
 

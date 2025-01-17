@@ -26,7 +26,7 @@ import inspect
 from collections import deque
 
 # [2. third-party]
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
 
 # [3. local]
 from ..core import override, override_required

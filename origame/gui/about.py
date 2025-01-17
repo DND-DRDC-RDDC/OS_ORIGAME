@@ -23,11 +23,11 @@ import origame
 import webbrowser
 
 # [2. third-party]
-from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR, Qt, QUrl, __license__ as PYQT_LICENSE
-from PyQt5.QtWidgets import QSplashScreen, QDialog, QWidget, QGroupBox
-from PyQt5.QtGui import QCloseEvent, QKeyEvent
+from PyQt6.QtCore import QT_VERSION_STR, PYQT_VERSION_STR, Qt, QUrl, __license__ as PYQT_LICENSE
+from PyQt6.QtWidgets import QSplashScreen, QDialog, QWidget, QGroupBox
+from PyQt6.QtGui import QCloseEvent, QKeyEvent
 
-from sip import SIP_VERSION_STR
+from PyQt6.sip import SIP_VERSION_STR
 
 # [3. local]
 from ..core import override
@@ -58,7 +58,7 @@ __all__ = [
 log = logging.getLogger('system')
 
 # When released to client, update this
-RELEASE_VERSION = '0.8.0 beta (2023-03-02)'
+RELEASE_VERSION = '0.9.0 beta (2025-01-16)'
 
 ABOUT_APP = '''\
 <h1 align="center">ORIGAME</h1>
@@ -111,14 +111,14 @@ def get_splash_screen() -> QSplashScreen:
     widget = AboutBox()
     widget.setStyleSheet("background-color: rgb(255, 0, 5);")
     pixmap = widget.grab()
-    return QSplashScreen(pixmap, flags=Qt.WindowStaysOnTopHint)
+    return QSplashScreen(pixmap, flags=Qt.WindowType.WindowStaysOnTopHint)
 
 
 def get_license():
     try:
         license_path = Path(origame.__file__).with_name('LICENSE.txt')
         license_html = Path(origame.__file__).with_name('docs') / 'licensing' / 'LICENSE.html'
-        
+
         info = '''Terms and conditions are in LICENSE.txt (<a href="file:{path}">show in Explorer</a>; or
                 <a href="file:{html_path}">view as HTML</a>).'''
 
@@ -153,7 +153,7 @@ class AboutBox(QWidget):
 
     @override(QWidget)
     def keyPressEvent(self, evt: QKeyEvent):
-        if evt.key() == Qt.Key_Backspace:
+        if evt.key() == Qt.Key.Key_Backspace:
             self.ui.textBrowser.setHtml(get_about_info())
             evt.accept()
         else:

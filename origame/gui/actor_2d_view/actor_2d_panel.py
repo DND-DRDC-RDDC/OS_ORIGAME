@@ -21,11 +21,10 @@ import logging
 from enum import IntEnum
 
 # [2. third-party]
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QAction, QActionGroup, QFrame, QLabel, QVBoxLayout, QHBoxLayout, QToolButton
-from PyQt5.QtWidgets import QSizePolicy
-from PyQt5.QtGui import QColor, QPalette, QIcon
-from PyQt5.Qt import Qt
+from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtWidgets import QWidget, QFrame, QLabel, QVBoxLayout, QHBoxLayout, QToolButton
+from PyQt6.QtWidgets import QSizePolicy
+from PyQt6.QtGui import QColor, QPalette, QIcon, QAction, QActionGroup
 
 # [3. local]
 from ...core import override
@@ -107,8 +106,8 @@ VERTICAL_BUTTON_BACKGROUND_STYLE = ("QToolButton {"
                                     "stop:0 rgb(228, 244, 252), stop:1 rgb(171, 216, 240));}"
                                     )
 
-EXPANSION_CHANGE_BUTTON_HORIZONTAL_SIZE_POLICY = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
-EXPANSION_CHANGE_BUTTON_VERTICAL_SIZE_POLICY = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
+EXPANSION_CHANGE_BUTTON_HORIZONTAL_SIZE_POLICY = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+EXPANSION_CHANGE_BUTTON_VERTICAL_SIZE_POLICY = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
 ICON_EXPAND = QIcon(get_icon_path("expand.svg"))
 ICON_COLLAPSE = QIcon(get_icon_path("compress.svg"))
@@ -192,8 +191,8 @@ class Actor2dPanel(IScenarioMonitor, IHasAnimationMode, IMenuActionsProvider, QW
 
         self.__title_bar = QFrame()
         self.__title_bar.setFixedHeight(DEFAULT_TITLE_BAR_HEIGHT)
-        self.__title_bar.setFrameShape(QFrame.StyledPanel)
-        self.__title_bar.setFrameShadow(QFrame.Sunken)
+        self.__title_bar.setFrameShape(QFrame.Shape.StyledPanel)
+        self.__title_bar.setFrameShadow(QFrame.Shadow.Sunken)
         self.__title_bar.setLineWidth(2)
         self._title_label = QLabel()
 
@@ -263,7 +262,7 @@ class Actor2dPanel(IScenarioMonitor, IHasAnimationMode, IMenuActionsProvider, QW
 
         self.__title_bar.setAutoFillBackground(True)
         palette = self.__title_bar.palette()
-        palette.setColor(QPalette.Window, TITLE_BAR_COLOR)
+        palette.setColor(QPalette.ColorRole.Window, TITLE_BAR_COLOR)
         self.__title_bar.setPalette(palette)
 
         self._monitor_scenario_replacement()
@@ -278,22 +277,22 @@ class Actor2dPanel(IScenarioMonitor, IHasAnimationMode, IMenuActionsProvider, QW
         self.__button_expansion_change_right.clicked.connect(self.__slot_on_expansion_change_right)
         self.__button_expansion_change_bottom.clicked.connect(self.__slot_on_expansion_bottom)
 
-        self.__map_expansion_area_to_button = {Qt.LeftDockWidgetArea: self.__button_expansion_change_left,
-                                               Qt.RightDockWidgetArea: self.__button_expansion_change_right,
-                                               Qt.BottomDockWidgetArea: self.__button_expansion_change_bottom}
+        self.__map_expansion_area_to_button = {Qt.DockWidgetArea.LeftDockWidgetArea: self.__button_expansion_change_left,
+                                               Qt.DockWidgetArea.RightDockWidgetArea: self.__button_expansion_change_right,
+                                               Qt.DockWidgetArea.BottomDockWidgetArea: self.__button_expansion_change_bottom}
 
         self.__map_expansion_rule_to_method = {
             ExpansionButtonStateEnum.expand:
                 [
-                    (Qt.LeftDockWidgetArea, ExpansionButtonStateEnum.left, self.__on_expansion_change_left),
-                    (Qt.RightDockWidgetArea, ExpansionButtonStateEnum.right, self.__on_expansion_change_right),
-                    (Qt.BottomDockWidgetArea, ExpansionButtonStateEnum.down, self.__on_expansion_change_bottom)
+                    (Qt.DockWidgetArea.LeftDockWidgetArea, ExpansionButtonStateEnum.left, self.__on_expansion_change_left),
+                    (Qt.DockWidgetArea.RightDockWidgetArea, ExpansionButtonStateEnum.right, self.__on_expansion_change_right),
+                    (Qt.DockWidgetArea.BottomDockWidgetArea, ExpansionButtonStateEnum.down, self.__on_expansion_change_bottom)
                 ],
             ExpansionButtonStateEnum.collapse:
                 [
-                    (Qt.LeftDockWidgetArea, ExpansionButtonStateEnum.right, self.__on_expansion_change_left),
-                    (Qt.RightDockWidgetArea, ExpansionButtonStateEnum.left, self.__on_expansion_change_right),
-                    (Qt.BottomDockWidgetArea, ExpansionButtonStateEnum.up, self.__on_expansion_change_bottom)
+                    (Qt.DockWidgetArea.LeftDockWidgetArea, ExpansionButtonStateEnum.right, self.__on_expansion_change_left),
+                    (Qt.DockWidgetArea.RightDockWidgetArea, ExpansionButtonStateEnum.left, self.__on_expansion_change_right),
+                    (Qt.DockWidgetArea.BottomDockWidgetArea, ExpansionButtonStateEnum.up, self.__on_expansion_change_bottom)
                 ]
         }
 
@@ -304,43 +303,43 @@ class Actor2dPanel(IScenarioMonitor, IHasAnimationMode, IMenuActionsProvider, QW
         }
 
         self.__map_expansion_area_to_arrow_type = {
-            Qt.LeftDockWidgetArea: {
-                ExpansionStatusEnum.empty: Qt.LeftArrow,
-                ExpansionStatusEnum.visible: Qt.LeftArrow,
-                ExpansionStatusEnum.invisible: Qt.RightArrow},
-            Qt.RightDockWidgetArea: {
-                ExpansionStatusEnum.empty: Qt.RightArrow,
-                ExpansionStatusEnum.visible: Qt.RightArrow,
-                ExpansionStatusEnum.invisible: Qt.LeftArrow},
-            Qt.BottomDockWidgetArea: {
-                ExpansionStatusEnum.empty: Qt.DownArrow,
-                ExpansionStatusEnum.visible: Qt.DownArrow,
-                ExpansionStatusEnum.invisible: Qt.UpArrow}
+            Qt.DockWidgetArea.LeftDockWidgetArea: {
+                ExpansionStatusEnum.empty: Qt.ArrowType.LeftArrow,
+                ExpansionStatusEnum.visible: Qt.ArrowType.LeftArrow,
+                ExpansionStatusEnum.invisible: Qt.ArrowType.RightArrow},
+            Qt.DockWidgetArea.RightDockWidgetArea: {
+                ExpansionStatusEnum.empty: Qt.ArrowType.RightArrow,
+                ExpansionStatusEnum.visible: Qt.ArrowType.RightArrow,
+                ExpansionStatusEnum.invisible: Qt.ArrowType.LeftArrow},
+            Qt.DockWidgetArea.BottomDockWidgetArea: {
+                ExpansionStatusEnum.empty: Qt.ArrowType.DownArrow,
+                ExpansionStatusEnum.visible: Qt.ArrowType.DownArrow,
+                ExpansionStatusEnum.invisible: Qt.ArrowType.UpArrow}
         }
 
         self.__map_expansion_area_to_button_state_spec = {
-            Qt.AllDockWidgetAreas: {
+            Qt.DockWidgetArea.AllDockWidgetAreas: {
                 ExpansionStatusEnum.empty: ExpansionButtonStateEnum.expand,
                 ExpansionStatusEnum.visible: ExpansionButtonStateEnum.expand,
                 ExpansionStatusEnum.invisible: ExpansionButtonStateEnum.collapse},
-            Qt.LeftDockWidgetArea: {
+            Qt.DockWidgetArea.LeftDockWidgetArea: {
                 ExpansionStatusEnum.empty: ExpansionButtonStateEnum.left,
                 ExpansionStatusEnum.visible: ExpansionButtonStateEnum.left,
                 ExpansionStatusEnum.invisible: ExpansionButtonStateEnum.right},
-            Qt.RightDockWidgetArea: {
+            Qt.DockWidgetArea.RightDockWidgetArea: {
                 ExpansionStatusEnum.empty: ExpansionButtonStateEnum.right,
                 ExpansionStatusEnum.visible: ExpansionButtonStateEnum.right,
                 ExpansionStatusEnum.invisible: ExpansionButtonStateEnum.left},
-            Qt.BottomDockWidgetArea: {
+            Qt.DockWidgetArea.BottomDockWidgetArea: {
                 ExpansionStatusEnum.empty: ExpansionButtonStateEnum.down,
                 ExpansionStatusEnum.visible: ExpansionButtonStateEnum.down,
                 ExpansionStatusEnum.invisible: ExpansionButtonStateEnum.up}
         }
 
-        self.__map_expansion_area_to_button_state = {Qt.AllDockWidgetAreas: ExpansionButtonStateEnum.expand,
-                                                     Qt.LeftDockWidgetArea: ExpansionButtonStateEnum.left,
-                                                     Qt.RightDockWidgetArea: ExpansionButtonStateEnum.right,
-                                                     Qt.BottomDockWidgetArea: ExpansionButtonStateEnum.down}
+        self.__map_expansion_area_to_button_state = {Qt.DockWidgetArea.AllDockWidgetAreas: ExpansionButtonStateEnum.expand,
+                                                     Qt.DockWidgetArea.LeftDockWidgetArea: ExpansionButtonStateEnum.left,
+                                                     Qt.DockWidgetArea.RightDockWidgetArea: ExpansionButtonStateEnum.right,
+                                                     Qt.DockWidgetArea.BottomDockWidgetArea: ExpansionButtonStateEnum.down}
 
         self.__map_expansion_area_expansion_status = dict()
 
@@ -741,11 +740,11 @@ class Actor2dPanel(IScenarioMonitor, IHasAnimationMode, IMenuActionsProvider, QW
         """
         self.__current_scene.override_detail_level(DetailLevelOverrideEnum.minimal)
 
-    def on_expansion_changed(self, area: int, expansion_status: ExpansionStatusEnum):
+    def on_expansion_changed(self, area: Qt.DockWidgetArea, expansion_status: ExpansionStatusEnum):
         """
         Asks the panel to show different icons on the expansion change buttons, depending on the current status of the
         panels.
-        :param area: The area where the button is updated 
+        :param area: The area where the button is updated
         :param expansion_status: The status of this area
         """
         button = self.__map_expansion_area_to_button[area]
@@ -773,7 +772,7 @@ class Actor2dPanel(IScenarioMonitor, IHasAnimationMode, IMenuActionsProvider, QW
     slot_nav_to_actor = safe_slot(nav_to_actor)
     slot_show_part_in_parent_actor = safe_slot(show_part_in_parent_actor)
     slot_show_actor_ifx_port_in_parent_actor = safe_slot(show_actor_ifx_port_in_parent_actor)
-    slot_on_expansion_changed = safe_slot(on_expansion_changed)
+    slot_on_expansion_changed = safe_slot(on_expansion_changed, [Qt.DockWidgetArea, ExpansionStatusEnum])
 
     edit_actions = property(get_edit_actions)
     view_actions = property(get_view_actions)
@@ -1045,14 +1044,14 @@ class Actor2dPanel(IScenarioMonitor, IHasAnimationMode, IMenuActionsProvider, QW
 
         self.__button_expansion_change_all.setEnabled(not overall_empty)
         self.__button_expansion_change_all.setIcon(self.__map_overall_area_to_icon[status])
-        button_state = self.__map_expansion_area_to_button_state_spec[Qt.AllDockWidgetAreas][status]
-        self.__map_expansion_area_to_button_state[Qt.AllDockWidgetAreas] = button_state
+        button_state = self.__map_expansion_area_to_button_state_spec[Qt.DockWidgetArea.AllDockWidgetAreas][status]
+        self.__map_expansion_area_to_button_state[Qt.DockWidgetArea.AllDockWidgetAreas] = button_state
 
     def __on_expansion_change_all(self):
         """
         Sends a signal to change expansion in all areas.
         """
-        expansion_all_btn_state = self.__map_expansion_area_to_button_state[Qt.AllDockWidgetAreas]
+        expansion_all_btn_state = self.__map_expansion_area_to_button_state[Qt.DockWidgetArea.AllDockWidgetAreas]
         for area, direction, method in self.__map_expansion_rule_to_method[expansion_all_btn_state]:
             if self.__map_expansion_area_to_button_state[area] == direction:
                 method()
@@ -1061,19 +1060,19 @@ class Actor2dPanel(IScenarioMonitor, IHasAnimationMode, IMenuActionsProvider, QW
         """
         Sends a signal to change expansion on the left.
         """
-        self.sig_expansion_change.emit(Qt.LeftDockWidgetArea)
+        self.sig_expansion_change.emit(Qt.DockWidgetArea.LeftDockWidgetArea)
 
     def __on_expansion_change_right(self):
         """
         Sends a signal to change expansion on the right.
         """
-        self.sig_expansion_change.emit(Qt.RightDockWidgetArea)
+        self.sig_expansion_change.emit(Qt.DockWidgetArea.RightDockWidgetArea)
 
     def __on_expansion_change_bottom(self):
         """
         Sends a signal to change expansion at the bottom.
         """
-        self.sig_expansion_change.emit(Qt.BottomDockWidgetArea)
+        self.sig_expansion_change.emit(Qt.DockWidgetArea.BottomDockWidgetArea)
 
     __slot_on_zoom_to_fit_all = safe_slot(__on_zoom_to_fit_all)
     __slot_on_zoom_to_selection = safe_slot(__on_zoom_to_selection)

@@ -18,9 +18,9 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel, QHeaderView
-from PyQt5.QtGui import QMouseEvent, QIcon
-from PyQt5.Qt import Qt
+from PyQt6.QtWidgets import QWidget, QLineEdit, QLabel, QHeaderView
+from PyQt6.QtGui import QMouseEvent, QIcon
+from PyQt6.QtCore import Qt
 
 # [3. local]
 from ...core import override
@@ -93,7 +93,7 @@ class DebugOpsPanel(QWidget):
         self.ui.breakpoint_on_off_button.clicked.connect(self._slot_on_breakpoint_on_off_button_clicked)
         self.ui.local_variables_table.setHorizontalHeaderLabels(LOCAL_VARIABLES_TABLE_HEADER_NAMES)
         self.ui.local_variables_table.verticalHeader().setVisible(False)
-        self.ui.local_variables_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.ui.local_variables_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.ui.local_variables_table.cellDoubleClicked.connect(self._slot_on_local_var_clicked)
         self.ui.local_variables_table.setFont(get_scenario_font(mono=True))
         self.__local_debug_vars = dict()
@@ -128,11 +128,11 @@ class DebugOpsPanel(QWidget):
                 self.ui.local_variables_table.insertRow(row)
 
                 _var_name = QLabel(var[var_name_col])
-                _var_name.setAlignment(Qt.AlignHCenter)
+                _var_name.setAlignment(Qt.AlignmentFlag.AlignHCenter)
                 self.ui.local_variables_table.setCellWidget(row, var_name_col, _var_name)
 
                 _var_value = QLabel(str(var[var_value_col]))
-                _var_value.setAlignment(Qt.AlignHCenter)
+                _var_value.setAlignment(Qt.AlignmentFlag.AlignHCenter)
                 self.ui.local_variables_table.setCellWidget(row, var_value_col, _var_value)
 
                 num_total_items += 1
@@ -146,12 +146,12 @@ class DebugOpsPanel(QWidget):
             self.ui.local_variables_table.insertRow(num_total_items)
 
             _var_name = QLabel(f"link.{item}")
-            _var_name.setAlignment(Qt.AlignHCenter)
+            _var_name.setAlignment(Qt.AlignmentFlag.AlignHCenter)
             self.ui.local_variables_table.setCellWidget(num_total_items, var_name_col, _var_name)
 
             _var_value = QLabel(str(_parts_proxy.__getattr__(item)))
-            _var_value.setAlignment(Qt.AlignHCenter)
-            self.ui.local_variables_table.setCellWidget(num_total_items, var_value_col, _var_value)    
+            _var_value.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+            self.ui.local_variables_table.setCellWidget(num_total_items, var_value_col, _var_value)
 
             num_total_items += 1
 
@@ -249,7 +249,7 @@ class DebugOpsPanel(QWidget):
         # regardless if the user clicked on the variable name or value of that row.
         _var = self.ui.local_variables_table.cellWidget(row, 0).text()
         self.python_expression.insert(_var)
-        self.python_expression.setFocus(Qt.OtherFocusReason)
+        self.python_expression.setFocus(Qt.FocusReason.OtherFocusReason)
 
     def _fill_expression_result(self, expression_results: Any):
         """

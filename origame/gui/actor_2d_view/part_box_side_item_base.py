@@ -19,9 +19,9 @@ import logging
 from enum import unique, IntEnum
 
 # [2. third-party]
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QGraphicsWidget, QGraphicsItem, QSizePolicy
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QCursor
+from PyQt6.QtWidgets import QGraphicsWidget, QGraphicsItem, QSizePolicy
 
 # [3. local]
 from ...core import override_optional
@@ -41,7 +41,7 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 # -- Module-level objects -----------------------------------------------------------------------
 
-__all__ = [  
+__all__ = [
     'TopSideTrayItemTypeEnum',
     'BottomSideTrayItemTypeEnum',
     'BaseSideTrayItem',
@@ -87,9 +87,9 @@ class BaseSideTrayItem(ICustomItem, QGraphicsWidget):
         """
         ICustomItem.__init__(self)
         QGraphicsWidget.__init__(self, parent)
-        self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed))
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed))
         self._part_box_item = part_box_item
-        self.setCursor(QCursor(Qt.ArrowCursor))
+        self.setCursor(Qt.CursorShape.ArrowCursor)
         self.setOpacity(QTBUG_55918_OPACITY)  # QTBUG-55918
 
     @override_optional

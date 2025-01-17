@@ -19,7 +19,7 @@ import logging
 import datetime
 
 # [2. third-party]
-from PyQt5.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget
 
 # [3. local]
 from ...core import override

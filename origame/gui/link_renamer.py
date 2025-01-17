@@ -19,8 +19,9 @@ Version History: See SVN log.
 import logging
 
 # [2. third-party]
-from PyQt5.QtWidgets import QDialog, QTreeWidgetItem, QAction, QMessageBox
-from PyQt5.QtCore import QObject
+from PyQt6.QtWidgets import QDialog, QTreeWidgetItem, QMessageBox
+from PyQt6.QtGui import QAction
+from PyQt6.QtCore import QObject
 
 # [3. local]
 from ..scenario.defn_parts import PartLink
@@ -92,7 +93,7 @@ class LinkRenameManager(QObject):
         if not allowed and use_dialog:
             exec_modal_dialog(dialog_title="Rename Link",
                               message='Unable to rename this link',
-                              icon=QMessageBox.Information,
+                              icon=QMessageBox.Icon.Information,
                               detailed_message="You cannot rename this link because you have not "
                                                "applied changes in the open editors that reference this link.")
 
@@ -144,7 +145,7 @@ class LinkRenameManager(QObject):
         ret = self.__link_rename_dialog.exec()
         self.__link_rename_dialog.ui.references.clear()
 
-        if ret == QDialog.Accepted:
+        if ret == QDialog.DialogCode.Accepted:
             new_name = self.__link_rename_dialog.ui.new_name_edit.text()
             log.debug("Rename {} to {}", self.__link.name, new_name)
             ref_parts = list()

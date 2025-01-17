@@ -20,11 +20,11 @@ from weakref import WeakKeyDictionary
 from enum import IntEnum, unique
 
 # [2. third-party]
-from PyQt5.QtCore import Qt, pyqtSignal, QPointF, QRectF, QTimer
-from PyQt5.QtWidgets import QGraphicsObject, QGraphicsView
-from PyQt5.QtWidgets import QMessageBox, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem, qApp
-from PyQt5.QtGui import QKeyEvent, QCursor, QTransform, QPainter, QPixmap
-from PyQt5.QtSvg import QSvgRenderer
+from PyQt6.QtCore import Qt, pyqtSignal, QPointF, QRectF, QTimer
+from PyQt6.QtWidgets import QGraphicsObject, QGraphicsView
+from PyQt6.QtWidgets import QMessageBox, QGraphicsScene, QGraphicsSceneMouseEvent, QGraphicsItem, QApplication
+from PyQt6.QtGui import QKeyEvent, QCursor, QTransform, QPainter, QPixmap
+from PyQt6.QtSvg import QSvgRenderer
 
 # [3. local]
 from ...core import override, BaseFsmState, IFsmOwner, plural_if, override_optional
@@ -68,6 +68,7 @@ __copyright__ = "(c) Her Majesty the Queen in Right of Canada"
 
 __all__ = [
     # defines module members that are public; one line per string
+    'Actor2dPanel'
 ]
 
 log = logging.getLogger('system')
@@ -93,7 +94,7 @@ def handle_mouse_move_event(event: QGraphicsSceneMouseEvent) -> bool:
     :param event: the event to check
     :return: True if should handle the event, False otherwise
     """
-    if event.modifiers() != Qt.NoModifier:
+    if event.modifiers() != Qt.KeyboardModifier.NoModifier:
         # there is a modifier, so doesn't matter what mouse button (if any) is pressed, we will not handle it.
         # HOWEVER before return False: the scene's View seems to treat Ctrl and Alt modifiers specially, so
         # when these are pressed during mouse motion, we need to gobble them up so they are not used by the scene:
@@ -101,7 +102,7 @@ def handle_mouse_move_event(event: QGraphicsSceneMouseEvent) -> bool:
         return False
 
     # warning: event.button() always returns 0! only event.buttons() works
-    left_button = bool(event.buttons() & Qt.LeftButton)
+    left_button = bool(event.buttons() & Qt.MouseButton.LeftButton)
     if left_button:
         event.accept()
         return True
@@ -131,7 +132,7 @@ def check_item_has_selectability_flag(item: QGraphicsItem) -> QGraphicsItem:
     """
 
     def has_selectability_flag(item):
-        return bool(item.flags() & QGraphicsItem.ItemIsSelectable)
+        return bool(item.flags() & QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
     while item is not None and not has_selectability_flag(item):
         item = item.parentItem()
@@ -145,7 +146,7 @@ def new_cursor_from_svg_path(svg_image_path: str, width: int, height: int) -> QC
     :param svg_image_path: path to an SVG file holder image for cursor
     :return: QCursor instance
     """
-    assert qApp.instance() is not None
+    assert QApplication.instance() is not None
     cursor_pixmap = QPixmap(width, height)
     cursor_painter = QPainter(cursor_pixmap)
     svg_renderer = QSvgRenderer(svg_image_path)
@@ -772,7 +773,7 @@ class Actor2dScene(IFsmOwner, QGraphicsScene):
                   "or No to go back without deletion.".format(
                 len(part_names), plural_if(self.selectedItems()), ', '.join(part_names))
 
-            if exec_modal_dialog("Delete", msg, QMessageBox.Question) != QMessageBox.Yes:
+            if exec_modal_dialog("Delete", msg, QMessageBox.Icon.Question) != QMessageBox.StandardButton.Yes:
                 return
 
         cmd = RemovePartsCommand([part_item.part for part_item in self.selectedItems()])
@@ -794,7 +795,7 @@ class Actor2dScene(IFsmOwner, QGraphicsScene):
                   "or No to go back without deletion.".format(
                 len(waypoint_names), plural_if(self.selectedItems()), ', '.join(waypoint_names))
 
-            if exec_modal_dialog("Delete", msg, QMessageBox.Question) != QMessageBox.Yes:
+            if exec_modal_dialog("Delete", msg, QMessageBox.Icon.Question) != QMessageBox.StandardButton.Yes:
                 return
 
         map_links_to_waypoints = dict()
@@ -1048,11 +1049,16 @@ class Actor2dScene(IFsmOwner, QGraphicsScene):
         part_box_item.zChanged.disconnect()
 
         # Disable updating the scene until delete process is completed.
-        self.get_main_view().setUpdatesEnabled(False)
+        view = self.get_main_view()
+        if view is not None:
+            view.setUpdatesEnabled(False)
+
         part_box_item.dispose()
         self.removeItem(part_box_item)
+
         # Enable updating the scene.
-        self.get_main_view().setUpdatesEnabled(True)
+        if view is not None:
+            view.setUpdatesEnabled(True)
 
     def __on_destroyed_grobj(self, qobject: QGraphicsObject):
         log.debug("Qt destroying QGraphicsObject with id={} called '{}'", id(qobject), qobject.objectName())
@@ -1220,7 +1226,7 @@ class SceneStateBase(BaseFsmState):
         """
         Check if quick-deletion keys activated; if so, transition and return True; else, just return False.
         """
-        if event.modifiers() != (Qt.ControlModifier | Qt.ShiftModifier):
+        if event.modifiers() != (Qt.KeyboardModifier.ControlModifier | Qt.KeyboardModifier.ShiftModifier):
             return False
 
         if disallowed is not None:
@@ -1236,7 +1242,7 @@ class SceneStateBase(BaseFsmState):
         """
         Check if rubber-band selection has been activated; if so, transition and return True; else, just return False.
         """
-        if event.modifiers() == Qt.ShiftModifier:
+        if event.modifiers() == Qt.KeyboardModifier.ShiftModifier:
             # event.accept()
             self._set_state(SceneStateRubberBandSel)
             return True
@@ -1289,7 +1295,7 @@ class SceneStateItemSelected(SceneStateBase):
 
     def __init__(self, prev_state: BaseFsmState, fsm_owner: IFsmOwner = None):
         super().__init__(prev_state, fsm_owner)
-        self.__sel_kb_modifiers = Qt.NoModifier
+        self.__sel_kb_modifiers = Qt.KeyboardModifier.NoModifier
 
     @override(SceneStateBase)
     def enter_state(self, prev_state: SceneStateBase):
@@ -1330,7 +1336,7 @@ class SceneStateItemSelected(SceneStateBase):
         # capture modifiers for next selectability check:
         if self._check_rubber_sel(event):
             return
-        self.__sel_kb_modifiers = int(event.modifiers())
+        self.__sel_kb_modifiers = event.modifiers()
 
     @override(SceneStateBase)
     def mouse_moved(self, event: QGraphicsSceneMouseEvent):
@@ -1366,11 +1372,11 @@ class SceneStateItemSelected(SceneStateBase):
         :return: True if there are no modifiers, False otherwise
         """
 
-        if self.__sel_kb_modifiers == Qt.NoModifier:
+        if self.__sel_kb_modifiers == Qt.KeyboardModifier.NoModifier:
             log.debug("No modifier: true regardless of item type")
             return True
 
-        if self.__sel_kb_modifiers == Qt.ControlModifier:
+        if self.__sel_kb_modifiers == Qt.KeyboardModifier.ControlModifier:
             current_selection = self._fsm_owner.selectedItems()
             assert len(current_selection) == 1
             # the item is only selectable if it is multi-selectable AND it matches the type of current selection:
@@ -1530,11 +1536,11 @@ class SceneStateManyPartsSelected(SceneStateBase):
 
     def __init__(self, prev_state: BaseFsmState, fsm_owner: IFsmOwner = None):
         super().__init__(prev_state, fsm_owner)
-        self.__sel_kb_modifiers = Qt.NoModifier
+        self.__sel_kb_modifiers = Qt.KeyboardModifier.NoModifier
 
     @override(SceneStateBase)
     def enter_state(self, prev_state: SceneStateBase):
-        self.__sel_kb_modifiers = Qt.NoModifier
+        self.__sel_kb_modifiers = Qt.KeyboardModifier.NoModifier
 
     @override(SceneStateBase)
     def check_item_selectable(self, item: IInteractiveItem) -> bool:
@@ -1546,11 +1552,11 @@ class SceneStateManyPartsSelected(SceneStateBase):
         """
 
         # Without mouse modifier, selection will be one, so anything goes:
-        if self.__sel_kb_modifiers == Qt.NoModifier:
+        if self.__sel_kb_modifiers == Qt.KeyboardModifier.NoModifier:
             return True
 
         # if extending selection, only parts can be added:
-        if self.__sel_kb_modifiers == Qt.ControlModifier:
+        if self.__sel_kb_modifiers == Qt.KeyboardModifier.ControlModifier:
             return item.type() == CustomItemEnum.part
 
         return False
@@ -1596,7 +1602,7 @@ class SceneStateManyWaypointsSelected(SceneStateBase):
 
     def __init__(self, prev_state: BaseFsmState, fsm_owner: IFsmOwner = None):
         super().__init__(prev_state, fsm_owner)
-        self.__sel_kb_modifiers = Qt.NoModifier
+        self.__sel_kb_modifiers = Qt.KeyboardModifier.NoModifier
 
     @override(SceneStateBase)
     def enter_state(self, prev_state: SceneStateBase):
@@ -1608,7 +1614,7 @@ class SceneStateManyWaypointsSelected(SceneStateBase):
             self._set_state(SceneStateItemSelected)  # One item selected -> transition to item selected
         else:
             # This state is valid
-            self.__sel_kb_modifiers = Qt.NoModifier
+            self.__sel_kb_modifiers = Qt.KeyboardModifier.NoModifier
 
     @override(SceneStateBase)
     def check_item_selectable(self, item: IInteractiveItem) -> bool:
@@ -1620,11 +1626,11 @@ class SceneStateManyWaypointsSelected(SceneStateBase):
         """
 
         # Without mouse modifier, selection will be one, so anything goes:
-        if self.__sel_kb_modifiers == Qt.NoModifier:
+        if self.__sel_kb_modifiers == Qt.KeyboardModifier.NoModifier:
             return True
 
         # if extending selection, only waypoints can be added:
-        if self.__sel_kb_modifiers == Qt.ControlModifier:
+        if self.__sel_kb_modifiers == Qt.KeyboardModifier.ControlModifier:
             return item.type() == CustomItemEnum.waypoint
 
         return False
@@ -1637,7 +1643,7 @@ class SceneStateManyWaypointsSelected(SceneStateBase):
             return
 
         # Cancel link creation if Esc pressed
-        if event.key() == Qt.Key_Delete:
+        if event.key() == Qt.Key.Key_Delete:
             if self._fsm_owner.has_waypoint_selection():
                 event.accept()
                 self._fsm_owner.delete_selected_waypoints()
@@ -1829,26 +1835,26 @@ class SceneStateCreatingLink(SceneStateBase):
     @override(SceneStateBase)
     def enter_state(self, prev_state: SceneStateBase):
         # Mark FIXME: the View code does not override and restore the view's cursor as they do in ClickDelete. Need to
-        #   figure out why. Once working, qApp.setOverrideCursor can be removed.
+        #   figure out why. Once working, QApplication.setOverrideCursor can be removed.
         # view = self._fsm_owner.get_main_view()
         # view.set_cursor_override()
-        # view.setCursor(QCursor(Qt.BlankCursor))
-        qApp.setOverrideCursor(QCursor(Qt.BlankCursor))
+        # view.setCursor(Qt.CursorShape.BlankCursor)
+        QApplication.setOverrideCursor(Qt.CursorShape.BlankCursor)
 
     @override(SceneStateBase)
     def exit_state(self, new_state: SceneStateBase):
         # Mark FIXME: the View code does not override and restore the view's cursor as they do in ClickDelete. Need to
-        #   figure out why. Once working, qApp.restoreOverrideCursor() can be removed.
+        #   figure out why. Once working, QApplication.restoreOverrideCursor() can be removed.
         # view = self._fsm_owner.get_main_view()
         # if view is not None and view.is_cursor_overridden():
         #     view.setCursor(self.__cursor_orig)
         #     view.set_cursor_default()
-        qApp.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()
 
     @override(SceneStateBase)
     def key_pressed(self, event: QKeyEvent):
         """Cancel link creation if Esc pressed."""
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             event.accept()
             self.cancel_link_creation()
 
@@ -1903,7 +1909,7 @@ class SceneStateCreatingLink(SceneStateBase):
         self._remove_target_highlight()
 
         # Cancel link creation if right mouse button pressed
-        if event.button() == Qt.RightButton:
+        if event.button() == Qt.MouseButton.RightButton:
             event.accept()
             self.cancel_link_creation()
             return
