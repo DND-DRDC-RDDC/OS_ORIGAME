@@ -25,7 +25,7 @@ import sys
 
 # [2. third-party]
 from PyQt5.QtCore import QObject, QSettings, QTimer, pyqtSignal
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QDialogButtonBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QDialogButtonBox, QCheckBox
 
 # [3. local]
 from ..core.typing import Any, Either, Optional, Callable, PathType, TextIO, BinaryIO
@@ -36,7 +36,7 @@ from ..scenario.defn_parts import ActorPart, BasePart
 
 from .async_methods import AsyncRequest, AsyncErrorInfo
 from .undo_manager import scene_undo_stack
-from .gui_utils import exec_modal_dialog
+from .gui_utils import create_modal_dialog, exec_modal_dialog
 from .safe_slot import safe_slot, ext_safe_slot
 from .about import AboutDialog
 from .slow_tasks import get_progress_bar, ProgressBusy
@@ -263,6 +263,17 @@ class ScenarioManagerBridge(QObject):
         """
         return self.__on_save_save_as(self.__save_scenario_as, save_status_callback)
 
+    def set_show_save_warning(self, targetValue: bool) -> None:
+        """
+        Called whenever the show_save_warning setting needs to be updated, through either the menu or a dialog checkbox.
+        :param targetValue: The value that we will change the setting to.
+        """
+        try:
+            QSettings().setValue("show_save_warning", targetValue)
+            self.__ui.action_toggle_save_warning.setChecked(targetValue)
+        except Exception:
+            log.error("Couldn't save show_save_warning to settings")
+
     def import_scenario(self):
         """
         Called when the user wants to import a scenario into the current actor.
@@ -322,6 +333,7 @@ class ScenarioManagerBridge(QObject):
     slot_load_scenario = safe_slot(load_scenario)
     slot_save_scenario = safe_slot(save_scenario)
     slot_save_scenario_as = safe_slot(save_scenario_as)
+    slot_toggle_save_warning = safe_slot(set_show_save_warning, arg_types=[bool])
     slot_import_scenario = safe_slot(import_scenario)
     slot_export_scenario = safe_slot(export_scenario)
 
@@ -363,24 +375,24 @@ class ScenarioManagerBridge(QObject):
                           '\n\nClick Save to save all changes, Don\'t Save to abandon all unsaved changes, or Cancel to go back.'
 
                     user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
-                                               buttons=[QMessageBox.Save, QMessageBox.Cancel],
-                                               buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
+                                                   buttons=[QMessageBox.Save, QMessageBox.Cancel],
+                                                   buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
 
                 elif editors_have_unsaved_changes and not scenario_has_unsaved_changes:
                     msg = 'There are part editors with unapplied changes.' \
                           '\n\nClick Save to save all changes, Don\'t Save to abandon all unapplied changes, or Cancel to go back.'
 
                     user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
-                                                buttons=[QMessageBox.Save, QMessageBox.Cancel],
-                                                buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
+                                                   buttons=[QMessageBox.Save, QMessageBox.Cancel],
+                                                   buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
 
                 else:
                     msg = 'The scenario has unsaved changes, and there are part editors with unapplied changes. ' \
                           '\n\nClick Save to save all changes, Don\'t Save to abandon all unapplied and unsaved changes, or Cancel to go back.'
 
                     user_input = exec_modal_dialog(title, msg, QMessageBox.Question,
-                                                buttons=[QMessageBox.Save, QMessageBox.Cancel],
-                                                buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
+                                                   buttons=[QMessageBox.Save, QMessageBox.Cancel],
+                                                   buttons_str_role=[("Don't Save", QMessageBox.DestructiveRole)])
 
                 if user_input == QMessageBox.Cancel:
                     # user cancelled the operation
@@ -436,12 +448,15 @@ class ScenarioManagerBridge(QObject):
             scene_undo_stack().clear()
 
             if non_serialized_obj:
-                msg = "The following objects were not loaded: \n"
+                msg = "The following objects were not loaded: "
                 for count, item in enumerate(non_serialized_obj):
-                    msg += f"{count+1}. {SaveError.get_type_from_json(item)} in {SaveError.get_location_from_json(item)} \n"
+                    msg += f"\n{count+1}. {SaveError.get_type_from_json(item)} in {SaveError.get_location_from_json(item)}"
 
-                exec_modal_dialog("Unsaved Objects", "There are non-serializable objects in the loaded file. These objects were not loaded.",
-                            QMessageBox.Warning, buttons=[QMessageBox.Ok], detailed_message=msg)
+                log.warning("There are non-serializable objects in the loaded file. {}", msg)
+
+                show_save_warning = QSettings().value("show_save_warning", type=bool)
+                if show_save_warning:
+                    self.__create_save_warning("There are non-serializable objects in the loaded file. These objects were not loaded.", msg)
 
         get_progress_bar().start_busy_progress('Loading')
         AsyncRequest.call(self.__scenario_manager.load, filename,
@@ -617,12 +632,15 @@ class ScenarioManagerBridge(QObject):
         get_progress_bar().stop_progress()
 
         if non_serialized_obj:
-            msg = "The following objects were not saved: \n"
+            msg = "The following objects were not saved: "
             for count, item in enumerate(non_serialized_obj):
-                msg += f"{count+1}. {SaveError.get_type_from_json(item)} in {SaveError.get_location_from_json(item)} \n"
+                msg += f"\n{count+1}. {SaveError.get_type_from_json(item)} in {SaveError.get_location_from_json(item)}"
 
-            exec_modal_dialog("Unsaved Objects", "There are non-serializable objects in the saved file. These objects were not saved.",
-                            QMessageBox.Warning, buttons=[QMessageBox.Ok], detailed_message=msg)
+            log.warning("There are non-serializable objects in the saved file. {}", msg)
+
+            show_save_warning = QSettings().value("show_save_warning", type=bool)
+            if show_save_warning:
+                self.__create_save_warning("There are non-serializable objects in the saved file. These objects were not saved.", msg)
 
     def __save_failed(self, err_info: AsyncErrorInfo):
         """
@@ -631,6 +649,26 @@ class ScenarioManagerBridge(QObject):
         """
         self.__save_was_successful = err_info
         get_progress_bar().stop_progress()
+
+    def __create_save_warning(self, short_msg: str, long_msg: str) -> None:
+        """
+        Used to create and display a modal dialog to alert the user to unsaved objects in the save file, with the
+        inclusion of a checkbox to prevent further dialogs from being opened from these actions.
+        :param short_msg: The message initially displayed in the text box.
+        :param long_msg: The message displayed when the user clicks "Show Details"
+        """
+        msg_box = create_modal_dialog("Unsaved Objects", short_msg,
+                                      QMessageBox.Warning, buttons=[QMessageBox.Ok], detailed_message=long_msg)
+        # Add checkbox to modal dialog
+        dont_show_again = QCheckBox("Don't show this again")
+        msg_box.setCheckBox(dont_show_again)
+        # Present modal dialog to user and wait for response
+        msg_box.exec()
+
+        # Logically, this dialog only appears when the setting is True, so the only time we need to change it
+        # is when we need to make it False.
+        if dont_show_again.isChecked():
+            self.set_show_save_warning(False)
 
 
 class HelpManager(QObject):

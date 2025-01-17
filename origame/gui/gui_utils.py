@@ -356,16 +356,16 @@ class CustomMessageBox(QMessageBox):
             self.move(int(self.pos().x() - (new_width - cur_width) / 2), int(self.pos().y()))
 
 
-def exec_modal_dialog(dialog_title: str,
-                      message: str,
-                      icon: QMessageBox.Icon,
-                      buttons: List[QMessageBox.StandardButton] = None,
-                      buttons_str_role: List[Tuple[str, int]] = None,
-                      parent: QWidget = None,
-                      detailed_message: str = None,
-                      default_button: QMessageBox.StandardButton = None) -> QMessageBox.StandardButton:
+def create_modal_dialog(dialog_title: str,
+                        message: str,
+                        icon: QMessageBox.Icon,
+                        buttons: List[QMessageBox.StandardButton] = None,
+                        buttons_str_role: List[Tuple[str, int]] = None,
+                        parent: QWidget = None,
+                        detailed_message: str = None,
+                        default_button: QMessageBox.StandardButton = None) -> QMessageBox.StandardButton:
     """
-    Accessory helper method to exec a modal dialog (QMessageBox) where user response is required.
+    Accessory helper method to create a modal dialog (QMessageBox) where user response is required.
     Use this dialog to display messages to the user where a user response is required to close the dialog. Since the
     dialog is modal, the user will not be able to interact with the application until the dialog closes. A list of
     StandardButton's may be provided to allow for user interaction with the dialogue. The default button is 'OK' unless
@@ -426,6 +426,39 @@ def exec_modal_dialog(dialog_title: str,
         if buttons_str_role is not None:
             for button_str, button_role in buttons_str_role:
                 msg_box.addButton(button_str, button_role)
+
+    return msg_box
+
+
+def exec_modal_dialog(dialog_title: str,
+                      message: str,
+                      icon: QMessageBox.Icon,
+                      buttons: List[QMessageBox.StandardButton] = None,
+                      buttons_str_role: List[Tuple[str, int]] = None,
+                      parent: QWidget = None,
+                      detailed_message: str = None,
+                      default_button: QMessageBox.StandardButton = None) -> QMessageBox.StandardButton:
+    """
+    Accessory helper method to exec a modal dialog (QMessageBox) where user response is required.
+    Use this dialog to display messages to the user where a user response is required to close the dialog. Since the
+    dialog is modal, the user will not be able to interact with the application until the dialog closes. A list of
+    StandardButton's may be provided to allow for user interaction with the dialogue. The default button is 'OK' unless
+    the icon specified is a QMessageBox.Question, in which case the default is 'Yes' and 'No'.
+
+    :param dialog_title: title to be displayed on the top of the dialog's window.
+    :param message: the message to be displayed.
+    :param icon: a QMessageBox.Icon: NoIcon, Question, Information, Warning, or Critical. If 'buttons' is
+        None, buttons appropriate for the icon are added to the message box.
+    :param buttons: [optional] a list of QMessageBox.StandardButton's to be displayed. Default is 'OK' unless the icon
+        specified is a QMessageBox.Question, in which case the default is 'Yes' and 'No'.
+    :param buttons_str_role:  [optional] buttons that are added to the box in str and role.
+    :param parent: [optional] The widget from which the message box is spawned.
+    :param detailed_message: [optional] if provided, the 'Details...'  button will appear and display this text if
+        pressed.
+    :param default_button: The button to be activated when the Enter key is pressed.
+    :return: the exec() result of the dialog.
+    """
+    msg_box = create_modal_dialog(dialog_title, message, icon, buttons, buttons_str_role, parent, detailed_message, default_button)
 
     button_pressed = msg_box.exec()
     return button_pressed
