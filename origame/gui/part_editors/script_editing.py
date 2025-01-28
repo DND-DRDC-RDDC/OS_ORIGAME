@@ -1080,7 +1080,15 @@ class ScriptEditor(BaseContentEditor):
         if len(self.__search_result_list) >= 1:
             list_len = len(self.__search_result_list) - 1
             next_index = 0 if found_index > list_len else found_index
-            editor.setSelection(*self.__search_result_list[next_index]["selection"])
+            next_selection = [*self.__search_result_list[next_index]["selection"]]
+            # If the next selection is on the same line, we need to offset it by the different in search/replace terms
+            if next_selection[0] == selection[0]:
+                offset = len(self.__replace_text) - len(self.__search_text)
+                next_selection[1] += offset
+                next_selection[3] += offset
+            editor.setSelection(*next_selection)
+        # Regenerate the search list to account for any additional results being offset
+        self.__search_parts(self.__search_text)
 
         self.ui.search_results_list_box.setEnabled(True)
 
@@ -1094,9 +1102,23 @@ class ScriptEditor(BaseContentEditor):
             return
 
         result_list = self.__search_result_list
+        offset_per_replace = len(self.__replace_text) - len(self.__search_text)
+        offset = offset_per_replace
+        last_line_num = None
         for result in result_list:
+            selection = [*result["selection"]]
+            if last_line_num == selection[0]:
+                # modify the selection of this result to account for previous replaces
+                selection[1] += offset
+                selection[3] += offset
+                result["selection"] = selection
+                offset += offset_per_replace
+            else:
+                # reset the offset because this is a new line
+                offset = offset_per_replace
             editor.setSelection(*result["selection"])
             editor.replaceSelectedText(self.__replace_text)
+            last_line_num = result["selection"][0]
         self.__search_result_list = []
         self.ui.search_results_list_box.clear()
 
