@@ -1086,9 +1086,12 @@ class ScriptEditor(BaseContentEditor):
                 offset = len(self.__replace_text) - len(self.__search_text)
                 next_selection[1] += offset
                 next_selection[3] += offset
+            # Regenerate the search list to account for any additional results being offset
+            self.ui.search_results_list_box.clear()
+            self.__search_result_list = []
+            self.__search_parts(self.__search_text)
+            self.__on_search_done()
             editor.setSelection(*next_selection)
-        # Regenerate the search list to account for any additional results being offset
-        self.__search_parts(self.__search_text)
 
         self.ui.search_results_list_box.setEnabled(True)
 
