@@ -867,7 +867,7 @@ class PyCodingAssistant(CodingAssistant):
             return self.__completion_names
 
         except Exception as exc:
-            log.error(exc)
+            log.error("Error in generating text completions: {}", exc)
 
     @override(CodingAssistant)
     def get_completion(self, name: str) -> str:
@@ -944,7 +944,7 @@ class PyCodingAssistant(CodingAssistant):
             params = self.__call_signature.params
             if params and self.__call_signature.index is not None:
                 param = params[self.__call_signature.index]
-                if param and param.name:  # sometimes jedi can't determine param name(!)
+                if param and param.name and param.name in self.__completion_names:  # sometimes jedi can't determine param name(!)
                     choice = param.name + CALL_PARAM_APPEND
                     self.__completion_names.insert(0, choice)
                     self.__completion_names.remove(param.name)

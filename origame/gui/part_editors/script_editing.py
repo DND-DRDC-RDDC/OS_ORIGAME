@@ -16,14 +16,15 @@ Version History: See SVN log.
 
 # [1. standard library]
 import inspect
-import logging, re
+import logging
+import re
 from importlib import import_module
 from textwrap import dedent
 
 # [2. third-party]
 from PyQt6.QtCore import Qt, QCoreApplication
 from PyQt6.QtGui import QIcon, QGuiApplication
-from PyQt6.QtWidgets import QWidget, QApplication, QListWidgetItem, QAbstractItemView, QListWidget, QMessageBox
+from PyQt6.QtWidgets import QWidget, QApplication, QListWidgetItem, QAbstractItemView, QListWidget, QMessageBox, QLabel
 from PyQt6.QtWidgets import QTableWidgetItem
 
 # [3. local]
@@ -273,6 +274,24 @@ class ScriptEditor(BaseContentEditor):
         button_icon.addFile(str(get_icon_path("arrow_left.png")), state=QIcon.State.Off)
         button_icon.addFile(str(get_icon_path("arrow_right.png")), state=QIcon.State.On)
 
+        self.__search_text = None
+        self.__replace_text = None
+        self.__search_result_list = []
+        self.__search_direction_forward = True
+
+        self.ui.search_text_box.setFont(get_scenario_font())
+        self.ui.replace_text_box.setFont(get_scenario_font())
+        self.ui.search_results_list_box.setFont(get_scenario_font())
+        self.ui.search_results_list_box.setEnabled(False)
+        self.ui.find_next_button.clicked.connect(self.__slot_on_find_next_clicked)
+        self.ui.find_prev_button.clicked.connect(self.__slot_on_find_prev_clicked)
+        self.ui.replace_button.clicked.connect(self.__slot_on_replace_button_clicked)
+        self.ui.replace_all_button.clicked.connect(self.__slot_on_replace_all_button_clicked)
+        self.ui.search_text_box.returnPressed.connect(self.__slot_on_find_next_clicked)
+        self.ui.search_text_box.textEdited.connect(self.__slot_on_search_text_box_edited)
+        self.ui.replace_text_box.textEdited.connect(self.__slot_on_replace_text_box_finished)
+        self.ui.search_results_list_box.itemDoubleClicked.connect(self.__slot_show_search_hit_part)
+
         self.ui.toggle_button.setCheckable(True)
         self.ui.toggle_button.setChecked(True)
         self.ui.toggle_button.setIcon(button_icon)
@@ -358,6 +377,14 @@ class ScriptEditor(BaseContentEditor):
         try_disconnect(self.ui.rename_button.clicked, self.__slot_on_rename_link)
         try_disconnect(self.ui.links_list.itemChanged, self.__slot_on_item_changed)
         try_disconnect(self.ui.links_list.itemSelectionChanged, self.__slot_on_item_selection_changed)
+        try_disconnect(self.ui.find_next_button.clicked, self.__slot_on_find_next_clicked)
+        try_disconnect(self.ui.find_prev_button.clicked, self.__slot_on_find_prev_clicked)
+        try_disconnect(self.ui.replace_button.clicked, self.__slot_on_replace_button_clicked)
+        try_disconnect(self.ui.replace_all_button.clicked, self.__slot_on_replace_all_button_clicked)
+        try_disconnect(self.ui.search_text_box.returnPressed, self.__slot_on_find_next_clicked)
+        try_disconnect(self.ui.search_text_box.textEdited, self.__slot_on_search_text_box_edited)
+        try_disconnect(self.ui.replace_text_box.textEdited, self.__slot_on_replace_text_box_finished)
+        try_disconnect(self.ui.search_results_list_box.itemDoubleClicked, self.__slot_show_search_hit_part)
 
         self.__map_id_to_link.clear()
 
@@ -618,6 +645,9 @@ class ScriptEditor(BaseContentEditor):
         """
         Displays a "*" on the editor title bar and flags the backend.
         """
+        if self.ui.search_results_list_box.count() > 0:
+            self.ui.search_results_list_box.setEnabled(False)
+            self.__set_search_results_font_italic(True)
         self.parent().set_dirty(bool(self.check_unapplied_changes()))
 
     def __on_rename_link(self):
@@ -841,6 +871,286 @@ class ScriptEditor(BaseContentEditor):
         """
         self.ui.available_tabs.setVisible(is_checked)
 
+    def __on_find_next_clicked(self):
+        """
+        Method called when the find next button is clicked in the editor.
+        """
+        self.__on_search_clicked(True)
+
+    def __on_find_prev_clicked(self):
+        """
+        Method called when the find prev button is clicked in the editor.
+        """
+        self.__on_search_clicked(False)
+
+    def __on_search_clicked(self, forward: bool):
+        """
+        Method called to begin the search process
+        :param forward: A bool to override the search direction when necessary
+        """
+        text = self.ui.search_text_box.text()
+        if not text:
+            exec_modal_dialog("Search Error", "Please enter a text string in the search box.", QMessageBox.Icon.Warning)
+            return
+
+        if self.ui.use_regex_checkbox.isChecked():
+            try:
+                re.compile(text)
+            except:
+                exec_modal_dialog("Regex Error", "Please enter a valid regex pattern in the search box, or uncheck the \"Use Regex\" option.", QMessageBox.Icon.Warning)
+                return
+        else:
+            text = re.escape(text)
+
+        self.__search_direction_forward = forward
+
+        if len(self.__search_result_list) != 0 and self.__search_text == text:
+            self.__find_next()
+
+        if self.__search_text != text or not self.ui.search_results_list_box.isEnabled():
+            self.__search_text = text
+            # Clear the lists in order to freshly populate them afterwards
+            self.ui.search_results_list_box.clear()
+            self.__search_result_list = []
+
+            AsyncRequest.call(self.__search_parts, text, response_cb=self.__on_search_done)
+
+    def __search_parts(self, re_pattern: str):
+        """
+        Find all parts that have properties with string value that matches a pattern.
+        :param re_pattern: pattern to match
+        """
+        editor = self.ui.code_editor
+        code_text = editor.text()
+
+        results = []
+        for x in re.finditer(re_pattern, code_text):
+            match_text = x[0]
+            line, column = editor.lineIndexFromPosition(x.start())
+            # To get line start, subtract the column value from the hit start
+            line_start = x.start() - column
+            line_end = editor.lineLength(line) + line_start - 1
+            # Make full_line out of unmodified portions around match, plus match with bold tags
+            full_line = (code_text[line_start:x.start()] + f"<b>{match_text}</b>" + code_text[x.end():line_end]).strip()
+
+            hit = {
+                "full_line": full_line,
+                "selection": (line, column, line, column + len(match_text)),
+            }
+            results.append(hit)
+        self.__search_result_list = results
+
+    def __on_search_done(self):
+        """
+        Callback method once results have been obtained for a particular query. The results have been obtained
+        one at a time already so they are merely sorted and the widgets states updated.
+        """
+        # The results MUST be added to the list from the main thread and not in an async call, otherwise it crashes.
+        for x in self.__search_result_list:
+            full_line = x["full_line"]
+            item = QListWidgetItem()
+            self.ui.search_results_list_box.addItem(item)
+            self.ui.search_results_list_box.setItemWidget(item, QLabel(full_line))
+
+        self.ui.search_results_list_box.setEnabled(self.ui.search_results_list_box.count())
+
+        if len(self.__search_result_list) != 0:
+            # Set the selection to the result closest to the cursor
+            self.__find_next()
+
+    def __find_next(self):
+        """
+        Finds the next search result in the list and selects it, returning the index of the hit in the result list
+        """
+        search_list = self.__search_result_list
+        if len(search_list) <= 1:
+            if len(search_list) == 1:
+                # Don't overcomplicate things, there's only one result
+                self.ui.code_editor.setSelection(*search_list[0]["selection"])
+            # Also return early if no results
+            return
+        forward = self.__search_direction_forward
+        c_selection = self.ui.code_editor.getSelection()
+        last_hit = None
+        next_hit = None
+        (c_fromLine, c_fromIndex, c_toLine, c_toIndex) = c_selection
+        if c_fromLine == -1:
+            # No selection, so use cursor position
+            c_toLine, c_toIndex = self.ui.code_editor.getCursorPosition()
+        # Loop until we find the closest previous hit so we can operate on it later
+        # A faster search algorithm may be more practical if operating on significantly larger files is common
+        # This approach assumes the search list is sorted, so if you change how it's generated, make sure it's sorted
+        for i, hit in enumerate(search_list):
+            hit_selection = hit["selection"]
+            if hit_selection == c_selection:
+                # We know exactly where we are and how to get to the hit we want
+                next_hit = i + (1 if forward else -1)
+                break
+            (hit_fromLine, hit_fromIndex, hit_toLine, hit_toIndex) = hit_selection
+            if c_toLine < hit_toLine:
+                # This hit is already later than our cursor, so break now
+                break
+            if c_toLine > hit_toLine:
+                # We may not have found the hit yet, record this and check the next one
+                last_hit = i
+                continue
+            # c_toLine == hit_toLine, we're on the right line now
+            if hit_toIndex <= c_toIndex:
+                # The cursor is to the right of this hit
+                # We still might not have found the last hit yet but we're on the right line
+                last_hit = i
+                continue
+            elif hit_fromIndex <= c_toIndex < hit_toIndex:
+                # The cursor is within the hit, but it is not an exact highlight
+                # Regardless of direction, this hit will be the one we want to highlight, not the previous
+                next_hit = i
+                break
+            # The last hit was the closest previous hit, so we don't need to check any later results
+            break
+
+        if next_hit is not None:
+            # We've found the hit we want, so we don't want to adjust it further
+            pass
+        elif last_hit is not None:
+            # Move the selection forward, or set the selection to the previous hit
+            next_hit = last_hit + (1 if forward else 0)
+        else:
+            # If last_hit wasn't found, then the cursor is before any hits, so next is either the first or last hit
+            next_hit = 0 if forward else -1
+        # Ensure the index is within bounds, and wrap around if not
+        next_hit = -1 if next_hit < 0 else (0 if next_hit >= len(search_list) else next_hit)
+        # Finally, set the selection to next_hit
+        self.ui.code_editor.setSelection(*search_list[next_hit]["selection"])
+
+    def __on_search_text_box_edited(self, new_search_text: str):
+        """
+        Method used to gray out search results list if the search content changes within the search box text field.
+        :params new_search_text: The text that triggered this function
+        """
+        if self.__search_text is not None and new_search_text != self.__search_text:
+            self.ui.search_results_list_box.setEnabled(False)
+            self.__set_search_results_font_italic(True)
+        elif self.ui.search_results_list_box.count():
+            self.ui.search_results_list_box.setEnabled(True)
+            self.__set_search_results_font_italic(False)
+
+    def __on_replace_text_box_finished(self, replacement: str):
+        """
+        Automatically updates the search results box with previews of the replacement results
+        :param replacement: the string that will replace search results
+        """
+        self.__replace_text = replacement
+        listbox = self.ui.search_results_list_box
+        for x in range(0, listbox.count()):
+            item = listbox.item(x)
+            full_line = self.__search_result_list[x]["full_line"]
+            # This method of replacement ensures only the highlighted text is replaced, and highlights the replacement
+            replaced = re.sub("<b>(.*)</b>", f"<b>{replacement}</b>", full_line)
+            listbox.setItemWidget(item, QLabel(replaced))
+
+    def __on_replace_button_clicked(self):
+        """
+        Method called when the replace button is clicked in the editor.
+        """
+        editor = self.ui.code_editor
+        if self.__replace_text is None:
+            exec_modal_dialog("Replace Error", "Please enter replacement text first.", QMessageBox.Icon.Warning)
+            return
+
+        if editor.selectedText() != self.__search_text:
+            exec_modal_dialog("Replace Error", "Please select the text you want to replace via the search results first.", QMessageBox.Icon.Warning)
+            return
+
+        listbox = self.ui.search_results_list_box
+        selection = editor.getSelection()
+        found_index = None
+        for i, x in enumerate(self.__search_result_list):
+            # The user doesn't need to choose from the select list but their selection does need to match an entry
+            if x["selection"] == selection:
+                found_index = i
+                break
+        if found_index is None:
+            exec_modal_dialog("Replace Error", "Selected text not found in search results, please search again before replacing.", QMessageBox.Icon.Warning)
+            return
+        editor.replaceSelectedText(self.__replace_text)
+        # Remove the item from the lists
+        listbox.takeItem(found_index)
+        del self.__search_result_list[found_index]
+        # Select the next item (moving forwards)
+        if len(self.__search_result_list) >= 1:
+            list_len = len(self.__search_result_list) - 1
+            next_index = 0 if found_index > list_len else found_index
+            next_selection = [*self.__search_result_list[next_index]["selection"]]
+            # If the next selection is on the same line, we need to offset it by the different in search/replace terms
+            if next_selection[0] == selection[0]:
+                offset = len(self.__replace_text) - len(self.__search_text)
+                next_selection[1] += offset
+                next_selection[3] += offset
+            # Regenerate the search list to account for any additional results being offset
+            self.ui.search_results_list_box.clear()
+            self.__search_result_list = []
+            self.__search_parts(self.__search_text)
+            self.__on_search_done()
+            editor.setSelection(*next_selection)
+
+        self.ui.search_results_list_box.setEnabled(True)
+
+    def __on_replace_all_button_clicked(self):
+        """
+        Method called when the replace all button is clicked in the editor.
+        """
+        editor = self.ui.code_editor
+        if self.__replace_text is None:
+            exec_modal_dialog("Replace Error", "Please enter replacement text first.", QMessageBox.Icon.Warning)
+            return
+
+        result_list = self.__search_result_list
+        offset_per_replace = len(self.__replace_text) - len(self.__search_text)
+        offset = offset_per_replace
+        last_line_num = None
+        for result in result_list:
+            selection = [*result["selection"]]
+            if last_line_num == selection[0]:
+                # modify the selection of this result to account for previous replaces
+                selection[1] += offset
+                selection[3] += offset
+                result["selection"] = selection
+                offset += offset_per_replace
+            else:
+                # reset the offset because this is a new line
+                offset = offset_per_replace
+            editor.setSelection(*result["selection"])
+            editor.replaceSelectedText(self.__replace_text)
+            last_line_num = result["selection"][0]
+        self.__search_result_list = []
+        self.ui.search_results_list_box.clear()
+
+    def __set_search_results_font_italic(self, is_italic: bool = True):
+        """
+        This function toggles the font of all list items in the search results list between regular and italic. The
+        italic font indicates that the displayed search results no longer reflect the currently displayed search
+        string. A tool tip explaining this is also added to each italicised list item.
+
+        :param is_italic: True if the list item text is to be set to italic; False if text is to be non-italic.
+        """
+        for i in range(self.ui.search_results_list_box.count()):
+            if self.ui.search_results_list_box.item(i).font().italic() != is_italic:
+                ft = self.ui.search_results_list_box.item(i).font()
+                ft.setItalic(is_italic)
+                self.ui.search_results_list_box.item(i).setFont(ft)
+            if is_italic:
+                self.ui.search_results_list_box.item(i).setToolTip("Search results are out of date")
+            else:
+                self.ui.search_results_list_box.item(i).setToolTip("")
+
+    def __show_search_hit_part(self):
+        """
+        When the user clicks on an item in the search results, select the text of that result and focus the editor
+        """
+        hit_index = self.ui.search_results_list_box.selectionModel().selectedIndexes()[0].row()
+        self.ui.code_editor.setSelection(*self.__search_result_list[hit_index]["selection"])
+        self.ui.code_editor.setFocus()
+
     __slot_handle_toggle = safe_slot(__on_toggle_button_click)
     __slot_paste = safe_slot(__paste)
     __slot_cut = safe_slot(__cut)
@@ -864,6 +1174,13 @@ class ScriptEditor(BaseContentEditor):
     __slot_on_unhighlight = safe_slot(__on_unhighlight_clicked)
     __slot_on_highlight_missing = safe_slot(__on_highlight_missing)
     __slot_on_check_unused = safe_slot(__on_check_unused)
+    __slot_on_search_text_box_edited = safe_slot(__on_search_text_box_edited)
+    __slot_on_replace_text_box_finished = safe_slot(__on_replace_text_box_finished)
+    __slot_show_search_hit_part = safe_slot(__show_search_hit_part)
+    __slot_on_find_next_clicked = safe_slot(__on_find_next_clicked)
+    __slot_on_find_prev_clicked = safe_slot(__on_find_prev_clicked)
+    __slot_on_replace_button_clicked = safe_slot(__on_replace_button_clicked)
+    __slot_on_replace_all_button_clicked = safe_slot(__on_replace_all_button_clicked)
 
 
 class PythonScriptEditor(ScriptEditor):
@@ -925,13 +1242,13 @@ class PythonScriptEditor(ScriptEditor):
         self.ui.symbol_table.setColumnWidth(self.OBJECT_COL_INDEX, 170)
 
         # hide the Hightlight and delete all undefined button and module doctring group box
-        sp_retain = self.ui.highlight_symbol.sizePolicy();
-        sp_retain.setRetainSizeWhenHidden(True);
-        self.ui.highlight_symbol.setSizePolicy(sp_retain);
+        sp_retain = self.ui.highlight_symbol.sizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        self.ui.highlight_symbol.setSizePolicy(sp_retain)
         self.ui.highlight_symbol.hide()
-        sp_retain = self.ui.delete_all_undefined.sizePolicy();
-        sp_retain.setRetainSizeWhenHidden(True);
-        self.ui.delete_all_undefined.setSizePolicy(sp_retain);
+        sp_retain = self.ui.delete_all_undefined.sizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        self.ui.delete_all_undefined.setSizePolicy(sp_retain)
         self.ui.delete_all_undefined.hide()
         self.ui.module_docstring_groupbox.hide()
 
@@ -988,7 +1305,7 @@ class PythonScriptEditor(ScriptEditor):
 
                 attr_name = ''
                 if self.__use_attr:
-                    attr_name = '.'+ self.__attr_name
+                    attr_name = '.' + self.__attr_name
                 obj_name = str(self.__new_module + attr_name)
                 self.__symbol_object_list.append(obj_name)
 

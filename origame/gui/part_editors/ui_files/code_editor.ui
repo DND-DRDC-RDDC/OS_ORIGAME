@@ -532,7 +532,7 @@ p, li { white-space: pre-wrap; }
         </size>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab_links">
         <attribute name="title">
@@ -918,6 +918,92 @@ Undefined</string>
             </item>
            </layout>
           </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_find">
+        <attribute name="title">
+         <string>Find</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <widget class="QLineEdit" name="search_text_box">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="find_prev_button">
+             <property name="text">
+              <string>Find Prev</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="find_next_button">
+             <property name="text">
+              <string>Find Next</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <item>
+            <widget class="QLineEdit" name="replace_text_box">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="replace_button">
+             <property name="text">
+              <string>Replace</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="replace_all_button">
+             <property name="text">
+              <string>Replace All</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="use_regex_checkbox">
+           <property name="text">
+            <string>Use Regex</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>To begin, start typing in the search box above</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="search_results_list_box"/>
          </item>
         </layout>
        </widget>
