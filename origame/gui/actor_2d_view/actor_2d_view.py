@@ -706,14 +706,14 @@ class Actor2dView(QGraphicsView):
             # step instead of a single (line) step, so need to remove the modifier before forwarding
             # to the horizontal scroll bar (but Qt does not have event cloning functions so have to
             # clone manually, without the SHIFT modifier)
-            event_without_shift = QWheelEvent(event.posF(),
-                                              event.globalPosF(),
+            event_without_shift = QWheelEvent(event.position(),
+                                              event.globalPosition(),
                                               event.pixelDelta(),
                                               event.angleDelta(),
-                                              event.angleDelta().y(),  # qt4delta is the y coomponent (undocumented)
-                                              Qt.Orientation.Horizontal,  # we want horizontal scroll
                                               Qt.MouseButton.MiddleButton,
-                                              Qt.KeyboardModifier.NoModifier)  # and no SHIFT modifier
+                                              Qt.KeyboardModifier.NoModifier,
+                                              event.phase(),
+                                              event.inverted())
             self.horizontalScrollBar().event(event_without_shift)
             self.__on_horizontal_mouse_wheel()
 
