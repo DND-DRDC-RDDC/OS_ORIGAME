@@ -123,6 +123,14 @@ class PlotFigureCanvas(FigureCanvas):
         """
         evt.ignore()
 
+    # noinspection PyPep8Naming
+    @override(FigureCanvas)
+    def wheelEvent(self, evt):
+        """
+        Make the canvas ignore scroll wheel events in favor of default behavior.
+        """
+        evt.ignore()
+
 
 class CallParameters(QLineEdit):
     """
