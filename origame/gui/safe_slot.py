@@ -192,7 +192,7 @@ def safe_slot(func: SlotFunc, arg_types=None, __allow_decorator: bool = False, i
     slot_wrapper = __get_safe_slot_wrapper(func, __allow_decorator)
 
     if ignore_types:
-        pyqt_slot = pyqtSlot()(slot_wrapper)
+        pyqt_slot = slot_wrapper
     else:
         # finally ready to return pyqtSlotted wrapper:
         # WARNING: decorating the wrapper with pyqtSlot() does not work! Need to do it after defined.
