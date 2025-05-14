@@ -353,6 +353,7 @@ class FramedPartWidget(IPartWidget):
 
         self._palette = QPalette()
         self._palette.setColor(QPalette.ColorRole.Window, color)
+        self._palette.setColor(QPalette.ColorRole.Base, color)
         self._palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
         self._palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
         self.ui.part_name_label.setStyleSheet("QLabel {color: white; font: bold; padding-right: 1px};")
