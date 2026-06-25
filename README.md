@@ -1,9 +1,7 @@
 # ORIGAME
-Private repository for ORIGAME simulation software.
+Public repository for the ORIGAME simulation software.
 
-This repository was created for a Government of Canada contract to update the ORIGAME code base.
-
-(c) Her Majesty the Queen in Right of Canada
+(c) His Majesty the King in Right of Canada
 
 ## LICENSE
 See LICENSE file.
